@@ -1,0 +1,5182 @@
+openapi: 3.0.1
+
+info:
+  x-logo:
+    url: "https://images.squarespace-cdn.com/content/v1/5bc6dc34797f7417700a1d4b/1586199140393-QKKZIXLCGW2YLXKGVKCS/Picture2.png?format=1500w"
+    backgroundColor: "#f9f8f1"
+    altText: "IQ Telemetry"
+
+
+  title: Payway API v1
+  description: |-
+    
+    Main API built around the Payway database.
+    
+    Implements all tablets and functions needed for report pulling, website and app building.
+    If you wish to access this api, please contact us with the desired endpoints and reason.
+    
+    NOTE: Access restricted, logged, rate limited API.
+  
+  
+  contact:
+    name: Ryan Pomario
+    email: ryan@iqt.co.za
+
+
+  version: 1.0.1
+
+externalDocs:
+  description: Click here to learn more about Payway.
+  url: https://payway.iqt.co.za
+
+tags:
+  - name: Data
+    description: Endpoints that interact with data via the database.
+  - name: Functions
+    description: Endpoints that perform functions relating to the database.
+  - name: Authentication
+    description: Endpoints that allow you to authenticate with the API.
+  - name: Users
+    description: Endpoints that allow you to control payway users.
+  - name: Users Access
+    description: Endpoints that allow you to control payway users access.
+  - name: Roles
+    description: Endpoints that allow you to control user roles.
+  - name: Levels
+    description: Endpoints that relate to levels in the business logic of payway.
+  - name: Other Business Logic
+    description: Endpoints that relate to other business logic.
+  - name: Logs
+    description: Endpoints that relate to viewing logs in the payway backend.
+  - name: Many-to-Many
+    description: Endpoints that relate to many to many linking tables.
+  - name: One-to-Many
+    description: Endpoints that relate to one to many linking tables.
+  - name: Polling
+    description: Endpoints that relate to device polling.
+  - name: Transactions
+    description: Endpoints that relate to transactions / payments.
+  - name: Audit Logs
+    description: Endpoints that relate to auditing or logging actions.
+
+
+x-tagGroups:
+  - name: User Management
+    tags:
+      - Users
+      - Roles
+  - name: API Authentication & Access
+    tags:
+      - Authentication
+      - Users Access
+  - name: Business Logic
+    tags:
+      - Levels
+      - Other Business Logic
+      - Transactions
+  - name: System Logs
+    tags:
+      - Logs
+      - Polling
+      - Audit Logs
+  - name: Linking Tables
+    tags:
+      - Many-to-Many
+      - One-to-Many
+
+servers:
+  - url: '{scheme}://payway.iqt.co.za/api/v1'
+    variables:
+      scheme:
+        description: 'The API is accessible via https.'
+        enum:
+          - 'https'
+        default: 'https'
+
+paths:
+  '/authentication':
+    post:
+      security:
+        - { }
+      tags:
+        - Functions
+        - Authentication
+      summary: Obtain x-user-token for auth
+      description: |-
+        This endpoint is used to retrieve an authentication token that is used to identify a payway user.
+        We call this token the "x-user-token", a randomly generated string representing an user. 
+        This token does not expire after a set time period. On every successful authentication a new token is generated, expiring the old one.
+        
+        It is important you store this token in a secure way as tokens do not expire. 
+
+      operationId: authentication
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                client_email:
+                  type: string
+                  pattern: '^(([^+<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
+                  example: 'test@iqt.co.za'
+                  maxLength: 320
+                  description: Email needs to be working otherwise Firebase verification will not work.
+                client_secret:
+                  type: string
+                  example: 'AET68Eh$WE7'
+                  maxLength: 100
+                  description: Client secret, or password, is provided by Firebase when a user is created. Not found in our database.
+                authority:
+                  type: string
+                  enum: [ "firebase", "google" ]
+              required: [ "client_email", "client_secret","authority" ]
+      responses:
+        '200':
+          description: Returns authenticated users object
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AuthenticationResponse"
+                example:
+                  {
+                    "success": 1,
+                    "data": [
+                      {
+                        "id": 1,
+                        "token": "7ecc242c-c40d-4fd1-ba02-62220b4t8c6b",
+                        "contact_number": "+27834567123",
+                        "currency": "R",
+                        "delimiter": ";",
+                        "displayname": "Ryan Pomario",
+                        "email": "ryan@iqt.co.za",
+                        "email_verified": true,
+                        "firebase_id": "Reu8oIQWf898E4K1hIJdPpKIpOe93",
+                        "google_id": "null",
+                        "sidebar_toggled": false,
+                        "active": true
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+
+  '/authentication/reset-password':
+    post:
+      security:
+        - { }
+      tags:
+        - Functions
+        - Authentication
+      summary: Request password reset for user account
+      description: |-
+        This endpoint is used to request a password reset for a firebase user account.
+        User must accept and complete password reset email for effect to take place, if not done, password will remain the same.
+
+      operationId: resetPassword
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                client_email:
+                  type: string
+                  pattern: '^(([^+<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
+                  example: 'test@iqt.co.za'
+                  description: Email needs to be working otherwise Firebase reset email will not work.
+                  maxLength: 320
+                authority:
+                  type: string
+                  enum: [ "firebase" ]
+              required: [ "client_email", "authority" ]
+      responses:
+        '200':
+          description: Returns status of password reset attempt
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PasswordResetResponse"
+              example:
+                {
+                  "success": true,
+                  "data": "Password reset link sent to user with email ryan@iqt.co.za",
+                  "timestamp": 1723108298846
+                }
+
+
+  '/access':
+    post:
+      tags:
+        - Data
+        - Authentication
+      summary: Create object for operation id / endpoint
+      description: |-
+        This endpoint is used to create access objects that define properties of endpoints, e.g. /authentication.
+        Primary key returned on successful creation, id, can be used to allow an user to access certain endpoints. This is done via "User Access".
+        
+        If an user sees the message: "Unauthorized. [${operationId}], they most likely do not have an access entry linked to their account.
+        Access to endpoints is denied by default.
+
+      operationId: createAccess
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  example: 'Allow Deleting Customers'
+                  maxLength: 100
+                operation_id:
+                  type: string
+                  example: 'deleteCustomers'
+                  maxLength: 100
+                  description: |-
+                    Operation IDs are plain text representations of HTTP/s resources, e.g /authentication.
+                    These values can be found in the OpenAPI spec, and are defined under every endpoint type.
+                can_access:
+                  type: boolean
+              required: [ "name", "operation_id", "can_access" ]
+      responses:
+        '200':
+          description: Returns access object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AccessResponse"
+              example:
+                {
+                  "success": true,
+                  "data": [
+                    {
+                      "id": 1,
+                      "name": "Delete Customers",
+                      "operation_id": "deleteCustomers",
+                      "can_access": true
+                    }
+                  ],
+                  "entries": 1,
+                  "timestamp": 1723108298846
+                }
+
+  '/access/{id}':
+    get:
+      tags:
+        - Data
+        - Authentication
+      summary: Get object for operation id / endpoint
+      description: Obtain all operation ids / endpoints an user has access to
+      operationId: getAccess
+      responses:
+        '200':
+          description: Obtain an array of "access" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AccessResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 85,
+                        "name": "Update Device Activity Audit",
+                        "operation_id": "updateDeviceActivityAudit",
+                        "can_access": true
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    put:
+      tags:
+        - Data
+        - Authentication
+      summary: Update object for operation id / endpoint
+      description: Update properties of an access object
+      operationId: updateAccess
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  example: 'User Deleting Customers'
+                  maxLength: 100
+                operation_id:
+                  type: string
+                  example: 'deleteCustomers'
+                  maxLength: 100
+                  description: |-
+                    Operation IDs are plain text representations of HTTP/s resources, e.g /authentication.
+                    These values can be found in the OpenAPI spec, and are defined under every endpoint type.
+                can_access:
+                  type: boolean
+      responses:
+        '200':
+          description: Returns an array of "access" items updated by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AccessResponse"
+    delete:
+      tags:
+        - Data
+        - Authentication
+      summary: Delete object for operation id / endpoint
+      operationId: deleteAccess
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  {
+                    "success": true,
+                    "data": "Successfully deleted record. [1]",
+                    "timestamp": 1723108298846
+                  }
+          description: ok
+
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+
+  '/roles':
+    post:
+      tags:
+        - Data
+        - Roles
+      summary: Create object for roles
+      description: |-
+        This endpoint is used to create roles that are linked to users. These roles define which reseller and organisation users are linked to.
+        Roles can only include one reseller or organisation, therefor: 
+          * 1 Reseller-to-MANY-Users
+          * 1 Organisation-to-MANY-Users
+        
+        For highest access normal users, the "is_reseller" boolean can be used to give total visibility and access to all resources under the reseller.
+        Companies, devices, sites are defined by arrays of ids. By default, a empty array will be used. When the array is empty,
+        all resources under the company, site etc are visible. If you would like to restrict certain roles to access certain resources, append ids to
+        the array. This will restrict the role to ONLY the defined ids found in the non empty arrays.
+        
+        e.g: 
+        * site_id_list: [] --> All sites under organisation
+        * site_id_list: [3, 1] --> Only sites 3 and 1
+
+      operationId: createRoles
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  example: 'Reseller role'
+                  maxLength: 50
+                reseller_id:
+                  type: number
+                organisation_id:
+                  type: number
+                company_id_list:
+                  type: array
+                  example: [9, 1, 5]
+                  description: If array is empty, access to all companies linked to user. If not empty, only defined companies in array are accessible by user.
+                site_id_list:
+                  type: array
+                  example: [7,1]
+                  description: If array is empty, access to all sites linked to user. If not empty, only defined sites in array are accessible by user.
+                device_id_list:
+                  type: array
+                  example: [8,9,12,477,322]
+                  description: If array is empty, access to all devices linked to user. If not empty, only defined devices in array are accessible by user.
+                is_reseller:
+                  type: boolean
+                  description: If role is set to reseller, this role will have access to all resources under the reseller. Similar to a "super-user" account.
+              required: [ "name", "reseller_id","organisation_id" ]
+              example:
+                {
+                  "name": "New Role",
+                  "reseller_id": 1,
+                  "organisation_id": 10,
+                  "company_id_list": [ 1,2 ],
+                  "site_id_list": [ 1,2 ],
+                  "device_id_list": [ ],
+                  "is_reseller": false
+                }
+
+      responses:
+        '200':
+          description: Returns role object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RolesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 7,
+                        "name": "New Role",
+                        "company_id_list": [ ],
+                        "device_id_list": [ 1, 2, 10, 3 ],
+                        "organisation_id": 10,
+                        "reseller_id": 1,
+                        "site_id_list": [ ],
+                        "is_reseller": false,
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+
+  '/roles/{id}':
+    get:
+      tags:
+        - Data
+        - Roles
+      operationId: getRoles
+      summary: Get object for roles
+      responses:
+        '200':
+          description: Returns an array of "role" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RolesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 7,
+                        "name": "New Role",
+                        "company_id_list": [ ],
+                        "device_id_list": [ 1, 2, 10, 3 ],
+                        "organisation_id": 10,
+                        "reseller_id": 1,
+                        "site_id_list": [ ],
+                        "is_reseller": false
+
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+
+    put:
+      tags:
+        - Data
+        - Roles
+      summary: Update object for roles
+      operationId: updateRoles
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  example: 'Updated Reseller role'
+                  maxLength: 50
+                reseller_id:
+                  type: number
+                organisation_id:
+                  type: number
+                company_id_list:
+                  type: array
+                  example: [9, 1, 5]
+                  description: If array is empty, access to all companies linked to user. If not empty, only defined companies in array are accessible by user.
+                site_id_list:
+                  type: array
+                  example: [7]
+                  description: If array is empty, access to all sites linked to user. If not empty, only defined sites in array are accessible by user.
+                device_id_list:
+                  type: array
+                  example: []
+                  description: If array is empty, access to all devices linked to user. If not empty, only defined devices in array are accessible by user.
+                is_reseller:
+                  type: boolean
+                  description: If role is set to reseller, this role will have access to all resources under the reseller. Similar to a "super-user" account.
+      responses:
+        '200':
+          description: Returns an array of "role" items updated by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RolesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 7,
+                        "name": "Updated Role",
+                        "company_id_list": [ ],
+                        "device_id_list": [ 1, 2, 10, 3 ],
+                        "organisation_id": 10,
+                        "reseller_id": 1,
+                        "site_id_list": [ ],
+                        "is_reseller": false
+
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    delete:
+      tags:
+        - Data
+        - Roles
+      summary: Delete object for roles
+      operationId: deleteRoles
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  {
+                    "success": true,
+                    "data": "Successfully deleted record. [1]",
+                    "timestamp": 1723108298846
+                  }
+          description: ok
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/users':
+    post:
+      tags:
+        - Data
+        - Users
+      summary: Create object for payway user
+      description: |-
+        Users are the main, and only way, to "access" resources in the API Backend. 
+        Every user is linked to Reseller, Organisation, Company, Site and Devices. As a user,
+        you only have the ability to access resources you are linked to. All permission and access restriction
+        is handled in this component, the API Backend. 
+        
+        When a new user is created, a "client secret" / "password" is generated. This password can ONLY be viewed by
+        the API, or any calls, once. This password is generated randomly. These users are handled by Firebase, so all 
+        administration of user accounts relating to login needs to be done there.
+        
+        Every user that has been authenticated will receive a "x-user-token".
+        This token is a randomly generated, unique string that identifies a user account.
+        These tokens do not expire, but do get invalidated when a new successful authentication request occurs. 
+        This means that only ONE logged in "session" can occur at once. e.g Only one computer logged into website at a time.
+        
+        Super admin users are the highest level of accounts in Payway. These accounts get access to all resources in the API. No matter
+        the reseller or organisation. 
+        
+        Proxy users are user accounts that are NOT suppose to be usable in any user facing website or app. Proxy users should
+        not be displayed, or be able to be logged into to, by these user facing apps / websites.
+        Proxy users are meant to be used by applications that require restricted access and are intergrated with
+        solutions requiring API use. Proxy users act like normal users, being linked to certain resellers, organisations etc.
+
+      operationId: createUsers
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                displayname:
+                  type: string
+                  example: John Doe
+                  maxLength: 50
+                  pattern: ^[a-z A-Z]+
+                email:
+                  type: string
+                  example: 'john.doe@gmail.com'
+                  maxLength: 320
+                  pattern: '^(([^+<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
+                email_verified:
+                  type: boolean
+                contact_number:
+                  type: string
+                  example: '+27876545611'
+                  maxLength: 20
+                  pattern: ^(\+|\d)[0-9]{7,16}$
+                currency:
+                  type: string
+                  example: "$"
+                  maxLength: 5
+                  pattern: ^[A-Z$€]*$
+                  description: Defines the type of current a user is using.
+                delimiter:
+                  type: string
+                  example: ';'
+                  maxLength: 1
+                  pattern: ^[;]*$
+                proxy_user:
+                  type: boolean
+                  description: Special user that should only be used in certain cases.
+                active:
+                  type: boolean
+              required: [ "displayname", "email", "currency", "delimiter" ]
+      responses:
+        '200':
+          description: Returns user object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UsersResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "displayname": "John Doe",
+                        "email": "john.doe@gmai.com",
+                        "email_verified": true,
+                        "contact_number": "+27653451232",
+                        "last_login_at": null,
+                        "active": true,
+                        "google_id": null,
+                        "token": null,
+                        "last_login_error": null,
+                        "sidebar_toggled": false,
+                        "firebase_id": "B9lQQzlzED5JOcdP8Jc399Jk1CA2",
+                        "currency": "R",
+                        "delimiter": ";",
+                        "super_admin": false,
+                        "proxy_user": false,
+                        "password": "ns98Ui7T2Sc"
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+
+  '/users/{id}':
+    get:
+      tags:
+        - Data
+        - Users
+      operationId: getUsers
+      summary: Get object for user
+      responses:
+        '200':
+          description: Returns an array of "user" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UsersResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "contact_number": "+278249563295",
+                        "email": "test@iqt.co.za",
+                        "email_verified": true,
+                        "last_login_at": "2024-08-13T09:08:29.000Z",
+                        "last_login_error": "success",
+                        "currency": "R",
+                        "delimiter": ";",
+                        "displayname": "Test IQT",
+                        "sidebar_toggled": false,
+                        "firebase_id": "B8vGoIQWfaN74K78HEdPpT9hpX93",
+                        "proxy_user": false,
+                        "super_admin": true,
+                        "active": true
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    put:
+      tags:
+        - Data
+        - Users
+      summary: Update object for users
+      operationId: updateUsers
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                displayname:
+                  type: string
+                  example: John Doe
+                  maxLength: 50
+                  pattern: ^[a-z A-Z]+
+                email:
+                  type: string
+                  maxLength: 320
+                  example: 'john.doe@gmail.com'
+                  pattern: '^(([^+<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
+                email_verified:
+                  type: boolean
+                contact_number:
+                  type: string
+                  example: '+27876545611'
+                  maxLength: 20
+                  pattern: ^(\+|\d)[0-9]{7,16}$
+                currency:
+                  type: string
+                  example: "$"
+                  maxLength: 5
+                  pattern: ^[A-Z$€]*$
+                  description: Defines the type of current a user is using.
+                delimiter:
+                  type: string
+                  example: ';'
+                  maxLength: 1
+                  pattern: ^[;]*$
+                proxy_user:
+                  type: boolean
+                  description: Special user that should only be used in certain cases.
+                active:
+                  type: boolean
+      responses:
+        '200':
+          description: Returns an array of "user" items updated by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UsersResponse"
+              example:
+                {
+                  "success": true,
+                  "data": [
+                    {
+                      "id": 1,
+                      "displayname": "IQT Test",
+                      "email": "test@iqt.co.za",
+                      "email_verified": true,
+                      "contact_number": "+27624574394",
+                      "last_login_at": "2024-06-06T08:06:21.000Z",
+                      "active": true,
+                      "google_id": null,
+                      "token": "null",
+                      "last_login_error": "Error: Email verification is required before this user can fully authenticate. An email has been sent to ryantest@iqt.co.za",
+                      "sidebar_toggled": false,
+                      "firebase_id": "Z7AyWWTA9iSUd8KIOV2YfrjlFT4O2",
+                      "currency": "R",
+                      "delimiter": ";",
+                      "super_admin": false,
+                      "proxy_user": false
+                    }
+                  ],
+                  "entries": 1,
+                  "timestamp": 1723108298846
+                }
+    delete:
+      tags:
+        - Data
+        - Users
+      summary: Delete object for users
+      operationId: deleteUsers
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  {
+                    "success": true,
+                    "data": "Successfully deleted record. [1]",
+                    "timestamp": 1723108298846
+                  }
+          description: ok
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+
+  '/user_access':
+    post:
+      tags:
+        - Data
+        - Users Access
+      summary: Create object for user access
+      description: |-
+        By default users are not able to access any resources, like /sites, until given specific permission to do so.
+        This table acts as a link to the access and user table. If a user does not have permissions to access a HTTP/s 
+        resource, this is the place to give them access.
+
+      operationId: createUserAccess
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                user_id:
+                  type: number
+                  example: 1
+                  description: Users ID can be found in the users resource
+                access_id:
+                  type: number
+                  example: 3
+                  description: Access ID can be found in the access resource
+              required: [ "user_id", "access_id" ]
+      responses:
+        '200':
+          description: Returns user access object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserAccessResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "user_id": 1,
+                        "access_id": 3
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+
+  '/user_access/user/{id}':
+    get:
+      tags:
+        - Data
+        - Users Access
+      summary: Get object for user access by a user id
+      operationId: getUserAccessDetailByUserId
+      responses:
+        '200':
+          description: Returns an array of "user access" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserAccessDetailResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "access_id": 1,
+                        "name": "Create Access",
+                        "operation_id": "createAccess",
+                        "can_access": true
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+
+  '/user_access/{id}':
+    get:
+      tags:
+        - Data
+        - Users Access
+      summary: Get object for user access
+      operationId: getUserAccess
+      responses:
+        '200':
+          description: Returns an array of "user access" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserAccessResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "access_id": 77,
+                        "user_id": 1
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    delete:
+      tags:
+        - Data
+        - Users Access
+      operationId: deleteUserAccess
+      summary: Delete object for user access
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  {
+                    "success": true,
+                    "data": "Successfully deleted record. [1]",
+                    "timestamp": 1723108298846
+                  }
+          description: ok
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/user_roles':
+    post:
+      tags:
+        - Data
+        - Roles
+      summary: Create object for user roles
+      description: |-
+        This endpoint is used as a linking table.
+        This tables relation is: MANY-Users-to-MANY-Roles.
+
+      operationId: createUserRoles
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                user_id:
+                  type: number
+                  example: 1
+                  description: Users ID can be found in the users resource
+                role_id:
+                  type: number
+                  example: 3
+                  description: Roles ID can be found in the roles resource
+              required: [ "user_id", "role_id" ]
+      responses:
+        '200':
+          description: Returns user roles object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserRolesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 2,
+                        "role_id": 1,
+                        "user_id": 100
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+
+  '/user_roles/{id}':
+    get:
+      tags:
+        - Data
+        - Roles
+      operationId: getUserRoles
+      summary: Get object for user roles
+      responses:
+        '200':
+          description: Returns an array of "user roles" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserRolesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 2,
+                        "role_id": 1,
+                        "user_id": 100
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+
+    delete:
+      tags:
+        - Data
+        - Roles
+      operationId: deleteUserRoles
+      summary: Delete object for user roles
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  {
+                    "success": true,
+                    "data": "Successfully deleted record. [1]",
+                    "timestamp": 1723108298846
+                  }
+          description: ok
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/user_roles/user/{id}':
+    get:
+      tags:
+        - Data
+        - Roles
+      operationId: getUserRolesByUserId
+      summary: Get object for user roles
+      responses:
+        '200':
+          description: Returns an array of "user roles" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserRolesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 2,
+                        "role_id": 1,
+                        "user_id": 100
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/resellers':
+    post:
+      tags:
+        - Data
+        - Levels
+      summary: Create object for reseller
+      description: |-
+        Resellers are of the highest level in the Payway system. Under resellers, there are:
+          * MANY Organisations
+          * MANY Companies
+          * MANY Sites
+          * MANY Devices
+        
+        Resellers are customers that resell the Payway system to other customers. These users, if marked as a reseller, have access
+        to ALL resources under the reseller.
+
+      operationId: createResellers
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  example: "BigTech Reseller"
+                  maxLength: 60
+                  pattern: ^[a-z A-Z]+
+                address:
+                  type: string
+                  example: "109 BigTech Street, Cape Town 8800"
+                  maxLength: 100
+                contact_number:
+                  type: string
+                  example: '+27876545611'
+                  maxLength: 20
+                  pattern: ^(\+|\d)[0-9]{7,16}$
+                contact_person:
+                  type: string
+                  example: "John Doe"
+                  maxLength: 50
+                  pattern: ^[a-z A-Z]+
+                lat_lng:
+                  type: string
+                  maxLength: 50
+                  example: "-18.08011,-34.73830"
+                  pattern: '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$'
+                active:
+                  type: boolean
+              required: [ "name","address", "contact_number", "contact_person", "lat_lng", "active" ]
+      responses:
+        '200':
+          description: Returns reseller object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ResellersResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "New Reseller",
+                        "address": "3336 Zebra Road, Cape Town 8800",
+                        "contact_number": "+2712795494",
+                        "contact_person": "John Doe",
+                        "lat_lng": "-18.08011,-34.73830",
+                        "active": true
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723628631562
+                  }
+
+  '/resellers/{id}':
+    get:
+      tags:
+        - Data
+        - Levels
+      operationId: getResellers
+      summary: Get object for resellers
+      responses:
+        '200':
+          description: Returns an array of "reseller" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ResellersResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "New Reseller",
+                        "address": "3336 Zebra Road, Cape Town 8800",
+                        "contact_number": "+2712795494",
+                        "contact_person": "John Doe",
+                        "lat_lng": "-18.08011,-34.73830",
+                        "active": true
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    put:
+      tags:
+        - Data
+        - Levels
+      summary: Update object for resellers
+      operationId: updateResellers
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  example: "BigTech Reseller"
+                  maxLength: 60
+                  pattern: ^[a-z A-Z]+
+                address:
+                  type: string
+                  example: "109 BigTech Street, Cape Town 8800"
+                  maxLength: 100
+                contact_number:
+                  type: string
+                  example: '+27876545611'
+                  maxLength: 20
+                  pattern: ^(\+|\d)[0-9]{7,16}$
+                contact_person:
+                  type: string
+                  example: "John Doe"
+                  maxLength: 50
+                  pattern: ^[a-z A-Z]+
+                lat_lng:
+                  type: string
+                  maxLength: 50
+                  example: "-18.08011,-34.73830"
+                  pattern: '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$'
+                active:
+                  type: boolean
+      responses:
+        '200':
+          description: Returns an array of "reseller" items updated by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ResellersResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "New Reseller",
+                        "address": "3336 Zebra Road, Cape Town 8800",
+                        "contact_number": "+2712795494",
+                        "contact_person": "John Doe",
+                        "lat_lng": "-18.08011,-34.73830",
+                        "active": true
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    delete:
+      tags:
+        - Data
+        - Levels
+      summary: Delete object for resellers
+      operationId: deleteResellers
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  {
+                    "success": true,
+                    "data": "Successfully deleted record. [1]",
+                    "timestamp": 1723108298846
+                  }
+          description: ok
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/organisations':
+    post:
+      tags:
+        - Data
+        - Levels
+      summary: Create object for an organisation
+      description: |-
+        Organisations are the second level in the Payway system. Under Organisations, there are:
+          * MANY Companies
+          * MANY Sites
+          * MANY Devices
+
+      operationId: createOrganisations
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  example: "BigTech Org"
+                  maxLength: 60
+                  pattern: ^[a-z A-Z]+
+                address:
+                  type: string
+                  example: "109 BigTech Street, Cape Town 8800"
+                  maxLength: 100
+                contact_number:
+                  type: string
+                  example: '+27876545611'
+                  maxLength: 20
+                  pattern: ^(\+|\d)[0-9]{7,16}$
+                contact_person:
+                  type: string
+                  example: "John Doe"
+                  maxLength: 50
+                  pattern: ^[a-z A-Z]+
+                lat_lng:
+                  type: string
+                  maxLength: 50
+                  example: "-18.08011,-34.73830"
+                  pattern: '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$'
+                active:
+                  type: boolean
+              required: [ "name", "address", "contact_number", "contact_person", "active" ]
+      responses:
+        '200':
+          description: Returns organisation object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrganisationsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "BigTech Org",
+                        "address": "3336 Zebra Road, Cape Town 8800",
+                        "contact_number": "+2712795494",
+                        "contact_person": "John Doe",
+                        "lat_lng": "-18.08011,-34.73830",
+                        "active": true
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723628631562
+                  }
+
+  '/organisations/{id}':
+    get:
+      tags:
+        - Data
+        - Levels
+      operationId: getOrganisations
+      summary: Get object for organisation
+      responses:
+        '200':
+          description: Returns an array of "organisation" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrganisationsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "BigTech Org",
+                        "address": "3336 Zebra Road, Cape Town 8800",
+                        "contact_number": "+2712795494",
+                        "contact_person": "John Doe",
+                        "lat_lng": "-18.08011,-34.73830",
+                        "active": true
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723628631562
+                  }
+    put:
+      tags:
+        - Data
+        - Levels
+      summary: Update object for organisations
+      operationId: updateOrganisations
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  example: "BigTech Org"
+                  maxLength: 60
+                  pattern: ^[a-z A-Z]+
+                address:
+                  type: string
+                  example: "109 BigTech Street, Cape Town 8800"
+                  maxLength: 100
+                contact_number:
+                  type: string
+                  example: '+27876545611'
+                  maxLength: 20
+                  pattern: ^(\+|\d)[0-9]{7,16}$
+                contact_person:
+                  type: string
+                  example: "John Doe"
+                  maxLength: 50
+                  pattern: ^[a-z A-Z]+
+                lat_lng:
+                  type: string
+                  maxLength: 50
+                  example: "-18.08011,-34.73830"
+                  pattern: '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$'
+                active:
+                  type: boolean
+      responses:
+        '200':
+          description: Returns an array of "organisation" items updated by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrganisationsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "New Org",
+                        "address": "3336 Zebra Road, Cape Town 8800",
+                        "contact_number": "+2712795494",
+                        "contact_person": "John Doe",
+                        "lat_lng": "-18.08011,-34.73830",
+                        "active": true
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723628631562
+                  }
+    delete:
+      tags:
+        - Data
+        - Levels
+      operationId: deleteOrganisations
+      summary: Delete object for organisations
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  {
+                    "success": true,
+                    "data": "Successfully deleted record. [1]",
+                    "timestamp": 1723108298846
+                  }
+          description: ok
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/companies':
+    post:
+      tags:
+        - Data
+        - Levels
+      summary: Create object for company
+      description: |-
+        Companies are the third highest level in the Payway system. Under companies, there are:
+          * MANY Sites
+          * MANY Devices
+
+      operationId: createCompanies
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  example: "BigTech Company"
+                  maxLength: 60
+                  pattern: ^[a-z A-Z]+
+                address:
+                  type: string
+                  example: "109 BigTech Street, Cape Town 8800"
+                  maxLength: 100
+                contact_number:
+                  type: string
+                  example: '+27876545611'
+                  maxLength: 20
+                  pattern: ^(\+|\d)[0-9]{7,16}$
+                contact_person:
+                  type: string
+                  example: "John Doe"
+                  maxLength: 50
+                  pattern: ^[a-z A-Z]+
+                lat_lng:
+                  type: string
+                  maxLength: 50
+                  example: "-18.08011,-34.73830"
+                  pattern: '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$'
+                organisation_id:
+                  type: number
+                  example: 2
+                email_template:
+                  type: string
+                  description: GZIPed string of custom HTML used for email templates
+                active:
+                  type: boolean
+              required: [ "name", "address", "contact_number", "contact_person", "organisation_id", "active" ]
+      responses:
+        '200':
+          description: Returns company object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CompaniesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 4,
+                        "name": "BigTech Company",
+                        "address": "109 BigTech Street, Cape Town 8800",
+                        "contact_number": "+27876545611",
+                        "contact_person": "John Doe",
+                        "lat_lng": "-18.08011,-34.73830",
+                        "organisation_id": 4,
+                        "email_template": "H4sIAAAAAAAAA+1abW/bNhD+vPwKxsMwYKgsyy9N4pcMaZq2QbI27bK225eBls4WF0pUSNqON/S/j6RkWZIlO02bLu18RZOIOh3J5557MeWd/q7HXDmPAPkyoIc7/cUvwN7hDlLSD0BiFOIABrUpgVnEuKwhl4USQjmozYgn/YEHU+KCZS5q9uqDHgiXk0gSFmaevcBCzBj30BsQIJGFjrizr36dBJhQdAlBRLEEgUaMIzUDUBYBF3n7vpSRBdcTMh3UjmPD1qXaT2YaCTfS1vvqIdfHXE01+O3ymbWfGpJEUjh8C5yMiIv1ItEx80AvSLRaGxfUt2MDsTEh54u/teh5H6VXQ+bN0T/ppZYA8zEJu6iB8EQytEsCjTAOZS+nFmHPI+FY61WpGPS7yGk0fqjUGSlQrBEOCJ13kcChsITedl6JkhAsH8jYl8pcvZ2/a81geEWUFW1KBIxJ3yxMzUUwJViAV3ggEJb2gSXI32Bh76+JkPEyyw1v0v2wk/75UwHM20yVeVziIYWld6RX9I1gltGxqIiwCwr9SFZiu9TmG7QzSyDBuDCpR4SimXLPkDL3Kj/FUEUL8C4KWQiFyfGNlSHAqgeIigYeMWr4bQWK32oG4k7U/9KF4cKyDKweuIwbC8U1fIjZbyf079txBulrxqdKFEYy5vug1qilw/FQnEmy45JFldoxPXM32GikYzs7NBy7jDI+qH3/bF//W95JZtNYLQfN4ge1NCR7FWFnXJ2JEotPqIITbrAr6byHhti9GnM2Cb0uSmbu1XYUGruWhV6cHD09eYMsS10buiwhp2Ss9uqCdtVyVdNkXMGR2ZlhQm6zLlCarHdlXBOyOL6AMI9BKTAZHI2sQLbEqYcy8GUZWUAlsbNIwXyZMvvSO8xRrwBTViogy0opfFkpgTIrVbAWdcogzkoCbKdRcX+J8chIuVZK0TTclcHopoBumYXDFXs51PM3vJQdrUZtMemiJLT0hLXyR83jKqlV3kw3wl1lUVVv0bXtgBEBwo/qYyL9ybBOmA265qpkntRcVW64tay5Ks+oRDQGW3JVxCLMFQHqUTguBy0rC35v1kzjY7PqBgrl9h1jWcjyucxebcSu8JddDJlktMS/65y+xqU6c52/ev7K5K1KrY92PAmUE0VdXE+UC03VtFwvrLsssJP+zZ46dmfoPvbcVnvvYG+013b29hoN7Hjtoe109h87BwdOu9E6aFmvz87+OH1/fvz8XfP38/dnz9+eHf9qXxBXTjg0NTt+ViQKsBw4KmZmt3ZVrugWy/MixTWbJihuSz+lXhFAn8uX2wD+BgNYjehSmKmV6YOxcqpgAvbk5dNsu/FV9huFvu3O/UZi51b9hsbul6PTlyvJ7v/RiVT0GJ+lneisZqPONhsV5CvJRmb0bu2E79x2Z7kTiyNOMH2EXgCdgiQu7u18l0p8HqE+96v61lGMytwyyUQlgYbTOGnuZ+8sc0dmMJNcivZnCWdD3UjQNfW+eu9azrHKSnyOnjB2pWZCR1FUjZXtO1+oVXBWg9PZBmdBvv3grObiQj4hNp12eWx2njw+2N+7Y2zmTixb6zvx9ZF5yczBMQknoOgjfTRnE46w66o+QqJp5oz4EYooYAHIVHwkfUAjRimb6YB29fkxCSUzz6+dcZjkABxF9TVJIPpCOaC5mgOa2xxQkG0OeHj1eTUHZG6a02vTfnfNKfSd80M2A/ypo/wBhOy2p96G7H2HbLPxoMv2O/iRg6KD+qFqrg802n0Agbntp7eB+cD76XjQGjIpWZDQ8+PitpgZPlupPR3p5hn5eAoIh3N0PQGhy65YdN7rCzURRCLdvItJpF/cokhxHvXxAuwYqEXPsfp+W31CB653eotT/XLxOYyWcTpmbExBv9qoHepE1bfxGs7cd476z+j6aXUkoatkkTJV6CIfMJUv2Ex53EPD+b0TsJp0F3g+w3NNuzo6QhFn3sSVekmnr9ElUAhA8vk9fgRd8/LCXC3eWORO3pdmimf2aY1pr1bZdkmVraysX7Karq+gG6rmhkr50dXRLnNF8T2Srb/BY77Qo78Z+C/iF9CUMSgAAA==",
+                        "active": true,
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723639902458
+                  }
+
+  '/companies/{id}':
+    get:
+      tags:
+        - Data
+        - Levels
+      operationId: getCompanies
+      summary: Get object for company
+      responses:
+        '200':
+          description: Returns an array of "companies" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CompaniesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 4,
+                        "name": "BigTech Company",
+                        "address": "109 BigTech Street, Cape Town 8800",
+                        "contact_number": "+27876545611",
+                        "contact_person": "John Doe",
+                        "lat_lng": "-18.08011,-34.73830",
+                        "organisation_id": 4,
+                        "email_template": "H4sIAAAAAAAAA+1abW/bNhD+vPwKxsMwYKgsyy9N4pcMaZq2QbI27bK225eBls4WF0pUSNqON/S/j6RkWZIlO02bLu18RZOIOh3J5557MeWd/q7HXDmPAPkyoIc7/cUvwN7hDlLSD0BiFOIABrUpgVnEuKwhl4USQjmozYgn/YEHU+KCZS5q9uqDHgiXk0gSFmaevcBCzBj30BsQIJGFjrizr36dBJhQdAlBRLEEgUaMIzUDUBYBF3n7vpSRBdcTMh3UjmPD1qXaT2YaCTfS1vvqIdfHXE01+O3ymbWfGpJEUjh8C5yMiIv1ItEx80AvSLRaGxfUt2MDsTEh54u/teh5H6VXQ+bN0T/ppZYA8zEJu6iB8EQytEsCjTAOZS+nFmHPI+FY61WpGPS7yGk0fqjUGSlQrBEOCJ13kcChsITedl6JkhAsH8jYl8pcvZ2/a81geEWUFW1KBIxJ3yxMzUUwJViAV3ggEJb2gSXI32Bh76+JkPEyyw1v0v2wk/75UwHM20yVeVziIYWld6RX9I1gltGxqIiwCwr9SFZiu9TmG7QzSyDBuDCpR4SimXLPkDL3Kj/FUEUL8C4KWQiFyfGNlSHAqgeIigYeMWr4bQWK32oG4k7U/9KF4cKyDKweuIwbC8U1fIjZbyf079txBulrxqdKFEYy5vug1qilw/FQnEmy45JFldoxPXM32GikYzs7NBy7jDI+qH3/bF//W95JZtNYLQfN4ge1NCR7FWFnXJ2JEotPqIITbrAr6byHhti9GnM2Cb0uSmbu1XYUGruWhV6cHD09eYMsS10buiwhp2Ss9uqCdtVyVdNkXMGR2ZlhQm6zLlCarHdlXBOyOL6AMI9BKTAZHI2sQLbEqYcy8GUZWUAlsbNIwXyZMvvSO8xRrwBTViogy0opfFkpgTIrVbAWdcogzkoCbKdRcX+J8chIuVZK0TTclcHopoBumYXDFXs51PM3vJQdrUZtMemiJLT0hLXyR83jKqlV3kw3wl1lUVVv0bXtgBEBwo/qYyL9ybBOmA265qpkntRcVW64tay5Ks+oRDQGW3JVxCLMFQHqUTguBy0rC35v1kzjY7PqBgrl9h1jWcjyucxebcSu8JddDJlktMS/65y+xqU6c52/ev7K5K1KrY92PAmUE0VdXE+UC03VtFwvrLsssJP+zZ46dmfoPvbcVnvvYG+013b29hoN7Hjtoe109h87BwdOu9E6aFmvz87+OH1/fvz8XfP38/dnz9+eHf9qXxBXTjg0NTt+ViQKsBw4KmZmt3ZVrugWy/MixTWbJihuSz+lXhFAn8uX2wD+BgNYjehSmKmV6YOxcqpgAvbk5dNsu/FV9huFvu3O/UZi51b9hsbul6PTlyvJ7v/RiVT0GJ+lneisZqPONhsV5CvJRmb0bu2E79x2Z7kTiyNOMH2EXgCdgiQu7u18l0p8HqE+96v61lGMytwyyUQlgYbTOGnuZ+8sc0dmMJNcivZnCWdD3UjQNfW+eu9azrHKSnyOnjB2pWZCR1FUjZXtO1+oVXBWg9PZBmdBvv3grObiQj4hNp12eWx2njw+2N+7Y2zmTixb6zvx9ZF5yczBMQknoOgjfTRnE46w66o+QqJp5oz4EYooYAHIVHwkfUAjRimb6YB29fkxCSUzz6+dcZjkABxF9TVJIPpCOaC5mgOa2xxQkG0OeHj1eTUHZG6a02vTfnfNKfSd80M2A/ypo/wBhOy2p96G7H2HbLPxoMv2O/iRg6KD+qFqrg802n0Agbntp7eB+cD76XjQGjIpWZDQ8+PitpgZPlupPR3p5hn5eAoIh3N0PQGhy65YdN7rCzURRCLdvItJpF/cokhxHvXxAuwYqEXPsfp+W31CB653eotT/XLxOYyWcTpmbExBv9qoHepE1bfxGs7cd476z+j6aXUkoatkkTJV6CIfMJUv2Ex53EPD+b0TsJp0F3g+w3NNuzo6QhFn3sSVekmnr9ElUAhA8vk9fgRd8/LCXC3eWORO3pdmimf2aY1pr1bZdkmVraysX7Karq+gG6rmhkr50dXRLnNF8T2Srb/BY77Qo78Z+C/iF9CUMSgAAA==",
+                        "active": true,
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723639902458
+                  }
+    put:
+      tags:
+        - Data
+        - Levels
+      summary: Update object for companies
+      operationId: updateCompanies
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  example: "BigTech Company"
+                  maxLength: 60
+                  pattern: ^[a-z A-Z]+
+                address:
+                  type: string
+                  example: "109 BigTech Street, Cape Town 8800"
+                  maxLength: 100
+                contact_number:
+                  type: string
+                  example: '+27876545611'
+                  maxLength: 20
+                  pattern: ^(\+|\d)[0-9]{7,16}$
+                contact_person:
+                  type: string
+                  example: "John Doe"
+                  maxLength: 50
+                  pattern: ^[a-z A-Z]+
+                lat_lng:
+                  type: string
+                  maxLength: 50
+                  example: "-18.08011,-34.73830"
+                  pattern: '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$'
+                organisation_id:
+                  type: number
+                  example: 2
+                email_template:
+                  type: string
+                  description: GZIPed string of custom HTML used for email templates
+                active:
+                  type: boolean
+      responses:
+        '200':
+          description: Returns an array of "companies" items updated by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CompaniesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "BigTech Company",
+                        "address": "109 BigTech Street, Cape Town 8800",
+                        "contact_number": "+27876545611",
+                        "contact_person": "John Doe",
+                        "lat_lng": "-18.08011,-34.73830",
+                        "active": true
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723628631562
+                  }
+    delete:
+      tags:
+        - Data
+        - Levels
+      operationId: deleteCompanies
+      summary: Delete object for companies
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  {
+                    "success": true,
+                    "data": "Successfully deleted record. [1]",
+                    "timestamp": 1723108298846
+                  }
+          description: ok
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/sites':
+    post:
+      tags:
+        - Data
+        - Levels
+      summary: Create object for site
+      description: |-
+        Sites are of the second lowest level in the Payway system. Under sites, there are:
+          * MANY Devices
+        
+        Bookings are managed on the site level, as well as mifare. 
+
+      operationId: createSites
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  example: "HighTech Site"
+                  maxLength: 60
+                  pattern: ^[a-z A-Z]+
+                address:
+                  type: string
+                  example: "109 BigTech Street, Cape Town 8800"
+                  maxLength: 100
+                contact_number:
+                  type: string
+                  example: '+27876545611'
+                  maxLength: 20
+                  pattern: ^(\+|\d)[0-9]{7,16}$
+                contact_person:
+                  type: string
+                  example: "John Doe"
+                  maxLength: 50
+                  pattern: ^[a-z A-Z]+
+                lat_lng:
+                  type: string
+                  example: "{\"latLng\":{\"lat\":-33.848106900673486,\"lng\":18.5385}}"
+                  pattern: '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$'
+                companies_id:
+                  type: number
+                  example: 5
+                mifare_site_id:
+                  type: number
+                  example: 5
+                allow_booking:
+                  type: boolean
+                active:
+                  type: boolean
+              required: [ "name", "address", "contact_number", "contact_person", "companies_id", "active" ]
+      responses:
+        '200':
+          description: Returns site object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SitesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "HighTech Site",
+                        "address": "109 BigTech Street, Cape Town 8800",
+                        "companies_id": 50,
+                        "contact_number": "+27876545611",
+                        "contact_person": "John Doe",
+                        "lat_lng": "{\"latLng\":{\"lat\":-33.848106900673486,\"lng\":18.5385}}",
+                        "mifare_site_id": 17,
+                        "allow_booking": false,
+                        "active": true
+
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723628631562
+                  }
+
+  '/sites/{id}':
+    get:
+      tags:
+        - Data
+        - Levels
+      operationId: getSites
+      summary: Get object for sites
+      responses:
+        '200':
+          description: Returns an array of "site" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SitesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "HighTech Site",
+                        "address": "109 BigTech Street, Cape Town 8800",
+                        "companies_id": 50,
+                        "contact_number": "+27876545611",
+                        "contact_person": "John Doe",
+                        "lat_lng": "{\"latLng\":{\"lat\":-33.848106900673486,\"lng\":18.5385}}",
+                        "mifare_site_id": 17,
+                        "allow_booking": false,
+                        "active": true
+
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723628631562
+                  }
+    put:
+      tags:
+        - Data
+        - Levels
+      summary: Update object for sites
+      operationId: updateSites
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  example: "HighTech Site"
+                  maxLength: 60
+                  pattern: ^[a-z A-Z]+
+                address:
+                  type: string
+                  example: "109 BigTech Street, Cape Town 8800"
+                  maxLength: 100
+                contact_number:
+                  type: string
+                  example: '+27876545611'
+                  maxLength: 20
+                  pattern: ^(\+|\d)[0-9]{7,16}$
+                contact_person:
+                  type: string
+                  example: "John Doe"
+                  maxLength: 50
+                  pattern: ^[a-z A-Z]+
+                lat_lng:
+                  type: string
+                  example: "{\"latLng\":{\"lat\":-33.848106900673486,\"lng\":18.5385}}"
+                  pattern: '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$'
+                companies_id:
+                  type: number
+                  example: 5
+                mifare_site_id:
+                  type: number
+                  example: 5
+                allow_booking:
+                  type: boolean
+                active:
+                  type: boolean
+      responses:
+        '200':
+          description: Returns an array of "site" items updated by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SitesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "HighTech Site",
+                        "address": "109 BigTech Street, Cape Town 8800",
+                        "companies_id": 50,
+                        "contact_number": "+27876545611",
+                        "contact_person": "John Doe",
+                        "lat_lng": "{\"latLng\":{\"lat\":-33.848106900673486,\"lng\":18.5385}}",
+                        "mifare_site_id": 17,
+                        "allow_booking": false,
+                        "active": true
+
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723628631562
+                  }
+    delete:
+      tags:
+        - Data
+        - Levels
+      summary: Delete object for sites
+      operationId: deleteSites
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  {
+                    "success": true,
+                    "data": "Successfully deleted record. [1]",
+                    "timestamp": 1723108298846
+                  }
+          description: ok
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/devices':
+    post:
+      tags:
+        - Data
+        - Levels
+      summary: Create object for device
+      description: |-
+        Devices are physical wifi or sim modems used to connect hardware to Payway. 
+        Each device has its own hardware type, found in the resource "host_hardware" and "pos_type". Each devices
+        configuration can be set here, e.g poll_start, poll_end, dip and csq. 
+        
+        Devices are of the lowest level in the Payway system, meaning they sit under resellers, organisations, companies
+        and sites. 
+
+      operationId: createDevices
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  maxLength: 50
+                uid:
+                  type: string
+                  maxLength: 50
+                  pattern: ^[a-zA-Z1-9]+
+                  description: TODO
+                imsi:
+                  type: string
+                  maxLength: 50
+                  pattern: ^[a-zA-Z1-9]+
+                  description: TODO
+                site_code:
+                  type: number
+                  description: TODO
+                pos_type_id:
+                  type: number
+                host_hardware_id:
+                  type: number
+                polling_frequency:
+                  type: number
+                  description: TODO
+                scale_factor:
+                  type: number
+                  description: TODO
+                time_zone:
+                  type: number
+                  description: TODO
+                screen_fitted:
+                  type: boolean
+                  description: TODO
+                multiplier:
+                  type: number
+                  description: TODO
+                divider:
+                  type: number
+                  description: TODO
+                unit_price:
+                  type: number
+                  description: TODO
+                ssid:
+                  type: string
+                  maxLength: 50
+                  pattern: '^[^!#;+\]\/"\t][^+\]\/"\t]{0,30}[^ !#;+\]\/"\t]$|^[^ !#;+\]\/"\t]$'
+                password:
+                  type: string
+                  maxLength: 50
+                coupon_price:
+                  type: number
+                  description: TODO
+                asset_state_id:
+                  type: number
+                short_name:
+                  type: string
+                  maxLength: 20
+                machine_serial_number:
+                  type: string
+                  maxLength: 100
+                  description: TODO
+                active:
+                  type: boolean
+              required: [ "name", "uid", "imsi", "site_id", "pos_type_id", "host_hardware_id", "emulation_id", "polling_frequency", "scale_factor", "time_zone", "screen_fitted", "multiplier", "divider", "unit_price", "active" ]
+      responses:
+        '200':
+          description: Returns device object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DevicesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "async_ratio": "0.00",
+                        "callback": 0,
+                        "calls": 23,
+                        "channels": 0,
+                        "connected_at": "never",
+                        "csq": "22,0",
+                        "dip": 14,
+                        "divider": 10,
+                        "firmware_version": "04.13",
+                        "heartbeat_rate": "0.00",
+                        "host_hardware_id": null,
+                        "imsi": "not reported",
+                        "life_days": 1542,
+                        "local_time": "2024-05-27 15:05:47",
+                        "mdb_online": false,
+                        "minutes_connected": "0.00",
+                        "multiplier": 1,
+                        "name": "21Tim",
+                        "password": "P@ss",
+                        "peer_host": "0.0.0.0",
+                        "polling_frequency": 30,
+                        "pos_type_id": 2,
+                        "protocol": "unknown",
+                        "scale_factor": 1,
+                        "screen_fitted": false,
+                        "seq": 32457,
+                        "site_id": 56,
+                        "ssid": "LS360",
+                        "status_code": null,
+                        "time_offset": -1,
+                        "time_zone": 2,
+                        "timestamp": "2024-05-26T22:05:04.000Z",
+                        "uid": "869867035272279",
+                        "unit_price": "10.00",
+                        "vmc_expansion_id": "",
+                        "asset_state_id": 1,
+                        "coupon_price": "10.00",
+                        "short_name": "T21",
+                        "machine_serial_number": "878-484e",
+                        "active": false,
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723628631562
+                  }
+
+  '/devices/{id}':
+    get:
+      tags:
+        - Data
+        - Levels
+      operationId: getDevices
+      summary: Get object for devices
+      responses:
+        '200':
+          description: Returns an array of "device" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DevicesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "async_ratio": "0.00",
+                        "callback": 0,
+                        "calls": 23,
+                        "channels": 0,
+                        "connected_at": "never",
+                        "csq": "22,0",
+                        "dip": 14,
+                        "divider": 10,
+                        "firmware_version": "04.13",
+                        "heartbeat_rate": "0.00",
+                        "host_hardware_id": null,
+                        "imsi": "not reported",
+                        "life_days": 1542,
+                        "local_time": "2024-05-27 15:05:47",
+                        "mdb_online": false,
+                        "minutes_connected": "0.00",
+                        "multiplier": 1,
+                        "name": "21Tim",
+                        "password": "P@ss",
+                        "peer_host": "0.0.0.0",
+                        "polling_frequency": 30,
+                        "pos_type_id": 2,
+                        "protocol": "unknown",
+                        "scale_factor": 1,
+                        "screen_fitted": false,
+                        "seq": 32457,
+                        "site_id": 56,
+                        "ssid": "LS360",
+                        "status_code": null,
+                        "time_offset": -1,
+                        "time_zone": 2,
+                        "timestamp": "2024-05-26T22:05:04.000Z",
+                        "uid": "869867035272279",
+                        "unit_price": "10.00",
+                        "vmc_expansion_id": "",
+                        "asset_state_id": 1,
+                        "coupon_price": "10.00",
+                        "short_name": "T21",
+                        "machine_serial_number": "878-484e",
+                        "active": false,
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723628631562
+                  }
+    put:
+      tags:
+        - Data
+        - Levels
+      summary: Update object for devices
+      operationId: updateDevices
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  maxLength: 50
+                uid:
+                  type: string
+                  maxLength: 50
+                  pattern: ^[a-zA-Z1-9]+
+                imsi:
+                  type: string
+                  maxLength: 50
+                  pattern: ^[a-zA-Z1-9]+
+                site_code:
+                  type: number
+                pos_type_id:
+                  type: number
+                host_hardware_id:
+                  type: number
+                polling_frequency:
+                  type: number
+                scale_factor:
+                  type: number
+                time_zone:
+                  type: number
+                screen_fitted:
+                  type: boolean
+                multiplier:
+                  type: number
+                divider:
+                  type: number
+                unit_price:
+                  type: number
+                ssid:
+                  type: string
+                  maxLength: 50
+                  pattern: '^[^!#;+\]\/"\t][^+\]\/"\t]{0,30}[^ !#;+\]\/"\t]$|^[^ !#;+\]\/"\t]$'
+                password:
+                  type: string
+                  maxLength: 50
+                coupon_price:
+                  type: number
+                asset_state_id:
+                  type: number
+                short_name:
+                  type: string
+                  maxLength: 20
+                machine_serial_number:
+                  type: string
+                  maxLength: 100
+                active:
+                  type: boolean
+      responses:
+        '200':
+          description: Returns an array of "device" items updated by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DevicesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "async_ratio": "0.00",
+                        "callback": 0,
+                        "calls": 23,
+                        "channels": 0,
+                        "connected_at": "never",
+                        "csq": "22,0",
+                        "dip": 14,
+                        "divider": 10,
+                        "firmware_version": "04.13",
+                        "heartbeat_rate": "0.00",
+                        "host_hardware_id": null,
+                        "imsi": "not reported",
+                        "life_days": 1542,
+                        "local_time": "2024-05-27 15:05:47",
+                        "mdb_online": false,
+                        "minutes_connected": "0.00",
+                        "multiplier": 1,
+                        "name": "21Tim",
+                        "password": "P@ss",
+                        "peer_host": "0.0.0.0",
+                        "polling_frequency": 30,
+                        "pos_type_id": 2,
+                        "protocol": "unknown",
+                        "scale_factor": 1,
+                        "screen_fitted": false,
+                        "seq": 32457,
+                        "site_id": 56,
+                        "ssid": "LS360",
+                        "status_code": null,
+                        "time_offset": -1,
+                        "time_zone": 2,
+                        "timestamp": "2024-05-26T22:05:04.000Z",
+                        "uid": "869867035272279",
+                        "unit_price": "10.00",
+                        "vmc_expansion_id": "",
+                        "asset_state_id": 1,
+                        "coupon_price": "10.00",
+                        "short_name": "T21",
+                        "machine_serial_number": "878-484e",
+                        "active": false,
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723628631562
+                  }
+    delete:
+      tags:
+        - Data
+        - Levels
+      summary: Delete object for devices
+      operationId: deleteDevices
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  {
+                    "success": true,
+                    "data": "Successfully deleted record. [1]",
+                    "timestamp": 1723108298846
+                  }
+          description: ok
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/logs_fatal/{id}':
+    get:
+      tags:
+        - Data
+        - Logs
+      operationId: getLogsFatal
+      summary: Get object for fatal logs
+      description: |-
+        This endpoint holds all fatal logs found in the Payway payment system.
+
+      responses:
+        '200':
+          description: Returns an array of "fatal log" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LogsFatalResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "webhook_timestamp": null,
+                        "provider": "none",
+                        "provider_id": null,
+                        "uuid": "none",
+                        "application": "cc_payment_gateway_logic",
+                        "application_timestamp": null,
+                        "application_version": "2.0.0",
+                        "calling_url": "",
+                        "reason": "Internal Server Error occurred",
+                        "payload": "",
+                        "created": "2024-07-02T13:00:59.773Z"
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+
+  '/logs_info/{id}':
+    get:
+      tags:
+        - Data
+        - Logs
+      operationId: getLogsInfo
+      summary: Get object for info logs
+      responses:
+        '200':
+          description: Returns an array of "info log" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LogsInfoResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "webhook_timestamp": 1719924749423,
+                        "provider": "IQT MiFare Legacy",
+                        "provider_id": 6,
+                        "uuid": "f0cd6ff0-3871-11ef-a4ac-8526e161eb2f",
+                        "application": "cc_payment_gateway_logic",
+                        "application_timestamp": 1719924749423,
+                        "application_version": "2.0.0",
+                        "calling_url": "",
+                        "reason": "unknown",
+                        "payload": "",
+                        "created": "2024-07-02T12:52:29.482Z"
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723715090987
+                  }
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/logs_warning/{id}':
+    get:
+      tags:
+        - Data
+        - Logs
+      operationId: getLogsWarning
+      summary: Get object for warning logs
+      responses:
+        '200':
+          description: Returns an array of "warning log" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LogsWarningResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "webhook_timestamp": 1719924749423,
+                        "provider": "IQT MiFare Legacy",
+                        "provider_id": 6,
+                        "uuid": "f0cd6ff0-3871-11ef-a4ac-8526e161eb2f",
+                        "application": "cc_payment_gateway_logic",
+                        "application_timestamp": 1719924749423,
+                        "application_version": "2.0.0",
+                        "calling_url": "",
+                        "reason": "unknown",
+                        "payload": "",
+                        "created": "2024-07-02T12:52:29.482Z"
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723715090987
+                  }
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/resellers_organisations':
+    post:
+      tags:
+        - Data
+        - Many-to-Many
+      summary: Create object for reseller to organisation link
+      description: |-
+        This endpoint is used as a MANY-Resellers-to-MANY-Organisations linking table.
+        If you want to link a reseller to a organisation, or vice versa, you need to add the entry here.
+        If this is not done, or not done correctly, users will not be able to see their intended resources.
+
+      operationId: createResellersOrganisations
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                reseller_id:
+                  type: number
+                  example: 3
+                organisation_id:
+                  type: number
+                  example: 1
+              required: [ "reseller_id", "organisation_id" ]
+      responses:
+        '200':
+          description: Returns reseller organisation link created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ResellersOrganisationsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "reseller_id": 3,
+                        "organisation_id": 1
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+
+  '/resellers_organisations/reseller/{id}':
+    get:
+      tags:
+        - Data
+        - Many-to-Many
+      summary: Get object for reseller organisation link by reseller id
+      operationId: getResellersOrganisationsByResellerId
+      responses:
+        '200':
+          description: Returns an array of "reseller organisation" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ResellersOrganisationsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "reseller_id": 3,
+                        "organisation_id": 1
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/resellers_organisations/{id}':
+    get:
+      tags:
+        - Data
+        - Many-to-Many
+      summary: Get object for reseller organisation link
+      operationId: getResellersOrganisations
+      responses:
+        '200':
+          description: Returns an array of "reseller organisation" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ResellersOrganisationsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "reseller_id": 3,
+                        "organisation_id": 1
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    delete:
+      tags:
+        - Data
+        - Many-to-Many
+      summary: Delete object for resellers organisations
+      operationId: deleteResellersOrganisations
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  {
+                    "success": true,
+                    "data": "Successfully deleted record. [1]",
+                    "timestamp": 1723108298846
+                  }
+          description: ok
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/providers':
+    post:
+      tags:
+        - Data
+        - Other Business Logic
+      summary: Create object for provider
+      description: |-
+        This endpoint is used to define providers that are supported by the Payway system.
+        Providers are integrations between Payway and an external payment system, e.g Snapscan or Mastercard.
+
+      operationId: createProviders
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  maxLength: 50
+                  example: Snapscan
+                logo_url:
+                  type: string
+                  example: 'https://google.com/image.png'
+                  description: Link to png used for logo
+                color:
+                  type: string
+                  maxLength: 10
+                  pattern: '^#(?:[0-9a-fA-F]{3}){1,2}$'
+                  example: '#7795f3'
+                  description: Hex code colour
+                active:
+                  type: boolean
+              required: [ "name", "active" ]
+      responses:
+        '200':
+          description: Returns provider object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProvidersResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "Snapscan",
+                        "color": "#7795f3",
+                        "logo_url": "https://google.com/image.png",
+                        "active": true
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723628631562
+                  }
+
+
+  '/providers/{id}':
+    get:
+      tags:
+        - Data
+        - Other Business Logic
+      operationId: getProviders
+      summary: Get object for providers
+      responses:
+        '200':
+          description: Returns an array of "provider" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProvidersResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "Snapscan",
+                        "color": "#7795f3",
+                        "logo_url": "https://google.com/image.png",
+                        "active": true
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723628631562
+                  }
+    put:
+      tags:
+        - Data
+        - Other Business Logic
+      summary: Update object for providers
+      operationId: updateProviders
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  maxLength: 50
+                  example: Snapscan
+                logo_url:
+                  type: string
+                  example: 'https://google.com/image.png'
+                color:
+                  type: string
+                  maxLength: 10
+                  pattern: '^#(?:[0-9a-fA-F]{3}){1,2}$'
+                  example: '#7795f3'
+                active:
+                  type: boolean
+      responses:
+        '200':
+          description: Returns an array of "provider" items updated by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProvidersResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "Snapscan",
+                        "color": "#7795f3",
+                        "logo_url": "https://google.com/image.png",
+                        "active": true
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723628631562
+                  }
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/pos_types':
+    post:
+      tags:
+        - Data
+        - Other Business Logic
+      summary: Create object for pos types
+      description: |-
+        This endpoint is used to create pos (point of sale) types. These define the method of communcation
+        devices use to access Payway. e.g Wifi, LTE.
+
+      operationId: createPosTypes
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  example: 'WIFI'
+                  maxLength: 50
+                version:
+                  type: string
+                  example: '1.0.0'
+                  maxLength: 10
+                  pattern: '^\d+\.\d+\.\d+$'
+                  description: Version of firmware used
+                active:
+                  type: boolean
+              required: [ "name", "active" ]
+      responses:
+        '200':
+          description: Returns pos type object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PosTypesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "WIFI",
+                        "version": "1.0",
+                        "active": true
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+
+  '/pos_types/{id}':
+    get:
+      tags:
+        - Data
+        - Other Business Logic
+      operationId: getPosTypes
+      summary: Get object for pos types
+      responses:
+        '200':
+          description: Returns an array of "pos type" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PosTypesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "WIFI",
+                        "version": "1.0",
+                        "active": true
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    put:
+      tags:
+        - Data
+        - Other Business Logic
+      summary: Update object for pos types
+      operationId: updatePosTypes
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  example: 'WIFI'
+                  maxLength: 50
+                version:
+                  type: string
+                  example: '1.0.0'
+                  maxLength: 10
+                  pattern: '^\d+\.\d+\.\d+$'
+                  description: Version of firmware used
+                active:
+                  type: boolean
+      responses:
+        '200':
+          description: Returns an array of "pos type" items updated by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PosTypesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "WIFI",
+                        "version": "1.0",
+                        "active": true
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/host_hardware':
+    post:
+      tags:
+        - Data
+        - Other Business Logic
+      summary: Create object for host hardware
+      description: |-
+        This endpoint is used to define different types of hardware customers use.
+        This is hardware that is used by the customer, and not the hardware IQT provide. e.g Certain model of Washing machine.
+
+      operationId: createHostHardware
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  maxLength: 50
+                  example: "Washer 3000"
+                cycle_time:
+                  type: integer
+                  example: 60
+                  description: Time in minutes
+                notes:
+                  type: string
+                  example: "The best washer ever!"
+                  description: Used to add any additional notes or information about the hardware
+                cycle_signal_source:
+                  type: number
+                  example: 1
+                  description: TODO
+                hardware_type_id:
+                  type: number
+                  example: 3
+                reseller_id:
+                  type: number
+                  example: 1
+                emulation_id:
+                  type: number
+                  example: 7
+                active:
+                  type: boolean
+              required: [ "name", "hardware_type_id", "reseller_id", "emulation_id", "active" ]
+      responses:
+        '200':
+          description: Returns host hardware object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/HostHardwareResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "Washer 3000",
+                        "reseller_id": 1,
+                        "hardware_type_id": 3,
+                        "notes": "The best washer ever!",
+                        "cycle_signal_source": 4,
+                        "cycle_time": 30,
+                        "emulation_id": 2,
+                        "active": true,
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723639902458
+                  }
+
+
+  '/host_hardware/{id}':
+    get:
+      tags:
+        - Data
+        - Other Business Logic
+      operationId: getHostHardware
+      summary: Get object for host hardware
+      responses:
+        '200':
+          description: Returns an array of "host hardware" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/HostHardwareResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "Washer 3000",
+                        "reseller_id": 1,
+                        "hardware_type_id": 3,
+                        "notes": "The best washer ever!",
+                        "cycle_signal_source": 4,
+                        "cycle_time": 30,
+                        "emulation_id": 2,
+                        "active": true,
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723639902458
+                  }
+    put:
+      tags:
+        - Data
+        - Other Business Logic
+      summary: Update object for host hardware
+      operationId: updateHostHardware
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  maxLength: 50
+                  example: "Washer 3000"
+                cycle_time:
+                  type: integer
+                  example: 60
+                  description: Time in minutes
+                notes:
+                  type: string
+                  example: "The best washer ever!"
+                  description: Used to add any additional notes or information about the hardware
+                cycle_signal_source:
+                  type: number
+                  example: 1
+                  description: TODO
+                hardware_type_id:
+                  type: number
+                  example: 3
+                reseller_id:
+                  type: number
+                  example: 1
+                emulation_id:
+                  type: number
+                  example: 7
+                active:
+                  type: boolean
+      responses:
+        '200':
+          description: Returns an array of "host hardware" items updated by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/HostHardwareResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "Washer 3000",
+                        "reseller_id": 1,
+                        "hardware_type_id": 3,
+                        "notes": "The best washer ever!",
+                        "cycle_signal_source": 4,
+                        "cycle_time": 30,
+                        "emulation_id": 2,
+                        "active": true,
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723639902458
+                  }
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/status_codes':
+    post:
+      tags:
+        - Data
+        - Other Business Logic
+      summary: Create object for status codes
+      description: |-
+        This endpoint is used to manage status codes. Status codes are codes / identification for an action.
+        e.g status code 1 means pending transaction.
+
+      operationId: createStatusCodes
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  maxLength: 50
+                  pattern: ^[a-z A-Z]+
+                  example: "COMPLETED"
+                  description: Name of event
+                code:
+                  type: integer
+                  example: 101
+                color:
+                  type: string
+                  maxLength: 10
+                  pattern: '^#(?:[0-9a-fA-F]{3}){1,2}$'
+                  example: '#7795f3'
+                  description: Hex code colour
+                refund_sale:
+                  type: boolean
+                  description: TODO
+                success:
+                  type: boolean
+                  description: TODO
+                active:
+                  type: boolean
+              required: [ "name", "code", "color", "refund_sale", "success", "active" ]
+      responses:
+        '200':
+          description: Returns status code object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StatusCodesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "COMPLETED",
+                        "code": 101,
+                        "color": "#7795f3",
+                        "refund_sale": false,
+                        "success": false,
+                        "active": true,
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+
+
+  '/status_codes/{id}':
+    get:
+      tags:
+        - Data
+        - Other Business Logic
+      operationId: getStatusCodes
+      summary: Get object for status code
+      responses:
+        '200':
+          description: Returns an array of "status code" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StatusCodesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "COMPLETED",
+                        "code": 101,
+                        "color": "#7795f3",
+                        "refund_sale": false,
+                        "success": false,
+                        "active": true,
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    put:
+      tags:
+        - Data
+        - Other Business Logic
+      summary: Update object for status codes
+      operationId: updateStatusCodes
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  maxLength: 50
+                  pattern: ^[a-z A-Z]+
+                  example: "COMPLETED"
+                  description: Name of event
+                code:
+                  type: integer
+                  example: 101
+                color:
+                  type: string
+                  maxLength: 10
+                  pattern: '^#(?:[0-9a-fA-F]{3}){1,2}$'
+                  example: '#7795f3'
+                  description: Hex code colour
+                refund_sale:
+                  type: boolean
+                  description: TODO
+                success:
+                  type: boolean
+                  description: TODO
+                active:
+                  type: boolean
+      responses:
+        '200':
+          description: Returns an array of "status code" items updated by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StatusCodesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "COMPLETED",
+                        "code": 101,
+                        "color": "#7795f3",
+                        "refund_sale": false,
+                        "success": false,
+                        "active": true,
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/emulations':
+    post:
+      tags:
+        - Data
+        - Other Business Logic
+      summary: Create object for emulations
+      description: |-
+        This endpoint is used to manage emulation types. Emulation types are the different methods
+        of emulating a pulse in a physical machine that uses coin based payments. e.g Vending machine accepting coins.
+
+      operationId: createEmulations
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  maxLength: 50
+                  pattern: ^[a-z A-Z]+
+                  example: "Coin Pulse"
+                active:
+                  type: boolean
+              required: [ "name", "active" ]
+      responses:
+        '200':
+          description: Returns emulation object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EmulationsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "Coin Pulse",
+                        "active": true,
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+
+  '/emulations/{id}':
+    get:
+      tags:
+        - Data
+        - Other Business Logic
+      summary: Get object for emulation
+      operationId: getEmulations
+      responses:
+        '200':
+          description: Returns an array of "emulation" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EmulationsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "Coin Pulse",
+                        "active": true,
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    put:
+      tags:
+        - Data
+        - Other Business Logic
+      summary: Update object for emulations
+      operationId: updateEmulations
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  maxLength: 50
+                  pattern: ^[a-z A-Z]+
+                  example: "Coin Pulse"
+                active:
+                  type: boolean
+      responses:
+        '200':
+          description: Returns an array of "emulation" items updated by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EmulationsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "Coin Pulse",
+                        "active": true,
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/connectivity_history/{id}':
+    get:
+      tags:
+        - Data
+        - Polling
+      operationId: getConnectivityHistory
+      summary: Get object for connectivity history
+      description: Obtain device polling / connectivity history
+      responses:
+        '200':
+          description: List of connectivity history objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ConnectivityHistoryResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "timestamp": 1720396800000,
+                        "device_id": 1,
+                        "pf0": 0,
+                        "pf1": 0,
+                        "pf2": 0,
+                        "pf3": 0,
+                        "pf4": 0,
+                        "pf5": 0,
+                        "pf6": 0,
+                        "pf7": 0,
+                        "pf8": 0,
+                        "pf9": 0,
+                        "pf10": 287,
+                        "pf11": 417,
+                        "pf12": 288,
+                        "pf13": 385,
+                        "pf14": 0,
+                        "pf15": 0,
+                        "pf16": 0,
+                        "pf17": 0,
+                        "pf18": 0,
+                        "pf19": 0,
+                        "pf20": 0,
+                        "pf21": 0,
+                        "sf0": 0,
+                        "sf1": 0,
+                        "sf2": 0,
+                        "sf3": 0,
+                        "sf4": 0,
+                        "sf5": 0,
+                        "sf6": 0,
+                        "sf7": 0,
+                        "sf8": 0,
+                        "sf9": 0,
+                        "sf10": 1,
+                        "sf11": 2,
+                        "sf12": 5,
+                        "sf13": 1,
+                        "sf14": 0,
+                        "sf15": 0,
+                        "sf16": 0,
+                        "sf17": 0,
+                        "sf18": 0,
+                        "sf19": 0,
+                        "sf20": 0,
+                        "sf21": 0
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+      parameters:
+        - $ref: "#/components/parameters/idParam"
+        - $ref: "#/components/parameters/limitParam"
+        - $ref: "#/components/parameters/offsetParam"
+        - $ref: "#/components/parameters/orderParam"
+        - $ref: "#/components/parameters/countParam"
+        - $ref: "#/components/parameters/others"
+
+  '/companies_providers':
+    post:
+      tags:
+        - Data
+        - One-to-Many
+      summary: Create object for company provider
+      description: |-
+        This endpoint is used to link and manage each companies payment integration and providers.
+        This includes their API keys / merchant ids / other forms of authentication so we know when a payment is made.
+
+      operationId: createCompaniesProviders
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                provider_id:
+                  type: integer
+                  example: 1
+                company_id:
+                  type: integer
+                  example: 5
+                merchant_id:
+                  type: string
+                  example: '6789A'
+                  maxLength: 50
+                pos_token:
+                  type: string
+                  example: '373-034534-ad354-a335'
+                  maxLength: 50
+                  description: API Key or other forms of authentication
+                provider_site_id:
+                  type: string
+                  example: '47724'
+                  maxLength: 20
+                callback_url:
+                  type: string
+                  example: 'https://zapper.com/webhook'
+                  description: If callback authentication, specify the URL here
+                allow_refund:
+                  type: boolean
+                active:
+                  type: boolean
+              required: [ "provider_id", "company_id", "allow_refund", "active" ]
+      responses:
+        '200':
+          description: Returns company provider object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CompaniesProvidersResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "provider_id": 1,
+                        "company_id": 5,
+                        "merchant_id": "6789A",
+                        "pos_token": "373-034534-ad354-a335",
+                        "provider_site_id": "47724",
+                        "callback_url": "https://zapper.com/webhook",
+                        "allow_refund": false,
+                        "active": true
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723639902458
+                  }
+
+  '/companies_providers/{id}':
+    get:
+      tags:
+        - Data
+        - One-to-Many
+      operationId: getCompaniesProviders
+      summary: Get object for company provider
+      responses:
+        '200':
+          description: Returns an array of "company provider" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CompaniesProvidersResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "provider_id": 1,
+                        "company_id": 5,
+                        "merchant_id": "6789A",
+                        "pos_token": "373-034534-ad354-a335",
+                        "provider_site_id": "47724",
+                        "callback_url": "https://zapper.com/webhook",
+                        "allow_refund": false,
+                        "active": true
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723639902458
+                  }
+    put:
+      tags:
+        - Data
+        - One-to-Many
+      summary: Update object for company provider
+      operationId: updateCompaniesProviders
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                provider_id:
+                  type: integer
+                  example: 1
+                company_id:
+                  type: integer
+                  example: 5
+                merchant_id:
+                  type: string
+                  example: '6789A'
+                  maxLength: 50
+                pos_token:
+                  type: string
+                  example: '373-034534-ad354-a335'
+                  maxLength: 50
+                  description: API Key or other forms of authentication
+                provider_site_id:
+                  type: string
+                  example: '47724'
+                  maxLength: 20
+                callback_url:
+                  type: string
+                  example: 'https://zapper.com/webhook'
+                  description: If callback authentication, specify the URL here
+                allow_refund:
+                  type: boolean
+                active:
+                  type: boolean
+      responses:
+        '200':
+          description: Returns an array of "company provider" items updated by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CompaniesProvidersResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "provider_id": 1,
+                        "company_id": 5,
+                        "merchant_id": "6789A",
+                        "pos_token": "373-034534-ad354-a335",
+                        "provider_site_id": "47724",
+                        "callback_url": "https://zapper.com/webhook",
+                        "allow_refund": false,
+                        "active": true
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723639902458
+                  }
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/transactions/{id}':
+    get:
+      tags:
+        - Data
+        - Transactions
+      operationId: getTransactions
+      summary: Get object for transactions
+      description: |-
+        This endpoint is used to retrieve and view transactions. These transactions are handled by the payment processing backend.
+      responses:
+        '200':
+          description: Returns an array of "transaction" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TransactionsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 131,
+                        "acknowledged": 80,
+                        "amount": "32.00",
+                        "company_id": 7,
+                        "credit": "0.00",
+                        "customer_name": "unknown",
+                        "device_id": 4010,
+                        "divider": 1,
+                        "emulation_id": 3,
+                        "end_run": 0,
+                        "end_time": null,
+                        "item": null,
+                        "multiplier": 1,
+                        "organisation_id": 7,
+                        "payment_date": "24-07-12 10:37:06",
+                        "payment_id": "691100-53416",
+                        "payment_reference": "ae6ec0-803a-11bb-88e6-11634890y2f7",
+                        "provider_id": 2,
+                        "retry": 0,
+                        "site_id": 153,
+                        "start_run": 0,
+                        "start_time": null,
+                        "time": "2024-07-12T10:37:06.203Z",
+                        "timestamp": 1720780626202,
+                        "uid": "e465b8a4ed60    ",
+                        "uuid": "aee5eec0-403a-11ef-88e6-116a4589c2f7"
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+      parameters:
+        - $ref: "#/components/parameters/idParam"
+        - $ref: "#/components/parameters/limitParam"
+        - $ref: "#/components/parameters/offsetParam"
+        - $ref: "#/components/parameters/orderParam"
+        - $ref: "#/components/parameters/countParam"
+        - $ref: "#/components/parameters/others"
+
+  '/asset_states':
+    post:
+      tags:
+        - Data
+        - Other Business Logic
+      summary: Create object for asset states
+      description: |-
+        This endpoint is used to track assets owned by a reseller, or others, and actions or movements on these assets.
+        e.g Device is broken, in maintenance or sold.
+
+      operationId: createAssetStates
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                state:
+                  type: string
+                  maxLength: 50
+                  example: "Out of order"
+                reseller_id:
+                  type: number
+                  example: 1
+                active:
+                  type: boolean
+              required: [ "state", "reseller_id", "active" ]
+      responses:
+        '200':
+          description: Returns asset state object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AssetStatesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "reseller_id": 1,
+                        "state": "Out of order",
+                        "active": true,
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+
+  '/asset_states/{id}':
+    get:
+      tags:
+        - Data
+        - Other Business Logic
+      operationId: getAssetStates
+      summary: Get object for asset states
+      responses:
+        '200':
+          description: Returns an array of "asset state" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AssetStatesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "reseller_id": 1,
+                        "state": "Out of order",
+                        "active": true,
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    put:
+      tags:
+        - Data
+        - Other Business Logic
+      summary: Update object for asset states
+      operationId: updateAssetStates
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                state:
+                  type: string
+                  maxLength: 50
+                  example: "Out of order"
+                reseller_id:
+                  type: number
+                  example: 1
+                active:
+                  type: boolean
+      responses:
+        '200':
+          description: Returns an array of "asset state" items updated by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AssetStatesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "reseller_id": 1,
+                        "state": "Out of order",
+                        "active": true,
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/refunds/{id}':
+    get:
+      tags:
+        - Data
+        - Transactions
+      operationId: getRefunds
+      summary: Get object for refunds
+      responses:
+        '200':
+          description: Returns an array of "refund" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RefundsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 4,
+                        "organisation_id": 10,
+                        "companies_id": 10,
+                        "amount": 10,
+                        "device_uid": 736e740b,
+                        "refund_reference": null,
+                        "payment_reference": "Zapper",
+                        "provider_id": 1,
+                        "site_id": 10,
+                        "status": null,
+                        "transaction_id": 1
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/device_activity_audit':
+    post:
+      tags:
+        - Data
+        - Audit Logs
+      summary: Create object for device activity audit
+      description: |-
+        This endpoint is used to track and manage movement, activity and anything else around the movement, repair, changing
+        settings etc. This is specially made for devices.
+
+      operationId: createDeviceActivityAudit
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                device_id:
+                  type: integer
+                  example: 104
+                user_id:
+                  type: integer
+                  example: 4
+                site_id:
+                  type: integer
+                  example: 9
+                asset_state_id:
+                  type: integer
+                  example: 1
+                notes:
+                  type: string
+                  example: "Testing this device"
+                  description: Anything of note or extra information can be added here
+                timestamp:
+                  type: string
+                  example: "2024-08-13T10:33:38.323Z"
+                  description: Time of entry creation in UTC
+              required: [ "device_id", "user_id", "site_id", "asset_state_id" ]
+      responses:
+        '200':
+          description: Returns device activity audit object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DeviceActivityAuditResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "device_id": 104,
+                        "asset_state_id": 1,
+                        "site_id": 9,
+                        "user_id": 4,
+                        "notes": "Testing this device",
+                        "timestamp": "2024-08-13T10:33:38.323Z"
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723628631562
+                  }
+
+  '/device_activity_audit/{id}':
+    get:
+      tags:
+        - Data
+        - Audit Logs
+      operationId: getDeviceActivityAudit
+      summary: Get object for device activity audit
+      responses:
+        '200':
+          description: Returns an array of "device activity audit" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DeviceActivityAuditResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "device_id": 104,
+                        "asset_state_id": 1,
+                        "site_id": 9,
+                        "user_id": 4,
+                        "notes": "Testing this device",
+                        "timestamp": "2024-08-13T10:33:38.323Z"
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723628631562
+                  }
+    put:
+      tags:
+        - Data
+        - Audit Logs
+      summary: Update object for device activity audits
+      operationId: updateDeviceActivityAudit
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                device_id:
+                  type: integer
+                  example: 104
+                user_id:
+                  type: integer
+                  example: 4
+                site_id:
+                  type: integer
+                  example: 9
+                asset_state_id:
+                  type: integer
+                  example: 1
+                notes:
+                  type: string
+                  example: "Testing this device"
+                  description: Anything of note or extra information can be added here
+                timestamp:
+                  type: string
+                  example: "2024-08-13T10:33:38.323Z"
+                  description: Time of entry creation in UTC
+      responses:
+        '200':
+          description: List of device activity audit objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DeviceActivityAuditResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "device_id": 104,
+                        "asset_state_id": 1,
+                        "site_id": 9,
+                        "user_id": 4,
+                        "notes": "Testing this device",
+                        "timestamp": "2024-08-13T10:33:38.323Z"
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723628631562
+                  }
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/customers':
+    post:
+      tags:
+        - Data
+        - Other Business Logic
+      summary: Create object for customer
+      description: |-
+        This endpoint manages a second type of user in Payway called customers.
+        Customers are not direct users of the Payway system, but rather customers of resellers. e.g Walk in to store customer.
+        
+        Customers are primarily used for the booking system.
+        Customers are linked to a real Payway user account, usually a "proxy user". This allows them to be access restricted and only see resources
+        they should see.
+
+      operationId: createCustomers
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                first_name:
+                  type: string
+                  maxLength: 100
+                  example: "John"
+                last_name:
+                  type: string
+                  maxLength: 100
+                  example: "Doe"
+                customer_identification:
+                  type: string
+                  maxLength: 30
+                  example: "0456744907613"
+                email:
+                  type: string
+                  maxLength: 100
+                  pattern: '^(([^+<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
+                contact_number:
+                  type: string
+                  example: '+27876545611'
+                  maxLength: 20
+                  pattern: ^(\+|\d)[0-9]{7,16}$
+                consent_number:
+                  type: boolean
+                consent_email:
+                  type: boolean
+                user_id:
+                  type: integer
+                  example: 105
+                  description: Customer needs to be linked to a user, usually a proxy user, for access control
+                blocked:
+                  type: boolean
+                  description: Prevents user from accessing the API.
+                daily_booking_limit:
+                  type: integer
+                  example: 5
+                  description: The total number of bookings a user can make in one day
+                verified:
+                  type: boolean
+                  description: Has the user verified their email?
+                email_sent_amount:
+                  type: integer
+                  example: 5
+                  description: Amount of times a login request has been sent
+              required: [ "first_name", "last_name", "email", "user_id" ]
+      responses:
+        '200':
+          description: Returns customer object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CustomersResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "email": "john.doe@gmail.com",
+                        "first_name": "John",
+                        "last_name": "Doe",
+                        "contact_number": "+27876545611",
+                        "customer_identification": "0456744907613",
+                        "user_id": 125,
+                        "consent_number": true,
+                        "consent_email": true,
+                        "daily_booking_limit": 5,
+                        "blocked": false,
+                        "verified": true,
+                        "email_sent_amount": 4
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+
+  '/customers/{id}':
+    get:
+      tags:
+        - Data
+        - Other Business Logic
+      operationId: getCustomers
+      responses:
+        '200':
+          description: Returns an array of "customer" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CustomersResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "email": "john.doe@gmail.com",
+                        "first_name": "John",
+                        "last_name": "Doe",
+                        "contact_number": "+27876545611",
+                        "customer_identification": "0456744907613",
+                        "user_id": 125,
+                        "consent_number": true,
+                        "consent_email": true,
+                        "daily_booking_limit": 5,
+                        "blocked": false,
+                        "verified": true,
+                        "email_sent_amount": 4
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    put:
+      tags:
+        - Data
+        - Other Business Logic
+      summary: Update object for customers
+      operationId: updateCustomers
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                first_name:
+                  type: string
+                  maxLength: 100
+                  example: "John"
+                last_name:
+                  type: string
+                  maxLength: 100
+                  example: "Doe"
+                customer_identification:
+                  type: string
+                  maxLength: 30
+                  example: "0456744907613"
+                email:
+                  type: string
+                  maxLength: 100
+                  pattern: '^(([^+<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
+                contact_number:
+                  type: string
+                  example: '+27876545611'
+                  maxLength: 20
+                  pattern: ^(\+|\d)[0-9]{7,16}$
+                consent_number:
+                  type: boolean
+                consent_email:
+                  type: boolean
+                user_id:
+                  type: integer
+                  example: 105
+                  description: Customer needs to be linked to a user, usually a proxy user, for access control
+                blocked:
+                  type: boolean
+                  description: Prevents user from accessing the API.
+                daily_booking_limit:
+                  type: integer
+                  example: 5
+                  description: The total number of bookings a user can make in one day
+                verified:
+                  type: boolean
+                  description: Has the user verified their email?
+                email_sent_amount:
+                  type: integer
+                  example: 5
+                  description: Amount of times a login request has been sent
+      responses:
+        '200':
+          description: Returns an array of "customer" items updated by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CustomersResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "email": "john.doe@gmail.com",
+                        "first_name": "John",
+                        "last_name": "Doe",
+                        "contact_number": "+27876545611",
+                        "customer_identification": "0456744907613",
+                        "user_id": 125,
+                        "consent_number": true,
+                        "consent_email": true,
+                        "daily_booking_limit": 5,
+                        "blocked": false,
+                        "verified": true,
+                        "email_sent_amount": 4
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    delete:
+      tags:
+        - Data
+        - Other Business Logic
+      operationId: deleteCustomers
+      summary: Delete object for customers
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  {
+                    "success": true,
+                    "data": "Successfully deleted record. [1]",
+                    "timestamp": 1723108298846
+                  }
+          description: ok
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+
+components:
+  securitySchemes:
+    XUserToken:
+      type: apiKey
+      in: header
+      name: x-user-token
+    XApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+
+
+  schemas:
+    AccessResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        operation_id:
+          type: string
+        can_access:
+          type: boolean
+    RolesResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        reseller_id:
+          type: number
+        organisation_id:
+          type: number
+        company_id_list:
+          type: array
+        site_id_list:
+          type: array
+        device_id_list:
+          type: array
+        is_reseller:
+          type: boolean
+    UsersResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        displayname:
+          type: string
+        email:
+          type: string
+        email_verified:
+          type: boolean
+        contact_number:
+          type: string
+        last_login_at:
+          type: string
+        google_id:
+          type: string
+        token:
+          type: string
+        last_login_error:
+          type: string
+        side_bar_toggled:
+          type: string
+        firebase_id:
+          type: string
+        currency:
+          type: string
+        delimiter:
+          type: string
+        proxy_user:
+          type: boolean
+        active:
+          type: boolean
+    AuthenticationResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        token:
+          type: string
+          description: x-user-token used in all endpoints.
+        contact_number:
+          type: string
+        currency:
+          type: string
+        delimiter:
+          type: string
+        displayname:
+          type: string
+        email:
+          type: string
+        email_verified:
+          type: boolean
+        firebase_id:
+          type: string
+        google_id:
+          type: string
+        sidebar_toggled:
+          type: boolean
+        active:
+          type: boolean
+    PasswordResetResponse:
+      type: string
+      description: Response returned by Firebase
+    UserAccessResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        user_id:
+          type: number
+        access_id:
+          type: number
+    UserRolesResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        user_id:
+          type: number
+        role_id:
+          type: number
+    ResellersOrganisationsResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        reseller_id:
+          type: number
+        organisation_id:
+          type: number
+    UserAccessDetailResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        user_id:
+          type: number
+        access_id:
+          type: number
+        name:
+          type: string
+        operation_id:
+          type: string
+        can_access:
+          type: boolean
+    ResellersResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        address:
+          type: string
+        contact_number:
+          type: string
+        contact_person:
+          type: string
+        lat_lng:
+          type: string
+        active:
+          type: boolean
+    OrganisationsResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        address:
+          type: string
+        contact_number:
+          type: string
+        contact_person:
+          type: string
+        lat_lng:
+          type: string
+        active:
+          type: boolean
+    CompaniesResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        organisation_id:
+          type: string
+        address:
+          type: string
+        contact_number:
+          type: string
+        contact_person:
+          type: string
+        lat_lng:
+          type: string
+        email_template:
+          type: string
+        active:
+          type: boolean
+    SitesResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        address:
+          type: string
+        contact_number:
+          type: string
+        contact_person:
+          type: string
+        lat_lng:
+          type: string
+        companies_id:
+          type: number
+        mifare_site_id:
+          type: number
+        active:
+          type: boolean
+    DevicesResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        uid:
+          type: string
+        imsi:
+          type: string
+        site_id:
+          type: number
+        pos_type_id:
+          type: number
+        host_hardware_id:
+          type: number
+        polling_frequency:
+          type: number
+        scale_factor:
+          type: number
+        time_zone:
+          type: number
+        callback:
+          type: number
+        calls:
+          type: number
+        local_time:
+          type: string
+        vmc_expansion_id:
+          type: string
+        timestamp:
+          type: string
+        time_offset:
+          type: number
+        firmware_version:
+          type: string
+        mdb_online:
+          type: boolean
+        seq:
+          type: number
+        csq:
+          type: string
+        dip:
+          type: number
+        screen_fitted:
+          type: boolean
+        life_days:
+          type: number
+        multiplier:
+          type: number
+        divider:
+          type: number
+        unit_price:
+          type: number
+        ssid:
+          type: string
+        password:
+          type: string
+        connected_at:
+          type: string
+        peer_host:
+          type: string
+        async_ratio:
+          type: string
+        protocol:
+          type: string
+        channels:
+          type: number
+        minutes_connected:
+          type: number
+        heartbeat_rate:
+          type: string
+        status_code:
+          type: number
+        asset_state_id:
+          type: number
+        coupon_price:
+          type: number
+        short_name:
+          type: string
+        allow_booking:
+          type: boolean
+        machine_serial_number:
+          type: string
+        active:
+          type: boolean
+    LogsFatalResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        webhook_timestamp:
+          type: number
+        provider:
+          type: string
+        provider_id:
+          type: number
+        uuid:
+          type: string
+        application:
+          type: string
+        application_timestamp:
+          type: number
+        application_version:
+          type: string
+        calling_url:
+          type: string
+        reason:
+          type: string
+        payload:
+          type: string
+    LogsInfoResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        webhook_timestamp:
+          type: number
+        provider:
+          type: string
+        provider_id:
+          type: number
+        uuid:
+          type: string
+        application:
+          type: string
+        application_timestamp:
+          type: number
+        application_version:
+          type: string
+        calling_url:
+          type: string
+        reason:
+          type: string
+        payload:
+          type: string
+    LogsWarningResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        webhook_timestamp:
+          type: number
+        provider:
+          type: string
+        provider_id:
+          type: number
+        uuid:
+          type: string
+        application:
+          type: string
+        application_timestamp:
+          type: number
+        application_version:
+          type: string
+        calling_url:
+          type: string
+        reason:
+          type: string
+        payload:
+          type: string
+    ProvidersResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        logo_url:
+          type: string
+        color:
+          type: string
+        active:
+          type: boolean
+    PosTypesResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        version:
+          type: string
+        active:
+          type: boolean
+    HostHardwareResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        cycle_time:
+          type: integer
+        notes:
+          type: string
+        cycle_signal_source:
+          type: integer
+        hardware_type_id:
+          type: integer
+        reseller_id:
+          type: integer
+        emulation_id:
+          type: integer
+        active:
+          type: boolean
+    StatusCodesResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        code:
+          type: integer
+        color:
+          type: string
+        refund_sale:
+          type: boolean
+        success:
+          type: boolean
+        active:
+          type: boolean
+    EmulationsResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        active:
+          type: boolean
+    ConnectivityHistoryResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        timestamp:
+          type: string
+        device_id:
+          type: integer
+        pf0:
+          type: integer
+        pf1:
+          type: integer
+        pf2:
+          type: integer
+        pf3:
+          type: integer
+        pf4:
+          type: integer
+        pf5:
+          type: integer
+        pf6:
+          type: integer
+        pf7:
+          type: integer
+        pf8:
+          type: integer
+        pf9:
+          type: integer
+        pf10:
+          type: integer
+        pf11:
+          type: integer
+        pf12:
+          type: integer
+        pf13:
+          type: integer
+        pf14:
+          type: integer
+        pf15:
+          type: integer
+        pf16:
+          type: integer
+        pf17:
+          type: integer
+        pf18:
+          type: integer
+        pf19:
+          type: integer
+        pf20:
+          type: integer
+        pf21:
+          type: integer
+        pf22:
+          type: integer
+        pf23:
+          type: integer
+        sf0:
+          type: integer
+        sf1:
+          type: integer
+        sf2:
+          type: integer
+        sf3:
+          type: integer
+        sf4:
+          type: integer
+        sf5:
+          type: integer
+        sf6:
+          type: integer
+        sf7:
+          type: integer
+        sf8:
+          type: integer
+        sf9:
+          type: integer
+        sf10:
+          type: integer
+        sf11:
+          type: integer
+        sf12:
+          type: integer
+        sf13:
+          type: integer
+        sf14:
+          type: integer
+        sf15:
+          type: integer
+        sf16:
+          type: integer
+        sf17:
+          type: integer
+        sf18:
+          type: integer
+        sf19:
+          type: integer
+        sf20:
+          type: integer
+        sf21:
+          type: integer
+        sf22:
+          type: integer
+        sf23:
+          type: integer
+    CompaniesProvidersResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        provider_id:
+          type: integer
+        company_id:
+          type: integer
+        merchant_id:
+          type: string
+        pos_token:
+          type: string
+        provider_site_id:
+          type: string
+        callback_url:
+          type: string
+        allow_refund:
+          type: boolean
+        active:
+          type: boolean
+    TransactionsResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        acknowledged:
+          type: integer
+        emulation_id:
+          type: integer
+        provider_id:
+          type: integer
+        company_id:
+          type: integer
+        organisation_id:
+          type: integer
+        site_id:
+          type: integer
+        device_id:
+          type: integer
+        uid:
+          type: string
+        amount:
+          type: integer
+        payment_id:
+          type: string
+        payment_reference:
+          type: string
+        time:
+          type: string
+        timestamp:
+          type: integer
+        payment_date:
+          type: string
+        customer_name:
+          type: string
+        multiplier:
+          type: integer
+        divider:
+          type: integer
+        credit:
+          type: integer
+        item:
+          type: integer
+        retry:
+          type: integer
+        uuid:
+          type: string
+        start_run:
+          type: integer
+        start_time:
+          type: integer
+        end_run:
+          type: integer
+        end_time:
+          type: integer
+    AssetStatesResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        state:
+          type: string
+        reseller_id:
+          type: number
+        active:
+          type: boolean
+    RefundsResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        companies_id:
+          type: integer
+        organisations_id:
+          type: integer
+        site_id:
+          type: integer
+        provider_id:
+          type: integer
+        transaction_id:
+          type: integer
+        device_uid:
+          type: string
+        payment_reference:
+          type: string
+        refund_reference:
+          type: string
+        amount:
+          type: integer
+        status:
+          type: string
+    DeviceActivityAuditResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        device_id:
+          type: integer
+        user_id:
+          type: integer
+        site_id:
+          type: integer
+        asset_state_id:
+          type: integer
+        notes:
+          type: string
+        timestamp:
+          type: string
+    CustomersResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        customer_identification:
+          type: string
+        email:
+          type: string
+        contact_number:
+          type: string
+        consent_number:
+          type: boolean
+        consent_email:
+          type: boolean
+        user_id:
+          type: integer
+        blocked:
+          type: boolean
+        daily_booking_limit:
+          type: integer
+        verified:
+          type: boolean
+        email_sent_amount:
+          type: integer
+
+    numberIndex:
+      type: string
+      pattern: '[0-9]$'
+    selectAll:
+      type: string
+      enum:
+        - _all
+
+  parameters:
+    idParam:
+      in: path
+      name: id
+      required: true
+      schema:
+        oneOf:
+          - $ref: "#/components/schemas/numberIndex"
+          - $ref: "#/components/schemas/selectAll"
+      examples:
+        id:
+          value: 12
+          summary: Search by specific primary key, id
+        all:
+          value: '_all'
+          summary: Search by all accessible objects
+
+    offsetParam:
+      in: query
+      name: offset
+      required: false
+      schema:
+        oneOf:
+          - $ref: "#/components/schemas/numberIndex"
+      example: 1
+
+    limitParam:
+      in: query
+      name: limit
+      required: false
+      schema:
+        type: integer
+      example: 3
+
+    orderParam:
+      in: query
+      name: order_by
+      required: false
+      schema:
+        oneOf:
+          - type: string
+            pattern: ^\w+:(asc|desc)$
+          - type: array
+            items:
+              pattern: ^\w+:(asc|desc)$
+      examples:
+        asc:
+          value: "field:asc"
+          summary: Filters the field specific by ascending order
+        desc:
+          value: "field:desc"
+          summary: Filters the field specific by descending order
+
+    countParam:
+      in: query
+      name: count_entries
+      required: false
+      schema:
+        type: boolean
+      example: true
+
+    others:
+      in: query
+      name: others
+      schema:
+        additionalProperties: true
+      examples:
+        textContaining:
+          value: "%Store%"
+          summary: Searches in specific field for text containing the word "Store"
+        textStart:
+          value: "Store%"
+          summary: Searches in specific field for text starting with the word "Store"
+        textEnd:
+          value: "%Store"
+          summary: Searches in specific field for text ending with the word "Store"
+        textFind:
+          value: "Store"
+          summary: Searches in specific field for text equaling to "Store"
+        numberFind:
+          value: 108
+          summary: Searches in specific field for number equaling to "108"
+
+
+
+security:
+  - XUserToken: [ ]
+  - XApiKey: [ ]
