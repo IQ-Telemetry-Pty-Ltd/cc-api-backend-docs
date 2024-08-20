@@ -7,12 +7,10 @@ info:
     altText: "IQ Telemetry"
 
 
-  title: Payway API v1
+  title: PayWay API v1
   description: |-
     
-    Main API built around the Payway database.
-    
-    Implements all tablets and functions needed for report pulling, website and app building.
+    PayWay payments engine API for all administrative functions and reporting. 
     If you wish to access this api, please contact us with the desired endpoints and reason.
     
     NOTE: Access restricted, logged, rate limited API.
@@ -26,8 +24,8 @@ info:
   version: 1.0.1
 
 externalDocs:
-  description: Click here to learn more about Payway.
-  url: https://payway.iqt.co.za
+  description: Click here to learn more about PayWay.
+  url: https://PayWay.iqt.co.za
 
 tags:
   - name: Data
@@ -37,17 +35,17 @@ tags:
   - name: Authentication
     description: Endpoints that allow you to authenticate with the API.
   - name: Users
-    description: Endpoints that allow you to control payway users.
+    description: Endpoints that allow you to control PayWay users.
   - name: Users Access
-    description: Endpoints that allow you to control payway users access.
+    description: Endpoints that allow you to control PayWay users access.
   - name: Roles
     description: Endpoints that allow you to control user roles.
   - name: Levels
-    description: Endpoints that relate to levels in the business logic of payway.
+    description: Endpoints that relate to levels in the business logic of PayWay.
   - name: Other Business Logic
     description: Endpoints that relate to other business logic.
   - name: Logs
-    description: Endpoints that relate to viewing logs in the payway backend.
+    description: Endpoints that relate to viewing logs in the PayWay backend.
   - name: Many-to-Many
     description: Endpoints that relate to many to many linking tables.
   - name: One-to-Many
@@ -85,7 +83,7 @@ x-tagGroups:
       - One-to-Many
 
 servers:
-  - url: '{scheme}://payway.iqt.co.za/api/v1'
+  - url: '{scheme}://PayWay.iqt.co.za/api/v1'
     variables:
       scheme:
         description: 'The API is accessible via https.'
@@ -103,11 +101,12 @@ paths:
         - Authentication
       summary: Obtain x-user-token for auth
       description: |-
-        This endpoint is used to retrieve an authentication token that is used to identify a payway user.
-        We call this token the "x-user-token", a randomly generated string representing an user. 
+        This endpoint is used to retrieve an authentication token that is used to identify a PayWay user.
+        We call this token the "x-user-token", a randomly generated string representing a user. 
         This token does not expire after a set time period. On every successful authentication a new token is generated, expiring the old one.
+        This end-point handles both Firebase (Email and Password) and Google Login methods. 
         
-        It is important you store this token in a secure way as tokens do not expire. 
+        It is important you session store this token in a secure way as tokens do not expire. 
 
       operationId: authentication
       requestBody:
@@ -158,6 +157,7 @@ paths:
                         "firebase_id": "Reu8oIQWf898E4K1hIJdPpKIpOe93",
                         "google_id": "null",
                         "sidebar_toggled": false,
+                        "password_reset": true,
                         "active": true
                       }
                     ],
@@ -218,10 +218,12 @@ paths:
         - Authentication
       summary: Create object for operation id / endpoint
       description: |-
-        This endpoint is used to create access objects that define properties of endpoints, e.g. /authentication.
-        Primary key returned on successful creation, id, can be used to allow an user to access certain endpoints. This is done via "User Access".
+        This endpoint is used to create access objects that define properties of endpoints, e.g. /users.
+        Primary key returned on successful creation, id, can be used to allow a user to access certain endpoints. This is done via "User Access".
+        This table is populated by the system maintainers and should have an entry for each non-public open-api end-point.  This table joined
+        with the users_access and users table can determine front-end visible menu items based on the user specific access controls.
         
-        If an user sees the message: "Unauthorized. [${operationId}], they most likely do not have an access entry linked to their account.
+        If a user sees the message: "Unauthorized. [${operationId}], they most likely do not have an access entry linked to their account.
         Access to endpoints is denied by default.
 
       operationId: createAccess
@@ -242,7 +244,7 @@ paths:
                   example: 'deleteCustomers'
                   maxLength: 100
                   description: |-
-                    Operation IDs are plain text representations of HTTP/s resources, e.g /authentication.
+                    Operation id's are plain text representations of the open-api resources, e.g deleteCustomers.
                     These values can be found in the OpenAPI spec, and are defined under every endpoint type.
                 can_access:
                   type: boolean
@@ -277,7 +279,7 @@ paths:
         - Data
         - Authentication
       summary: Get object for operation id / endpoint
-      description: Obtain all operation ids / endpoints an user has access to
+      description: Obtain all operation id's / endpoints a user has access to
       operationId: getAccess
       responses:
         '200':
@@ -326,7 +328,7 @@ paths:
                   example: 'deleteCustomers'
                   maxLength: 100
                   description: |-
-                    Operation IDs are plain text representations of HTTP/s resources, e.g /authentication.
+                    Operation id's are plain text representations of the open-api resources, e.g deleteCustomers.
                     These values can be found in the OpenAPI spec, and are defined under every endpoint type.
                 can_access:
                   type: boolean
@@ -376,18 +378,34 @@ paths:
       summary: Create object for roles
       description: |-
         This endpoint is used to create roles that are linked to users. These roles define which reseller and organisation users are linked to.
-        Roles can only include one reseller or organisation, therefor: 
-          * 1 Reseller-to-MANY-Users
-          * 1 Organisation-to-MANY-Users
+        A user may only belong to one Reseller and Organisation, and the Organisation must be a direct descendant of the Reseller.  A User may
+        be linked to many Roles, and as such, we must ensure that the Reseller and Organisation are the same across all linked Roles.  A change
+        in this rule will lead to unexpected behaviour.
         
-        For highest access normal users, the "is_reseller" boolean can be used to give total visibility and access to all resources under the reseller.
-        Companies, devices, sites are defined by arrays of ids. By default, a empty array will be used. When the array is empty,
-        all resources under the company, site etc are visible. If you would like to restrict certain roles to access certain resources, append ids to
-        the array. This will restrict the role to ONLY the defined ids found in the non empty arrays.
+        If the "is_reseller" flag is set in any of the Roles linked to the User, only the Reseller will be used to determine which siblings in
+        the Reseller - Organisation - Company - Site - Device and other related resource will be accessible.  Note that only one Role needs this
+        "is_reseller" flag to be set for this behaviour to be enforced.  This flag is set only for Users that are Resellers such that the User 
+        may view and manage any resource belonging to any Organisation under their control.
+          
+        If a User is granted "super_admin" status, then roles are no longer in effect and total system wide visibility is permitted.  
+        This status is granted only by direct database changes by the development squad. 
+        (See Users endpoint details for more information on this)
+        
+        The Role also permits finer resource controls by defining which Companies, Sites and Devices may be accessible by the User-Role
+        relationship.  Companies, Sites and Devices are defined by arrays of id's. An empty array is created by default. When the array is empty,
+        all Companies, Sites and Devices which are direct descendants of the Organisation are visible. If you would like to restrict the roles 
+        access to certain resources, append the relevant resources id to the array. This will restrict the role to ONLY the defined id's found 
+        in those non-empty arrays.
         
         e.g: 
-        * site_id_list: [] --> All sites under organisation
-        * site_id_list: [3, 1] --> Only sites 3 and 1
+        * site_id_list: [] results in ALL sites under organisation being accessible
+        * site_id_list: [3, 1] results in only sites with ID 3 and 1 being accessible
+        
+        Users are linked to Roles via the Users_Roles service.  When onboarding a new Organisation, the Primary User account created for the 
+        Organisation will be done using either a Super Admin or Reseller User account.  This primary User account should be allocated a Role,
+        such that each Organisation will have at least one Primary Role that permits full visibility of all resources that are direct descendants.    
+        This will allow for the organisation's Primary User to create subsequent User accounts and Roles only in relation to the resources that 
+        are direct descendants.  
 
       operationId: createRoles
       requestBody:
@@ -594,29 +612,31 @@ paths:
       tags:
         - Data
         - Users
-      summary: Create object for payway user
+      summary: Create object for PayWay user
       description: |-
         Users are the main, and only way, to "access" resources in the API Backend. 
-        Every user is linked to Reseller, Organisation, Company, Site and Devices. As a user,
-        you only have the ability to access resources you are linked to. All permission and access restriction
-        is handled in this component, the API Backend. 
+        Every user is linked to a Reseller and Organisation. As a user, you only have the ability to access resources 
+        defined by the Access and Roles rules for the particular User, unless the "super_user" flag is set, in which case you
+        have system wide access. 
         
-        When a new user is created, a "client secret" / "password" is generated. This password can ONLY be viewed by
-        the API, or any calls, once. This password is generated randomly. These users are handled by Firebase, so all 
-        administration of user accounts relating to login needs to be done there.
+        When a new user is created, a "client secret" or "password" is randomly generated and the "password_reset" flag is set.
+        On first login of the User Account, if the "password_reset" flag is set, the User must be prompted to set a new
+        password.  The password should not be the same as the email account used and must be at least 10 characters long containing 
+        at least 2 upper case characters, one special character, two numerical characters and three lowercase characters.
+        If the password is not updated, the user will not be able to access any resources other than that required to update the
+        password.  On update of the password, be sure to reset the "password_reset" flag.  
         
-        Every user that has been authenticated will receive a "x-user-token".
-        This token is a randomly generated, unique string that identifies a user account.
-        These tokens do not expire, but do get invalidated when a new successful authentication request occurs. 
-        This means that only ONE logged in "session" can occur at once. e.g Only one computer logged into website at a time.
+        Every user that has been successfully authenticated will receive an "x-user-token".
+        This token is a randomly generated unique string that identifies a user account.
+        These tokens do not expire, but do get refreshed on a new successful authentication request. 
+        This means that only ONE active "session" can exist. e.g The user account can only be used on one device at a time
         
-        Super admin users are the highest level of accounts in Payway. These accounts get access to all resources in the API. No matter
+        Super admin users have the highest access level. These accounts get access to all resources in the API. No matter
         the reseller or organisation. 
         
-        Proxy users are user accounts that are NOT suppose to be usable in any user facing website or app. Proxy users should
-        not be displayed, or be able to be logged into to, by these user facing apps / websites.
-        Proxy users are meant to be used by applications that require restricted access and are intergrated with
-        solutions requiring API use. Proxy users act like normal users, being linked to certain resellers, organisations etc.
+        Proxy users (or service accounts) are NOT to be used by user facing websites or mobile applications. 
+        Proxy users are meant to be used by applications that require restricted access to API resources. 
+        Proxy users act like normal users, having the same access and role based controls.
 
       operationId: createUsers
       requestBody:
@@ -691,6 +711,7 @@ paths:
                         "delimiter": ";",
                         "super_admin": false,
                         "proxy_user": false,
+                        "password_reset": true,
                         "password": "ns98Ui7T2Sc"
                       }
                     ],
@@ -732,6 +753,7 @@ paths:
                         "firebase_id": "B8vGoIQWfaN74K78HEdPpT9hpX93",
                         "proxy_user": false,
                         "super_admin": true,
+                        "password_reset": true,
                         "active": true
                       }
                     ],
@@ -783,6 +805,12 @@ paths:
                 proxy_user:
                   type: boolean
                   description: Special user that should only be used in certain cases.
+                password_reset:
+                  type: boolean
+                  description: password reset required
+                password:
+                   type: string
+                   description: new password
                 active:
                   type: boolean
       responses:
@@ -814,6 +842,7 @@ paths:
                       "currency": "R",
                       "delimiter": ";",
                       "super_admin": false,
+                      "password_reset": true,
                       "proxy_user": false
                     }
                   ],
@@ -1135,6 +1164,261 @@ paths:
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
 
+  '/customers':
+    post:
+      tags:
+        - Data
+        - Other Business Logic
+      summary: Create object for customer
+      description: |-
+        This endpoint manages a second type of user in PayWay called customers.
+        Customers are not direct users of the PayWay system, but rather customers of resellers. e.g Walk in to store customer, a student, etc..
+        
+        Customers are primarily used for the booking system.
+        Customers are linked to a PayWay proxy user (service account) and will ensure access is restricted to the correct organisation and resources
+        in terms of the Access and Roles Based rules of the service account.
+
+      operationId: createCustomers
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                first_name:
+                  type: string
+                  maxLength: 100
+                  example: "John"
+                last_name:
+                  type: string
+                  maxLength: 100
+                  example: "Doe"
+                customer_identification:
+                  type: string
+                  maxLength: 30
+                  example: "0456744907613"
+                email:
+                  type: string
+                  maxLength: 100
+                  pattern: '^(([^+<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
+                contact_number:
+                  type: string
+                  example: '+27876545611'
+                  maxLength: 20
+                  pattern: ^(\+|\d)[0-9]{7,16}$
+                consent_number:
+                  type: boolean
+                consent_email:
+                  type: boolean
+                user_id:
+                  type: integer
+                  example: 105
+                  description: The id of the proxy user (service account)
+                blocked:
+                  type: boolean
+                  description: Prevents user from accessing the API.
+                daily_booking_limit:
+                  type: integer
+                  example: 5
+                  description: The total number of bookings a user can make in one day
+                verified:
+                  type: boolean
+                  description: Has the user verified their email?
+                email_sent_amount:
+                  type: integer
+                  example: 5
+                  description: Amount of times a login request has been sent
+              required: [ "first_name", "last_name", "email", "user_id" ]
+      responses:
+        '200':
+          description: Returns customer object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CustomersResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "email": "john.doe@gmail.com",
+                        "first_name": "John",
+                        "last_name": "Doe",
+                        "contact_number": "+27876545611",
+                        "customer_identification": "0456744907613",
+                        "user_id": 125,
+                        "consent_number": true,
+                        "consent_email": true,
+                        "daily_booking_limit": 5,
+                        "blocked": false,
+                        "verified": true,
+                        "email_sent_amount": 4
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+
+  '/customers/{id}':
+    get:
+      tags:
+        - Data
+        - Other Business Logic
+      operationId: getCustomers
+      responses:
+        '200':
+          description: Returns an array of "customer" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CustomersResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "email": "john.doe@gmail.com",
+                        "first_name": "John",
+                        "last_name": "Doe",
+                        "contact_number": "+27876545611",
+                        "customer_identification": "0456744907613",
+                        "user_id": 125,
+                        "consent_number": true,
+                        "consent_email": true,
+                        "daily_booking_limit": 5,
+                        "blocked": false,
+                        "verified": true,
+                        "email_sent_amount": 4
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    put:
+      tags:
+        - Data
+        - Other Business Logic
+      summary: Update object for customers
+      operationId: updateCustomers
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                first_name:
+                  type: string
+                  maxLength: 100
+                  example: "John"
+                last_name:
+                  type: string
+                  maxLength: 100
+                  example: "Doe"
+                customer_identification:
+                  type: string
+                  maxLength: 30
+                  example: "0456744907613"
+                email:
+                  type: string
+                  maxLength: 100
+                  pattern: '^(([^+<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
+                contact_number:
+                  type: string
+                  example: '+27876545611'
+                  maxLength: 20
+                  pattern: ^(\+|\d)[0-9]{7,16}$
+                consent_number:
+                  type: boolean
+                consent_email:
+                  type: boolean
+                user_id:
+                  type: integer
+                  example: 105
+                  description: Customer needs to be linked to a user, usually a proxy user, for access control
+                blocked:
+                  type: boolean
+                  description: Prevents user from accessing the API.
+                daily_booking_limit:
+                  type: integer
+                  example: 5
+                  description: The total number of bookings a user can make in one day
+                verified:
+                  type: boolean
+                  description: Has the user verified their email?
+                email_sent_amount:
+                  type: integer
+                  example: 5
+                  description: Amount of times a login request has been sent
+      responses:
+        '200':
+          description: Returns an array of "customer" items updated by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CustomersResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "email": "john.doe@gmail.com",
+                        "first_name": "John",
+                        "last_name": "Doe",
+                        "contact_number": "+27876545611",
+                        "customer_identification": "0456744907613",
+                        "user_id": 125,
+                        "consent_number": true,
+                        "consent_email": true,
+                        "daily_booking_limit": 5,
+                        "blocked": false,
+                        "verified": true,
+                        "email_sent_amount": 4
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    delete:
+      tags:
+        - Data
+        - Other Business Logic
+      operationId: deleteCustomers
+      summary: Delete object for customers
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  {
+                    "success": true,
+                    "data": "Successfully deleted record. [1]",
+                    "timestamp": 1723108298846
+                  }
+          description: ok
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+
   '/resellers':
     post:
       tags:
@@ -1142,15 +1426,9 @@ paths:
         - Levels
       summary: Create object for reseller
       description: |-
-        Resellers are of the highest level in the Payway system. Under resellers, there are:
-          * MANY Organisations
-          * MANY Companies
-          * MANY Sites
-          * MANY Devices
+        Resellers are PayWay customers that re-sell the PayWay system to their customers. 
+        Resellers are of the highest level in the PayWay system. Resellers may have MANY Organisations.
         
-        Resellers are customers that resell the Payway system to other customers. These users, if marked as a reseller, have access
-        to ALL resources under the reseller.
-
       operationId: createResellers
       requestBody:
         required: true
@@ -1347,10 +1625,8 @@ paths:
         - Levels
       summary: Create object for an organisation
       description: |-
-        Organisations are the second level in the Payway system. Under Organisations, there are:
-          * MANY Companies
-          * MANY Sites
-          * MANY Devices
+        Organisations are the second level in the PayWay system.
+        An Organisation may be linked to MANY Resellers (See Organisations_Resellers), and may have many companies.
 
       operationId: createOrganisations
       requestBody:
@@ -1541,6 +1817,149 @@ paths:
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
 
+  '/resellers_organisations':
+    post:
+      tags:
+        - Data
+        - Many-to-Many
+      summary: Create object for reseller to organisation link
+      description: |-
+        This endpoint is used as a MANY-Resellers-to-MANY-Organisations linking table.
+        If you want to link a reseller to a organisation, or vice versa, you need to add the entry here.
+        If this is not done, or not done correctly, users will not be able to see their intended resources.
+
+      operationId: createResellersOrganisations
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                reseller_id:
+                  type: number
+                  example: 3
+                organisation_id:
+                  type: number
+                  example: 1
+              required: [ "reseller_id", "organisation_id" ]
+      responses:
+        '200':
+          description: Returns reseller organisation link created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ResellersOrganisationsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "reseller_id": 3,
+                        "organisation_id": 1
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+
+  '/resellers_organisations/reseller/{id}':
+    get:
+      tags:
+        - Data
+        - Many-to-Many
+      summary: Get object for reseller organisation link by reseller id
+      operationId: getResellersOrganisationsByResellerId
+      responses:
+        '200':
+          description: Returns an array of "reseller organisation" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ResellersOrganisationsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "reseller_id": 3,
+                        "organisation_id": 1
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/resellers_organisations/{id}':
+    get:
+      tags:
+        - Data
+        - Many-to-Many
+      summary: Get object for reseller organisation link
+      operationId: getResellersOrganisations
+      responses:
+        '200':
+          description: Returns an array of "reseller organisation" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ResellersOrganisationsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "reseller_id": 3,
+                        "organisation_id": 1
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    delete:
+      tags:
+        - Data
+        - Many-to-Many
+      summary: Delete object for resellers organisations
+      operationId: deleteResellersOrganisations
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  {
+                    "success": true,
+                    "data": "Successfully deleted record. [1]",
+                    "timestamp": 1723108298846
+                  }
+          description: ok
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
   '/companies':
     post:
       tags:
@@ -1548,9 +1967,7 @@ paths:
         - Levels
       summary: Create object for company
       description: |-
-        Companies are the third highest level in the Payway system. Under companies, there are:
-          * MANY Sites
-          * MANY Devices
+        Companies are the third level in the PayWay system. A company may only be linked to one parent Organisation
 
       operationId: createCompanies
       requestBody:
@@ -1764,10 +2181,9 @@ paths:
         - Levels
       summary: Create object for site
       description: |-
-        Sites are of the second lowest level in the Payway system. Under sites, there are:
-          * MANY Devices
-        
-        Bookings are managed on the site level, as well as mifare. 
+        Sites are of the fourth level in the PayWay system. A site may only be linked to one parent Company
+        The Booking System is managed at a site level.  For a site to allow bookings, the "allow_booking" flag must be set.
+        The "mifare_site_id" field is used to match the Site to it's equivalent Mifare Site (refer to MiFare API).
 
       operationId: createSites
       requestBody:
@@ -1991,12 +2407,10 @@ paths:
         - Levels
       summary: Create object for device
       description: |-
-        Devices are physical wifi or sim modems used to connect hardware to Payway. 
-        Each device has its own hardware type, found in the resource "host_hardware" and "pos_type". Each devices
+        Devices are physical WiFi or SIM based modems used to connect hardware to the PayWay engine. 
+        Each device has its own hardware type, found in the resource "host_hardware", and "pos_type". Each devices
         configuration can be set here, e.g poll_start, poll_end, dip and csq. 
-        
-        Devices are of the lowest level in the Payway system, meaning they sit under resellers, organisations, companies
-        and sites. 
+        A device may only be linked to one parent Site.
 
       operationId: createDevices
       requestBody:
@@ -2357,7 +2771,7 @@ paths:
       operationId: getLogsFatal
       summary: Get object for fatal logs
       description: |-
-        This endpoint holds all fatal logs found in the Payway payment system.
+        This endpoint holds all Fatal Logs generated in the PayWay Payment Engine.
 
       responses:
         '200':
@@ -2407,6 +2821,8 @@ paths:
         - Logs
       operationId: getLogsInfo
       summary: Get object for info logs
+      description: |-
+        This endpoint holds all Info Logs generated in the PayWay Payment Engine.
       responses:
         '200':
           description: Returns an array of "info log" items from the database
@@ -2453,6 +2869,8 @@ paths:
         - Logs
       operationId: getLogsWarning
       summary: Get object for warning logs
+      description: |-
+        This endpoint holds all Warning Logs generated in the PayWay Payment Engine.
       responses:
         '200':
           description: Returns an array of "warning log" items from the database
@@ -2492,149 +2910,6 @@ paths:
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
 
-  '/resellers_organisations':
-    post:
-      tags:
-        - Data
-        - Many-to-Many
-      summary: Create object for reseller to organisation link
-      description: |-
-        This endpoint is used as a MANY-Resellers-to-MANY-Organisations linking table.
-        If you want to link a reseller to a organisation, or vice versa, you need to add the entry here.
-        If this is not done, or not done correctly, users will not be able to see their intended resources.
-
-      operationId: createResellersOrganisations
-      requestBody:
-        required: true
-        content:
-          'application/json':
-            schema:
-              type: object
-              additionalProperties: false
-              properties:
-                reseller_id:
-                  type: number
-                  example: 3
-                organisation_id:
-                  type: number
-                  example: 1
-              required: [ "reseller_id", "organisation_id" ]
-      responses:
-        '200':
-          description: Returns reseller organisation link created by query
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ResellersOrganisationsResponse"
-                example:
-                  {
-                    "success": true,
-                    "data": [
-                      {
-                        "id": 1,
-                        "reseller_id": 3,
-                        "organisation_id": 1
-                      }
-                    ],
-                    "entries": 1,
-                    "timestamp": 1723108298846
-                  }
-
-  '/resellers_organisations/reseller/{id}':
-    get:
-      tags:
-        - Data
-        - Many-to-Many
-      summary: Get object for reseller organisation link by reseller id
-      operationId: getResellersOrganisationsByResellerId
-      responses:
-        '200':
-          description: Returns an array of "reseller organisation" items from the database
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ResellersOrganisationsResponse"
-                example:
-                  {
-                    "success": true,
-                    "data": [
-                      {
-                        "id": 1,
-                        "reseller_id": 3,
-                        "organisation_id": 1
-                      }
-                    ],
-                    "entries": 1,
-                    "timestamp": 1723108298846
-                  }
-    parameters:
-      - $ref: "#/components/parameters/idParam"
-      - $ref: "#/components/parameters/limitParam"
-      - $ref: "#/components/parameters/offsetParam"
-      - $ref: "#/components/parameters/orderParam"
-      - $ref: "#/components/parameters/countParam"
-      - $ref: "#/components/parameters/others"
-
-  '/resellers_organisations/{id}':
-    get:
-      tags:
-        - Data
-        - Many-to-Many
-      summary: Get object for reseller organisation link
-      operationId: getResellersOrganisations
-      responses:
-        '200':
-          description: Returns an array of "reseller organisation" items from the database
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ResellersOrganisationsResponse"
-                example:
-                  {
-                    "success": true,
-                    "data": [
-                      {
-                        "id": 1,
-                        "reseller_id": 3,
-                        "organisation_id": 1
-                      }
-                    ],
-                    "entries": 1,
-                    "timestamp": 1723108298846
-                  }
-    delete:
-      tags:
-        - Data
-        - Many-to-Many
-      summary: Delete object for resellers organisations
-      operationId: deleteResellersOrganisations
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: object
-                example:
-                  {
-                    "success": true,
-                    "data": "Successfully deleted record. [1]",
-                    "timestamp": 1723108298846
-                  }
-          description: ok
-    parameters:
-      - $ref: "#/components/parameters/idParam"
-      - $ref: "#/components/parameters/limitParam"
-      - $ref: "#/components/parameters/offsetParam"
-      - $ref: "#/components/parameters/orderParam"
-      - $ref: "#/components/parameters/countParam"
-      - $ref: "#/components/parameters/others"
-
   '/providers':
     post:
       tags:
@@ -2642,8 +2917,8 @@ paths:
         - Other Business Logic
       summary: Create object for provider
       description: |-
-        This endpoint is used to define providers that are supported by the Payway system.
-        Providers are integrations between Payway and an external payment system, e.g Snapscan or Mastercard.
+        This endpoint is used to define providers that are supported by the PayWay system.
+        Providers are integrations between PayWay and an external payment systems, e.g Snapscan or Mastercard.
 
       operationId: createProviders
       requestBody:
@@ -2795,8 +3070,8 @@ paths:
         - Other Business Logic
       summary: Create object for pos types
       description: |-
-        This endpoint is used to create pos (point of sale) types. These define the method of communcation
-        devices use to access Payway. e.g Wifi, LTE.
+        This endpoint is used to create POS (Point Of Sale) types. These define the technology e.g Wifi, LTE. and 
+        Firmware Release Version.
 
       operationId: createPosTypes
       requestBody:
@@ -2938,8 +3213,9 @@ paths:
         - Other Business Logic
       summary: Create object for host hardware
       description: |-
-        This endpoint is used to define different types of hardware customers use.
-        This is hardware that is used by the customer, and not the hardware IQT provide. e.g Certain model of Washing machine.
+        This endpoint is used to define different types of host hardware devices are connected to in the field, eg: 
+        Speedqueen SWMN216 Washing Machine,  Azkoyn Palma Vending Machine, etc.  
+        Cycle time, cycle signal source, hardware type, payment emulation and additional notes can be set here.
 
       operationId: createHostHardware
       requestBody:
@@ -2997,7 +3273,7 @@ paths:
                         "reseller_id": 1,
                         "hardware_type_id": 3,
                         "notes": "The best washer ever!",
-                        "cycle_signal_source": 4,
+                        "cycle_signal_source": 1,
                         "cycle_time": 30,
                         "emulation_id": 2,
                         "active": true,
@@ -3034,7 +3310,7 @@ paths:
                         "reseller_id": 1,
                         "hardware_type_id": 3,
                         "notes": "The best washer ever!",
-                        "cycle_signal_source": 4,
+                        "cycle_signal_source": 1,
                         "cycle_time": 30,
                         "emulation_id": 2,
                         "active": true,
@@ -3103,7 +3379,7 @@ paths:
                         "reseller_id": 1,
                         "hardware_type_id": 3,
                         "notes": "The best washer ever!",
-                        "cycle_signal_source": 4,
+                        "cycle_signal_source": 1,
                         "cycle_time": 30,
                         "emulation_id": 2,
                         "active": true,
@@ -3127,8 +3403,8 @@ paths:
         - Other Business Logic
       summary: Create object for status codes
       description: |-
-        This endpoint is used to manage status codes. Status codes are codes / identification for an action.
-        e.g status code 1 means pending transaction.
+        This endpoint is used to manage status codes. Status codes are codes identifying an action,
+        e.g status code of 1 means "pending transaction".
 
       operationId: createStatusCodes
       requestBody:
@@ -3432,7 +3708,10 @@ paths:
         - Polling
       operationId: getConnectivityHistory
       summary: Get object for connectivity history
-      description: Obtain device polling / connectivity history
+      description: |-
+        Obtain device polling / connectivity history.  
+        pfN = polling frequency for hour of day N.
+        sfN = session frequency for hour of day N.
       responses:
         '200':
           description: List of connectivity history objects
@@ -3515,7 +3794,8 @@ paths:
       summary: Create object for company provider
       description: |-
         This endpoint is used to link and manage each companies payment integration and providers.
-        This includes their API keys / merchant ids / other forms of authentication so we know when a payment is made.
+        This includes their API keys, merchant id's, callback URL's, tokens, etc.
+        A company may be linked to many providers, but may not be linked to many of the same provider.
 
       operationId: createCompaniesProviders
       requestBody:
@@ -3703,7 +3983,7 @@ paths:
       operationId: getTransactions
       summary: Get object for transactions
       description: |-
-        This endpoint is used to retrieve and view transactions. These transactions are handled by the payment processing backend.
+        This endpoint is used to retrieve and view transactions. This is a history of transactions processed by the PayWay Payment Engine.
       responses:
         '200':
           description: Returns an array of "transaction" items from the database
@@ -3757,6 +4037,51 @@ paths:
         - $ref: "#/components/parameters/countParam"
         - $ref: "#/components/parameters/others"
 
+  '/refunds/{id}':
+    get:
+      tags:
+        - Data
+        - Transactions
+      operationId: getRefunds
+      summary: Get object for refunds
+      responses:
+        '200':
+          description: Returns an array of "refund" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RefundsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 4,
+                        "organisation_id": 10,
+                        "companies_id": 10,
+                        "amount": 10,
+                        "device_uid": 736e740b,
+                        "refund_reference": null,
+                        "payment_reference": "Zapper",
+                        "provider_id": 1,
+                        "site_id": 10,
+                        "status": null,
+                        "transaction_id": 1
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723108298846
+                  }
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
   '/asset_states':
     post:
       tags:
@@ -3764,8 +4089,8 @@ paths:
         - Other Business Logic
       summary: Create object for asset states
       description: |-
-        This endpoint is used to track assets owned by a reseller, or others, and actions or movements on these assets.
-        e.g Device is broken, in maintenance or sold.
+        This endpoint is used to track assets owned by a reseller, or others, and actions or movements of these assets.
+        e.g Device is broken, in maintenance, in trade or sold.
 
       operationId: createAssetStates
       requestBody:
@@ -3894,51 +4219,6 @@ paths:
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
 
-  '/refunds/{id}':
-    get:
-      tags:
-        - Data
-        - Transactions
-      operationId: getRefunds
-      summary: Get object for refunds
-      responses:
-        '200':
-          description: Returns an array of "refund" items from the database
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/RefundsResponse"
-                example:
-                  {
-                    "success": true,
-                    "data": [
-                      {
-                        "id": 4,
-                        "organisation_id": 10,
-                        "companies_id": 10,
-                        "amount": 10,
-                        "device_uid": 736e740b,
-                        "refund_reference": null,
-                        "payment_reference": "Zapper",
-                        "provider_id": 1,
-                        "site_id": 10,
-                        "status": null,
-                        "transaction_id": 1
-                      }
-                    ],
-                    "entries": 1,
-                    "timestamp": 1723108298846
-                  }
-    parameters:
-      - $ref: "#/components/parameters/idParam"
-      - $ref: "#/components/parameters/limitParam"
-      - $ref: "#/components/parameters/offsetParam"
-      - $ref: "#/components/parameters/orderParam"
-      - $ref: "#/components/parameters/countParam"
-      - $ref: "#/components/parameters/others"
-
   '/device_activity_audit':
     post:
       tags:
@@ -3946,9 +4226,7 @@ paths:
         - Audit Logs
       summary: Create object for device activity audit
       description: |-
-        This endpoint is used to track and manage movement, activity and anything else around the movement, repair, changing
-        settings etc. This is specially made for devices.
-
+        This endpoint is used to track and manage device movements and asset_state changes.
       operationId: createDeviceActivityAudit
       requestBody:
         required: true
@@ -4099,260 +4377,6 @@ paths:
                     "entries": 1,
                     "timestamp": 1723628631562
                   }
-    parameters:
-      - $ref: "#/components/parameters/idParam"
-      - $ref: "#/components/parameters/limitParam"
-      - $ref: "#/components/parameters/offsetParam"
-      - $ref: "#/components/parameters/orderParam"
-      - $ref: "#/components/parameters/countParam"
-      - $ref: "#/components/parameters/others"
-
-  '/customers':
-    post:
-      tags:
-        - Data
-        - Other Business Logic
-      summary: Create object for customer
-      description: |-
-        This endpoint manages a second type of user in Payway called customers.
-        Customers are not direct users of the Payway system, but rather customers of resellers. e.g Walk in to store customer.
-        
-        Customers are primarily used for the booking system.
-        Customers are linked to a real Payway user account, usually a "proxy user". This allows them to be access restricted and only see resources
-        they should see.
-
-      operationId: createCustomers
-      requestBody:
-        required: true
-        content:
-          'application/json':
-            schema:
-              type: object
-              additionalProperties: false
-              properties:
-                first_name:
-                  type: string
-                  maxLength: 100
-                  example: "John"
-                last_name:
-                  type: string
-                  maxLength: 100
-                  example: "Doe"
-                customer_identification:
-                  type: string
-                  maxLength: 30
-                  example: "0456744907613"
-                email:
-                  type: string
-                  maxLength: 100
-                  pattern: '^(([^+<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
-                contact_number:
-                  type: string
-                  example: '+27876545611'
-                  maxLength: 20
-                  pattern: ^(\+|\d)[0-9]{7,16}$
-                consent_number:
-                  type: boolean
-                consent_email:
-                  type: boolean
-                user_id:
-                  type: integer
-                  example: 105
-                  description: Customer needs to be linked to a user, usually a proxy user, for access control
-                blocked:
-                  type: boolean
-                  description: Prevents user from accessing the API.
-                daily_booking_limit:
-                  type: integer
-                  example: 5
-                  description: The total number of bookings a user can make in one day
-                verified:
-                  type: boolean
-                  description: Has the user verified their email?
-                email_sent_amount:
-                  type: integer
-                  example: 5
-                  description: Amount of times a login request has been sent
-              required: [ "first_name", "last_name", "email", "user_id" ]
-      responses:
-        '200':
-          description: Returns customer object created by query
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/CustomersResponse"
-                example:
-                  {
-                    "success": true,
-                    "data": [
-                      {
-                        "id": 1,
-                        "email": "john.doe@gmail.com",
-                        "first_name": "John",
-                        "last_name": "Doe",
-                        "contact_number": "+27876545611",
-                        "customer_identification": "0456744907613",
-                        "user_id": 125,
-                        "consent_number": true,
-                        "consent_email": true,
-                        "daily_booking_limit": 5,
-                        "blocked": false,
-                        "verified": true,
-                        "email_sent_amount": 4
-                      }
-                    ],
-                    "entries": 1,
-                    "timestamp": 1723108298846
-                  }
-
-  '/customers/{id}':
-    get:
-      tags:
-        - Data
-        - Other Business Logic
-      operationId: getCustomers
-      responses:
-        '200':
-          description: Returns an array of "customer" items from the database
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/CustomersResponse"
-                example:
-                  {
-                    "success": true,
-                    "data": [
-                      {
-                        "id": 1,
-                        "email": "john.doe@gmail.com",
-                        "first_name": "John",
-                        "last_name": "Doe",
-                        "contact_number": "+27876545611",
-                        "customer_identification": "0456744907613",
-                        "user_id": 125,
-                        "consent_number": true,
-                        "consent_email": true,
-                        "daily_booking_limit": 5,
-                        "blocked": false,
-                        "verified": true,
-                        "email_sent_amount": 4
-                      }
-                    ],
-                    "entries": 1,
-                    "timestamp": 1723108298846
-                  }
-    put:
-      tags:
-        - Data
-        - Other Business Logic
-      summary: Update object for customers
-      operationId: updateCustomers
-      requestBody:
-        required: true
-        content:
-          'application/json':
-            schema:
-              type: object
-              additionalProperties: false
-              properties:
-                first_name:
-                  type: string
-                  maxLength: 100
-                  example: "John"
-                last_name:
-                  type: string
-                  maxLength: 100
-                  example: "Doe"
-                customer_identification:
-                  type: string
-                  maxLength: 30
-                  example: "0456744907613"
-                email:
-                  type: string
-                  maxLength: 100
-                  pattern: '^(([^+<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
-                contact_number:
-                  type: string
-                  example: '+27876545611'
-                  maxLength: 20
-                  pattern: ^(\+|\d)[0-9]{7,16}$
-                consent_number:
-                  type: boolean
-                consent_email:
-                  type: boolean
-                user_id:
-                  type: integer
-                  example: 105
-                  description: Customer needs to be linked to a user, usually a proxy user, for access control
-                blocked:
-                  type: boolean
-                  description: Prevents user from accessing the API.
-                daily_booking_limit:
-                  type: integer
-                  example: 5
-                  description: The total number of bookings a user can make in one day
-                verified:
-                  type: boolean
-                  description: Has the user verified their email?
-                email_sent_amount:
-                  type: integer
-                  example: 5
-                  description: Amount of times a login request has been sent
-      responses:
-        '200':
-          description: Returns an array of "customer" items updated by query
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/CustomersResponse"
-                example:
-                  {
-                    "success": true,
-                    "data": [
-                      {
-                        "id": 1,
-                        "email": "john.doe@gmail.com",
-                        "first_name": "John",
-                        "last_name": "Doe",
-                        "contact_number": "+27876545611",
-                        "customer_identification": "0456744907613",
-                        "user_id": 125,
-                        "consent_number": true,
-                        "consent_email": true,
-                        "daily_booking_limit": 5,
-                        "blocked": false,
-                        "verified": true,
-                        "email_sent_amount": 4
-                      }
-                    ],
-                    "entries": 1,
-                    "timestamp": 1723108298846
-                  }
-    delete:
-      tags:
-        - Data
-        - Other Business Logic
-      operationId: deleteCustomers
-      summary: Delete object for customers
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                type: object
-                example:
-                  {
-                    "success": true,
-                    "data": "Successfully deleted record. [1]",
-                    "timestamp": 1723108298846
-                  }
-          description: ok
     parameters:
       - $ref: "#/components/parameters/idParam"
       - $ref: "#/components/parameters/limitParam"
