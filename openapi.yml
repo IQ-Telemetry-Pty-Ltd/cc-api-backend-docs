@@ -10,7 +10,7 @@ info:
   title: Payway API v1
   description: |-
     
-    Payway payments engine API for all administrative functions and reporting. 
+    Payway backend engine API for all administrative functions and reporting. 
     If you wish to access this api, please contact us with the desired endpoints and reason.
     
     NOTE: Access restricted, logged, rate limited API.
@@ -20,8 +20,7 @@ info:
     name: Ryan Pomario
     email: ryan@iqt.co.za
 
-
-  version: 1.0.2
+  version: 1.0.3
 
 externalDocs:
   description: Click here to learn more about Payway.
@@ -89,6 +88,8 @@ tags:
     description: Endpoints that relate to providers.
   - name: Status Codes
     description: Endpoints that relate to status codes.
+  - name: Bookings
+    description: Endpoints that relate to bookings.
 
 
 x-tagGroups:
@@ -133,6 +134,7 @@ x-tagGroups:
       - Logs
       - Transactions
       - Refunds
+      - Bookings
 
 
 servers:
@@ -2532,7 +2534,7 @@ paths:
                 site_code:
                   type: integer
                   description: Unique customer site code.
-                  example:  'ABC123'
+                  example: 'ABC123'
                 pos_type_id:
                   type: integer
                 host_hardware_id:
@@ -2748,7 +2750,7 @@ paths:
                 site_code:
                   type: integer
                   description: Unique customer site code.
-                  example:  'ABC123'
+                  example: 'ABC123'
                 pos_type_id:
                   type: integer
                 host_hardware_id:
@@ -4519,6 +4521,238 @@ paths:
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
 
+  '/bookings/{id}':
+    get:
+      tags:
+        - Data
+        - Bookings
+      operationId: getBookings
+      summary: Get object for bookings
+      responses:
+        '200':
+          description: Returns an array of "booking" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BookingsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 36,
+                        "date": "2024-08-08T11:58:52.032Z",
+                        "booking_guid": [
+                          "57e8ffae-558e-11ef-af9f-4bbe8661d8e8",
+                          "57e8ffaf-558e-11ef-af9f-cf8b36714bd7",
+                          "57e8ffb0-558e-11ef-af9f-5b2c5ebd9dc5",
+                          "57e8ffb1-558e-11ef-af9f-5bf8ad8a0dff",
+                          "57e8ffb2-558e-11ef-af9f-3feacc8b3a27",
+                          "57e8ffb3-558e-11ef-af9f-473d60c096f4",
+                          "57e8ffb4-558e-11ef-af9f-5b73a8db1e0a",
+                          "57e8ffb5-558e-11ef-af9f-ffcd4ca01865",
+                          "57e8ffb6-558e-11ef-af9f-7fe35d411510",
+                          "57e8ffb7-558e-11ef-af9f-fb2929e833cf",
+                          "57e8ffb8-558e-11ef-af9f-e34010195cd2",
+                          "57e8ffb9-558e-11ef-af9f-63d02f60a895",
+                          "57e8ffba-558e-11ef-af9f-eb0108c6e265",
+                          "57e8ffbb-558e-11ef-af9f-83e06496a479",
+                          "57e8ffbc-558e-11ef-af9f-0f472645aab3",
+                          "57e8ffbd-558e-11ef-af9f-836f06d1ba00",
+                          "57e8ffbe-558e-11ef-af9f-d73b9bb274e5",
+                          "57e8ffbf-558e-11ef-af9f-7baf89099b29",
+                          "57e8ffc0-558e-11ef-af9f-bf51939434aa",
+                          "57e8ffc1-558e-11ef-af9f-637e501d567f",
+                          "57e8ffc2-558e-11ef-af9f-4f3fc8c697c6",
+                          "57e8ffc3-558e-11ef-af9f-4fd4e7e8838e",
+                          "57e8ffc4-558e-11ef-af9f-4303c2637358",
+                          "57e8ffc5-558e-11ef-af9f-8b4b07af0656"
+                        ],
+                        "device_id": 2523,
+                        "status": [
+                          0,
+                          0,
+                          0,
+                          0,
+                          0,
+                          0,
+                          0,
+                          0,
+                          0,
+                          0,
+                          0,
+                          0,
+                          0,
+                          0,
+                          0,
+                          0,
+                          0,
+                          0,
+                          0,
+                          0,
+                          0,
+                          0,
+                          0,
+                          0
+                        ],
+                        "version": [
+                          1,
+                          1,
+                          1,
+                          1,
+                          1,
+                          1,
+                          1,
+                          1,
+                          1,
+                          1,
+                          1,
+                          1,
+                          1,
+                          1,
+                          1,
+                          1,
+                          1,
+                          1,
+                          1,
+                          1,
+                          1,
+                          1,
+                          1,
+                          1
+                        ],
+                        "customer_id": [
+                          "0",
+                          "0",
+                          "0",
+                          "0",
+                          "0",
+                          "0",
+                          "0",
+                          "0",
+                          "0",
+                          "0",
+                          "0",
+                          "0",
+                          "0",
+                          "0",
+                          "0",
+                          "0",
+                          "0",
+                          "0",
+                          "0",
+                          "0",
+                          "0",
+                          "0",
+                          "0",
+                          "0"
+                        ],
+                        "slot": [
+                          1,
+                          2,
+                          3,
+                          4,
+                          5,
+                          6,
+                          7,
+                          8,
+                          9,
+                          10,
+                          11,
+                          12,
+                          13,
+                          14,
+                          15,
+                          16,
+                          17,
+                          18,
+                          19,
+                          20,
+                          21,
+                          22,
+                          23,
+                          24
+                        ],
+                        "site_id": 30
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723715090987
+                  }
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/missed_bookings/{id}':
+    get:
+      tags:
+        - Data
+        - Bookings
+      operationId: getMissedBookings
+      summary: Get object for missed bookings.
+      responses:
+        '200':
+          description: Returns an array of "missed bookings" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MissedBookingsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 3,
+                        "booking_guid": "333",
+                        "customer_uid": "3",
+                        "date": "2024-08-22T10:47:58.000Z",
+                        "slot": 3,
+                        "company_id": 10,
+                        "organisation_id": 10,
+                        "site_id": 10,
+                        "device_id": 10
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723715090987
+                  }
+    delete:
+      tags:
+        - Data
+        - Bookings
+      summary: Delete object for missed bookings
+      operationId: deleteMissedBookings
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DeleteResponse"
+              example:
+                {
+                  "success": true,
+                  "data": "Successfully deleted record. [1]",
+                  "timestamp": 1723108298846
+                }
+          description: Returns result of delete
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
 
 components:
   securitySchemes:
@@ -5247,6 +5481,58 @@ components:
           type: boolean
         email_sent_amount:
           type: integer
+    BookingsResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+        booking_guid:
+          type: array
+          items:
+            type: string
+        device_id:
+          type: integer
+        status:
+          type: array
+          items:
+            type: integer
+        version:
+          type: array
+          items:
+            type: integer
+        customer_id:
+          type: array
+          items:
+            type: integer
+        slot:
+          type: array
+          items:
+            type: integer
+        site_id:
+          type: integer
+    MissedBookingsResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+        slot:
+          type: integer
+        bookings_guid:
+          type: string
+        company_id:
+          type: integer
+        organisation_id:
+          type: integer
+        site_id:
+          type: integer
+        device_id:
+          type: integer
+        customer_uid:
+          type: string
     DeleteResponse:
       type: object
       properties:
@@ -5350,9 +5636,12 @@ components:
         numberFind:
           value: 108
           summary: Searches in specific field for number equaling to "108".
+        dateFind:
+          value: "2024-08-01 00:00:00"
+          summary: Searches in specific field for date equaling to "2024-08-01 00:00:00".
 
 
 
 security:
   - XUserToken: [ ]
-    XApiKey: [ ]
+  - XApiKey: [ ]
