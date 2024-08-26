@@ -1,6 +1,5 @@
 .split {
     height: 100%;
-    width: 50%;
     position: fixed;
     z-index: 1;
     top: 0;
@@ -10,18 +9,23 @@
 
 .left {
     left: 0;
-    width: 30%;
+    width: 20%;
     font-family: Roboto, sans-serif;
     background: #f9f8f1;
-    border-right: 1px solid #b9b8b4;
+    border-right: 1px solid rgba(0, 0, 0, .1);}
 
+.logo-img {
+    margin-top: 20px;
+    width: 80%;
+    height: auto;
+    position: relative;
+    left: 10%;
 }
 
 .right {
     right: 0;
-    width: 60%;
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    width: 80%;
+    font-family: Inter, regular, monospace;
 }
 
 .centered {
@@ -32,16 +36,10 @@
     text-align: center;
 }
 
-
-body {
-    font-family: Roboto, sans-serif;
-    background-color: #f4f4f4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
+.split-bottom {
+    padding-bottom: 40px;
 }
+
 
 .container {
     text-align: center;
@@ -60,7 +58,7 @@ body {
     box-sizing: border-box;
     color: #1A202C;
     display: inline-flex;
-    font-family: Inter, sans-serif;
+    font-family: Inter, regular, monospace;
     font-size: 1rem;
     font-weight: 700;
     height: 56px;
@@ -78,6 +76,34 @@ body {
     margin-top: 10px;
     margin-bottom: 10px;
 }
+
+.button-2 {
+    align-items: center;
+    background: #FFFFFF;
+    border: 0 solid #E2E8F0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-sizing: border-box;
+    color: #1A202C;
+    display: inline-flex;
+    font-family: Inter, regular, monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    height: 56px;
+    justify-content: center;
+    line-height: 24px;
+    overflow-wrap: break-word;
+    padding: 24px;
+    text-decoration: none;
+    width: auto;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
 
 .divider {
     width: 5px;
