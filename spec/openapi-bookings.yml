@@ -2,7 +2,7 @@ openapi: 3.0.1
 
 info:
   x-logo:
-    url: "https://i.imgur.com/0rbGtSC.jpeg"
+    url: "https://i.imgur.com/YI6VLQx.png"
     backgroundColor: "#f9f8f1"
     altText: "IQ Telemetry"
 
@@ -56,13 +56,18 @@ x-tagGroups:
       - Verify Customer
 
 servers:
-  - url: '{scheme}://payway.iqt.co.za/api/v1'
+  - url: '{scheme}://payway.iqt.co.za/{version}/bookings'
     variables:
       scheme:
         description: 'The API is accessible via https.'
         enum:
           - 'https'
         default: 'https'
+      version:
+        description: 'The API version.'
+        enum:
+          - 'v1'
+        default: 'v1'
 
 paths:
   '/bookings/all/{device_id}':

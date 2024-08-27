@@ -2,7 +2,7 @@ openapi: 3.0.1
 
 info:
   x-logo:
-    url: "https://i.imgur.com/0rbGtSC.jpeg"
+    url: "https://i.imgur.com/YI6VLQx.png"
     backgroundColor: "#f9f8f1"
     altText: "IQ Telemetry"
 
@@ -10,7 +10,7 @@ info:
   title: Payway API v1
   description: |-
     
-    Payway backend engine API for all administrative functions and reporting. 
+    Payway Backend API for all administrative functions and reporting. 
     If you wish to access this api, please contact us with the desired endpoints and reason.
     
     NOTE: Access restricted, logged, rate limited API.
@@ -138,13 +138,18 @@ x-tagGroups:
 
 
 servers:
-  - url: '{scheme}://Payway.iqt.co.za/api/v1'
+  - url: '{scheme}://payway.iqt.co.za/{version}/api'
     variables:
       scheme:
         description: 'The API is accessible via https.'
         enum:
           - 'https'
         default: 'https'
+      version:
+        description: 'The API version.'
+        enum:
+          - 'v1'
+        default: 'v1'
 
 paths:
   '/authentication':
@@ -2272,8 +2277,8 @@ paths:
         - Sites
       summary: Create object for site
       description: |-
-        Sites are of the fourth level in the Payway system. A site may only be linked to one parent Company
-        The Booking System is managed at a site level.  For a site to allow bookings, the "allow_booking" flag must be set.
+        Sites are of the fourth level in the Payway system. A site may only be linked to one parent company.
+        The Booking System is managed at a site level. For a site to allow bookings, the "allow_booking" flag must be set.
         The "mifare_site_id" field is used to match the Site to it's equivalent Mifare Site (refer to MiFare API).
 
       operationId: createSites
