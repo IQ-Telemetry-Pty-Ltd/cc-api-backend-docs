@@ -1,7 +1,19 @@
-<!doctype html>
-<link rel="shortcut icon" type="image/png" href="../favicon.png"/>
-<title>Payway Bookings Documentation</title>
-<script src="https://cdn.redoc.ly/redoc/v2.1.5/bundles/redoc.standalone.js"></script><style data-styled="true" data-styled-version="6.1.12">.htdgPt{width:calc(100% - 40%);padding:0 40px;}/*!sc*/
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf8"/>
+    <link rel="shortcut icon" type="image/png" href="../favicon.png"/>
+    <title>Payway Bookings Documentation</title>
+    <!-- needed for adaptive design -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+    </style>
+    <script src="https://cdn.redoc.ly/redoc/v2.1.5/bundles/redoc.standalone.js"></script><style data-styled="true" data-styled-version="6.1.12">.htdgPt{width:calc(100% - 40%);padding:0 40px;}/*!sc*/
 @media print,screen and (max-width: 75rem){.htdgPt{width:100%;padding:40px 40px;}}/*!sc*/
 .gxopqJ{width:calc(100% - 40%);padding:0 40px;}/*!sc*/
 @media print,screen and (max-width: 75rem){.gxopqJ{width:100%;padding:0px 40px;}}/*!sc*/
@@ -367,12 +379,11 @@ data-styled.g136[id="sc-hAkARQ"]{content:"fuhEqn,"}/*!sc*/
 .fBvPoH path{fill:#333333;}/*!sc*/
 data-styled.g137[id="sc-kvXgyf"]{content:"fBvPoH,"}/*!sc*/
 </style>
-<style>
-    body {
-        margin: 0;
-        padding: 0;
-    }
-</style>
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700"
+              rel="stylesheet">
+</head>
+
+<body>
 
       <div id="redoc"><div class="sc-ixtKjU fabhKa redoc-wrap"><div class="sc-dUMaFF czUxKr menu-content" style="top:0px;height:calc(100vh - 0px)"><div style="background-color:#f9f8f1" class="sc-fvMZNI zdFQt"><img src="https://i.imgur.com/YI6VLQx.png" alt="IQ Telemetry" class="sc-jNXfOT dKvMBm"/></div><div role="search" class="sc-dovzVR dcjLWY"><svg class="sc-kvXgyf fBvPoH search-icon" version="1.1" viewBox="0 0 1000 1000" x="0px" xmlns="http://www.w3.org/2000/svg" y="0px"><path d="M968.2,849.4L667.3,549c83.9-136.5,66.7-317.4-51.7-435.6C477.1-25,252.5-25,113.9,113.4c-138.5,138.3-138.5,362.6,0,501C219.2,730.1,413.2,743,547.6,666.5l301.9,301.4c43.6,43.6,76.9,14.9,104.2-12.4C981,928.3,1011.8,893,968.2,849.4z M524.5,522c-88.9,88.7-233,88.7-321.8,0c-88.9-88.7-88.9-232.6,0-321.3c88.9-88.7,233-88.7,321.8,0C613.4,289.4,613.4,433.3,524.5,522z"></path></svg><input placeholder="Search..." aria-label="Search" type="text" class="sc-hAkARQ fuhEqn search-input" value=""/></div><div class="sc-dJDBYC bWVgjU scrollbar-container undefined"><ul role="menu" class="sc-iMDhdf hYtPsf"><li tabindex="0" depth="0" data-item-id="group/Booking-Logic" role="menuitem" class="sc-loAbOW eRPMcc"><label class="sc-bPZXsP gFKjFu -depth0"><span width="calc(100% - 38px)" title="Booking Logic" class="sc-eteQWc glMKqQ">Booking Logic</span></label><ul class="sc-iMDhdf hYtPsf"><li tabindex="0" depth="1" data-item-id="tag/Booking-Status" role="menuitem" class="sc-loAbOW btrDvq"><label class="sc-bPZXsP jcAwhe -depth1"><span width="calc(100% - 38px)" title="Booking Status" class="sc-eteQWc glMKqQ">Booking Status</span><svg class="sc-cBYhjr gUrACV" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></label><ul class="sc-iMDhdf fEjWGm"><li tabindex="0" depth="2" data-item-id="tag/Booking-Status/operation/getBookingsAllByDevice" role="menuitem" class="sc-loAbOW btrDvq"><label class="sc-bPZXsP bJwA-dz -depth2"><span type="get" class="sc-exkVDC QUyzu operation-type get">get</span><span tabindex="0" width="calc(100% - 38px)" class="sc-eteQWc glMKqQ">Get all bookings by device id</span></label></li><li tabindex="0" depth="2" data-item-id="tag/Booking-Status/operation/getBookingsAllBySite" role="menuitem" class="sc-loAbOW btrDvq"><label class="sc-bPZXsP bJwA-dz -depth2"><span type="get" class="sc-exkVDC QUyzu operation-type get">get</span><span tabindex="0" width="calc(100% - 38px)" class="sc-eteQWc glMKqQ">Get all bookings by site id</span></label></li></ul></li><li tabindex="0" depth="1" data-item-id="tag/Reserve-Booking" role="menuitem" class="sc-loAbOW btrDvq"><label class="sc-bPZXsP jcAwhe -depth1"><span width="calc(100% - 38px)" title="Reserve Booking" class="sc-eteQWc glMKqQ">Reserve Booking</span><svg class="sc-cBYhjr gUrACV" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></label><ul class="sc-iMDhdf fEjWGm"><li tabindex="0" depth="2" data-item-id="tag/Reserve-Booking/operation/createBookingsReserve" role="menuitem" class="sc-loAbOW btrDvq"><label class="sc-bPZXsP bJwA-dz -depth2"><span type="post" class="sc-exkVDC QUyzu operation-type post">post</span><span tabindex="0" width="calc(100% - 38px)" class="sc-eteQWc glMKqQ">Reserve booking for timeslot</span></label></li></ul></li><li tabindex="0" depth="1" data-item-id="tag/Release-Booking" role="menuitem" class="sc-loAbOW btrDvq"><label class="sc-bPZXsP jcAwhe -depth1"><span width="calc(100% - 38px)" title="Release Booking" class="sc-eteQWc glMKqQ">Release Booking</span><svg class="sc-cBYhjr gUrACV" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></label><ul class="sc-iMDhdf fEjWGm"><li tabindex="0" depth="2" data-item-id="tag/Release-Booking/operation/releaseBooking" role="menuitem" class="sc-loAbOW btrDvq"><label class="sc-bPZXsP bJwA-dz -depth2"><span type="post" class="sc-exkVDC QUyzu operation-type post">post</span><span tabindex="0" width="calc(100% - 38px)" class="sc-eteQWc glMKqQ">Release booking</span></label></li></ul></li></ul></li><li tabindex="0" depth="0" data-item-id="group/Customer-Management" role="menuitem" class="sc-loAbOW eRPMcc"><label class="sc-bPZXsP gFKjFu -depth0"><span width="calc(100% - 38px)" title="Customer Management" class="sc-eteQWc glMKqQ">Customer Management</span></label><ul class="sc-iMDhdf hYtPsf"><li tabindex="0" depth="1" data-item-id="tag/Request-Verification" role="menuitem" class="sc-loAbOW btrDvq"><label class="sc-bPZXsP jcAwhe -depth1"><span width="calc(100% - 38px)" title="Request Verification" class="sc-eteQWc glMKqQ">Request Verification</span><svg class="sc-cBYhjr gUrACV" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></label><ul class="sc-iMDhdf fEjWGm"><li tabindex="0" depth="2" data-item-id="tag/Request-Verification/operation/customerVerify" role="menuitem" class="sc-loAbOW btrDvq"><label class="sc-bPZXsP bJwA-dz -depth2"><span type="post" class="sc-exkVDC QUyzu operation-type post">post</span><span tabindex="0" width="calc(100% - 38px)" class="sc-eteQWc glMKqQ">Request verification for customer</span></label></li></ul></li><li tabindex="0" depth="1" data-item-id="tag/Verify-Customer" role="menuitem" class="sc-loAbOW btrDvq"><label class="sc-bPZXsP jcAwhe -depth1"><span width="calc(100% - 38px)" title="Verify Customer" class="sc-eteQWc glMKqQ">Verify Customer</span><svg class="sc-cBYhjr gUrACV" version="1.1" viewBox="0 0 24 24" x="0" xmlns="http://www.w3.org/2000/svg" y="0" aria-hidden="true"><polygon points="17.3 8.3 12 13.6 6.7 8.3 5.3 9.7 12 16.4 18.7 9.7 "></polygon></svg></label><ul class="sc-iMDhdf fEjWGm"><li tabindex="0" depth="2" data-item-id="tag/Verify-Customer/operation/customerVerifyToken" role="menuitem" class="sc-loAbOW btrDvq"><label class="sc-bPZXsP bJwA-dz -depth2"><span type="post" class="sc-exkVDC QUyzu operation-type post">post</span><span tabindex="0" width="calc(100% - 38px)" class="sc-eteQWc glMKqQ">Complete customer verification</span></label></li></ul></li></ul></li></ul><div class="sc-gkavYR eucVZG"><a target="_blank" rel="noopener noreferrer" href="https://redocly.com/redoc/">API docs by Redocly</a></div></div></div><div class="sc-elEJnV kEKeWg"><div class="sc-bQEQyQ jQQbBk"><svg class="" style="transform:translate(2px, -4px) rotate(180deg);transition:transform 0.2s ease" viewBox="0 0 926.23699 573.74994" version="1.1" x="0px" y="0px" width="15" height="15"><g transform="translate(904.92214,-879.1482)"><path d="
           m -673.67664,1221.6502 -231.2455,-231.24803 55.6165,
@@ -504,3 +515,5 @@ will only &quot;expire&quot; on new successful verification as a new token is ge
       Redoc.hydrate(__redoc_state, container);
 
       </script>
+</body>
+</html>

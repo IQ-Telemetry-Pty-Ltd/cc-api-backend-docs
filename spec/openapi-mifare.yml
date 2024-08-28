@@ -86,18 +86,17 @@ paths:
         - Users
       summary: Update object for users
       description: |-
-        Users are the main, and only way, to "access" resources in the Mifare Backend. **NOTE:** Mifare users are SEPARATE from Payway users.
+        Mifare Users are used to control access to resources.  Mifare Users do not require any form of
+        authentication.  An access token is created when the user is created.  This token, `x-user-token`,  is present in the 
+        header of each call and is used to identify resources.  Tokens never expire.
         
-        Every user is linked to a site, product, cardholder and transaction. A mifare user only has the ability to access resources 
-        that they are directly linked too, unless the "super_user" flag is set, in which case you
-        have system wide access. 
+        Mifare users are NOT Payway users.  The MiFare user token is used in the PayWay Payment Provider
+        configuration to identify and link the Mifare service to the PayWay Company entity via the `pos_token'
+        field.
+        (Refer to https://docs.iqt.co.za/pages/backend.html#tag/Companies-Providers for more detail)
         
-        Every user that has been created will receive a "x-user-token".
-        This token is a randomly generated unique string that identifies a user account.
-        These tokens do not expire.
-        
-        Super admin users have the highest access level. These accounts get access to all resources in the Mifare API.
-      
+        A mifare user only has the ability to access resources that they are directly associated too, 
+        unless the "super_user" flag is set, in which case you have system wide access. 
 
       operationId: createUser
       requestBody:
@@ -229,8 +228,7 @@ paths:
         - Transactions
       summary: Get object for transactions
       description: |-
-        This endpoint is used to return transactions made by Mifare users. These transactions are linked to a card and site.
-        All successful and non successful transactions can be found in this resource.
+        This endpoint is used to retrieve all transactional history for the Mifare User. 
 
       operationId: getTransaction
       responses:
@@ -289,9 +287,11 @@ paths:
         - Sites
       summary: Create object for site
       description: |-
-        Sites are a physical location that the Mifare system is used at. 
-        A site is linked to a Mifare user that then owns that site. 
-        The "mifare_site_id" field, found in the [API Backend](https://docs.iqt.co.za/pages/backend.html#tag/Sites/operation/getSites), is used to match the Payway Site to it's equivalent Mifare Site.
+        Sites are physical locations where Mifare is in use.  Mifare cards are linked to one or many Mifare Sites.
+        If a card is used on a site that is not linked to the card, the transaction will fail.
+        Mifare Sites are mapped one-to-one to PayWay Sites by placing the Mifare Site ID into the `mifare_site_id`
+        field found in PayWay Site entity configuration. 
+        (refer to https://docs.iqt.co.za/pages/backend.html#tag/Sites for more information)
 
       operationId: createSite
       requestBody:
@@ -449,7 +449,8 @@ paths:
         - Products
       summary: Create object for products
       description: |-
-        TODO
+        In certain applications, such as vending machines, Mifare is used not only to control consumption
+        but can also be configured to control consumption of certain items or products specifically linked to Mifare cards.
       operationId: createProduct
       requestBody:
         required: true
@@ -464,23 +465,23 @@ paths:
                 description:
                   type: string
                   maxLength: 100
-                  description: TODO
-                  example: TODO
+                  description: Product description or name
+                  example: Protective welding glove
                 product_code:
                   type: string
                   maxLength: 45
-                  description: TODO
-                  example: TODO
+                  description: Product code associated with the product
+                  example: PWG123
                 sap_code:
                   type: string
                   maxLength: 45
-                  description: TODO
-                  example: TODO
+                  description: SAP Code
+                  example: XGW00001TR
                 location:
                   type: string
                   maxLength: 80
-                  description: TODO
-                  example: TODO
+                  description: Stock location (can be store room location or channel location in a vending machine)
+                  example: ROW 6 COL 10
                 active:
                   type: boolean
               required: [ "user_id", "description", "active" ]
@@ -563,23 +564,23 @@ paths:
                 description:
                   type: string
                   maxLength: 100
-                  description: TODO
-                  example: TODO
+                  description: Product description or name
+                  example: Protective welding glove
                 product_code:
                   type: string
                   maxLength: 45
-                  description: TODO
-                  example: TODO
+                  description: Product code associated with the product
+                  example: PWG123
                 sap_code:
                   type: string
                   maxLength: 45
-                  description: TODO
-                  example: TODO
+                  description: SAP Code
+                  example: XGW00001TR
                 location:
                   type: string
                   maxLength: 80
-                  description: TODO
-                  example: TODO
+                  description: Stock location (can be store room location or channel location in a vending machine)
+                  example: ROW 6 COL 10
                 active:
                   type: boolean
       responses:
@@ -623,7 +624,7 @@ paths:
         - Cardholder Sites
       summary: Create object for cardholder site
       description: |-
-        TODO
+        Links Cards to one or many sites
       operationId: createCardholderSite
       requestBody:
         required: true
@@ -781,7 +782,7 @@ paths:
         - Cardholder Products
       summary: Create object for provider
       description: |-
-        TODO
+        Links Card to one or many Products
       operationId: createCardholderProduct
       requestBody:
         required: true
@@ -797,17 +798,17 @@ paths:
                   type: integer
                 balance:
                   type: integer
-                  description: TODO
+                  description: Balance available to the card holder for this product
                 restock_flag:
                   type: boolean
-                  description: TODO
+                  description: Should this product balance be automatically reset to the `take_limit` value at month end
                 unlimited:
                   type: boolean
-                  description: TODO
+                  description: If set, there is no limit to how many can be consumed
                 take_limit:
                   type: integer
-                  description: TODO
-                  example: TODO
+                  description: The maximum amount that can be consumed
+                  example: 10
                 user_id:
                   type: integer
                 active:
@@ -897,17 +898,17 @@ paths:
                   type: integer
                 balance:
                   type: integer
-                  description: TODO
+                  description: Balance available to the card holder for this product
                 restock_flag:
                   type: boolean
-                  description: TODO
+                  description: Should this product balance be automatically reset to the `take_limit` value at month end
                 unlimited:
                   type: boolean
-                  description: TODO
+                  description: If set, there is no limit to how many can be consumed
                 take_limit:
                   type: integer
-                  description: TODO
-                  example: TODO
+                  description: The maximum amount that can be consumed
+                  example: 10
                 user_id:
                   type: integer
                 active:
@@ -973,7 +974,8 @@ paths:
     post:
       summary: Create object for cardholders
       description: |-
-        TODO
+        Card Holders are identified as Mifare cards.  Each card is identified by a unique `card_no` that
+        can be read out of the card using the correct Mifare card reader/NFC reader.
       operationId: createCardholder
       requestBody:
         required: true
@@ -987,8 +989,8 @@ paths:
                   type: integer
                 card_no:
                   type: string
-                  description: TODO
-                  example: TODO
+                  description: The unique UUID for the card
+                  example: ab34ef16aa
                   maxLength: 45
                 first_name:
                   type: string
@@ -998,8 +1000,8 @@ paths:
                   maxLength: 45
                 user_number:
                   type: string
-                  description: TODO
-                  example: TODO
+                  description: A student number, employee number or similar
+                  example: STU001
                   maxLength: 45
                 contact_number:
                   type: string
@@ -1008,24 +1010,30 @@ paths:
                   pattern: ^(\+|\d)[0-9]{7,16}$
                 negative_credit_allowed:
                   type: boolean
-                  description: TODO
+                  description: If set, the card wallet balance will be allowed to go into negative credits
                 throttle_multiple_requests:
                   type: boolean
-                  description: TODO
+                  description: |-
+                    If set (default), multiple requests for the card at the same POS terminal will be throttled to prevent
+                    "double-tapping".
                 balance_accumulate:
                   type: boolean
-                  description: TODO
+                  description: At the end of each month, card wallet balances are re-calculated.  If this is set, then
+                    any un-used credits are included in the calculation.
                 cost_centre:
                   type: string
-                  description: TODO
-                  example: TODO
+                  description: For reporting purposes.  Cards can be allocated to various Cost Centres
+                  example: STUDENT, MAINTENANCE
                   maxLength: 45
                 topup_value:
                   type: number
-                  description: TODO
+                  description: This is the amount the will be either added to the wallet balance, if balance_accumulate is set,
+                    or the value that will be used to set the wallet balance at month end.
                   minimum: 0
                 topup_reoccurrence:
                   type: boolean
+                  description: If set, the card wallet will automatically be reset on month end in accordance with the rules set
+                    above.
                 active:
                   type: boolean
               required: [ "user_id", "card_no", "active" ]
@@ -1141,8 +1149,8 @@ paths:
                   type: integer
                 card_no:
                   type: string
-                  description: TODO
-                  example: TODO
+                  description: The unique UUID for the card
+                  example: ab34ef16aa
                   maxLength: 45
                 first_name:
                   type: string
@@ -1152,8 +1160,8 @@ paths:
                   maxLength: 45
                 user_number:
                   type: string
-                  description: TODO
-                  example: TODO
+                  description: A student number, employee number or similar
+                  example: STU001
                   maxLength: 45
                 contact_number:
                   type: string
@@ -1162,25 +1170,32 @@ paths:
                   pattern: ^(\+|\d)[0-9]{7,16}$
                 negative_credit_allowed:
                   type: boolean
-                  description: TODO
+                  description: If set, the card wallet balance will be allowed to go into negative credits
                 throttle_multiple_requests:
                   type: boolean
-                  description: TODO
+                  description: |-
+                    If set (default), multiple requests for the card at the same POS terminal will be throttled to prevent
+                    "double-tapping".
                 balance_accumulate:
                   type: boolean
-                  description: TODO
+                  description: At the end of each month, card wallet balances are re-calculated.  If this is set, then
+                    any un-used credits are included in the calculation.
                 cost_centre:
                   type: string
-                  example: TODO
-                  description: TODO
+                  description: For reporting purposes.  Cards can be allocated to various Cost Centres
+                  example: STUDENT, MAINTENANCE
                   maxLength: 45
                 topup_value:
                   type: number
-                  description: TODO
+                  description: This is the amount the will be either added to the wallet balance, if balance_accumulate is set,
+                    or the value that will be used to set the wallet balance at month end.
                   minimum: 0
                 topup_reoccurrence:
                   type: boolean
-                  description: TODO
+                  description: If set, the card wallet will automatically be reset on month end in accordance with the rules set
+                    above.
+                active:
+                  type: boolean
       responses:
         '200':
           description: List of user objects
@@ -1267,52 +1282,52 @@ components:
           type: integer
         tx_id:
           type: string
-          description: TODO
+          description: Unique transaction identifier
         full_name:
           type: string
-          description: TODO
+          description: Full name associated to the card
         card_no:
           type: string
-          description: TODO
+          description: The unique card number/UUID
         user_number:
           type: string
-          description: TODO
+          description: The user number associated to the card
         action:
           type: string
-          description: TODO
+          description: Transaction type, eg Credit, Debit, etc.
         wallet:
           type: number
-          description: TODO
+          description: Wallet balance before the transaction completed
         amount:
           type: number
-          description: TODO
+          description: The amount added or removed from the card wallet balance
         balance:
           type: number
-          description: TODO
+          description: The new card wallet balance after the transaction completed
         channel:
           type: string
-          description: TODO
+          description: If used in a vending application, the channel that the product was dispensed from
         stock_level:
           type: integer
-          description: TODO
+          description: If used in a vending application, the remaining stock level
         timestamp:
           type: integer
-          description: TODO
+          description: Timestamp of the transaction
         result:
           type: string
-          description: TODO
+          description: Final result of the transaction, eg. DR, CR, BN
         agent:
           type: string
-          description: TODO
+          description: Unique Identifier of the agent (or machine)
         agent_name:
           type: string
-          description: TODO
+          description: Human readable name associated with the agent
         payment_reference_1:
           type: integer
-          description: TODO
+          description: The unique transaction identifier
         payment_reference_2:
           type: integer
-          description: TODO
+          description: Custom payment reference or used to cross-reference if a refund transaction
         user_id:
           type: integer
         cardholder_id:
@@ -1321,7 +1336,7 @@ components:
           type: integer
         seq_key:
           type: string
-          description: TODO
+          description: Unique sequence identifier to prevent duplication at POS
         created_at:
           type: integer
     SitesResponse:
@@ -1349,16 +1364,16 @@ components:
           type: integer
         description:
           type: string
-          description: TODO
+          description: Product description
         product_code:
           type: string
-          description: TODO
+          description: Product code
         sap_code:
           type: string
-          description: TODO
+          description: SAP Product Code
         location:
           type: string
-          description: TODO
+          description: Physical location of product
         active:
           type: boolean
     CardholdersSitesResponse:
