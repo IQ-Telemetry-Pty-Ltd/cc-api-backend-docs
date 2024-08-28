@@ -56,7 +56,7 @@ x-tagGroups:
       - Verify Customer
 
 servers:
-  - url: '{scheme}://payway.iqt.co.za/{version}/bookings'
+  - url: '{scheme}://payway.iqt.co.za/{version}/booking'
     variables:
       scheme:
         description: 'The API is accessible via https.'
