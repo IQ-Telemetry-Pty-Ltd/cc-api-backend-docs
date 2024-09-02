@@ -90,6 +90,8 @@ tags:
     description: Endpoints that relate to status codes.
   - name: Bookings
     description: Endpoints that relate to bookings.
+  - name: Notifications
+    description: Endpoints that relate to application notification centers.
 
 
 x-tagGroups:
@@ -135,6 +137,7 @@ x-tagGroups:
       - Transactions
       - Refunds
       - Bookings
+      - Notifications
 
 
 servers:
@@ -191,7 +194,7 @@ paths:
                 authority:
                   type: string
                   enum: [ "firebase", "google" ]
-              required: [ "client_email", "client_secret","authority" ]
+              required: [ "client_email", "client_secret", "authority" ]
       responses:
         '200':
           description: Returns authenticated users object
@@ -2543,6 +2546,8 @@ paths:
                   type: integer
                 host_hardware_id:
                   type: integer
+                site_id:
+                  type: integer
                 polling_frequency:
                   type: integer
                   description: Expected number of polled calls from the device.
@@ -2563,7 +2568,7 @@ paths:
                   example:
                   description: Integer Value to divide the incoming paid value by.
                 unit_price:
-                  type: integer
+                  type: number
                   example:
                   description: The price per unit.
                 ssid:
@@ -2592,7 +2597,7 @@ paths:
                   example: 'SWMN20045XY2323223'
                 active:
                   type: boolean
-              required: [ "name", "uid", "imsi", "site_id", "pos_type_id", "host_hardware_id", "emulation_id", "polling_frequency", "scale_factor", "time_zone", "screen_fitted", "multiplier", "divider", "unit_price", "active" ]
+              required: [ "name", "uid", "imsi", "site_id", "pos_type_id", "host_hardware_id", "polling_frequency", "scale_factor", "time_zone", "screen_fitted", "multiplier", "divider", "unit_price", "active" ]
       responses:
         '200':
           description: Returns device object created by query
@@ -2759,6 +2764,8 @@ paths:
                   type: integer
                 host_hardware_id:
                   type: integer
+                site_id:
+                  type: integer
                 polling_frequency:
                   type: integer
                   description: Expected number of polled calls from the device.
@@ -2779,7 +2786,7 @@ paths:
                   example:
                   description: Integer Value to divide the incoming paid value by.
                 unit_price:
-                  type: integer
+                  type: number
                   example:
                   description: The price per unit.
                 ssid:
@@ -4778,6 +4785,214 @@ paths:
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
 
+  '/notifications':
+    post:
+      tags:
+        - Data
+        - Notifications
+      summary: Create object for notifications
+      description: |-
+        This endpoint is used to create notifications that can be viewed in apps or websites. This contains announcements, alerts or any other
+        communication.
+
+      operationId: createNotifications
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                id:
+                  type: integer
+                summary:
+                  type: string
+                  example: "Zapper Downtime"
+                  description: Short summary, usually used for a title.
+                description:
+                  type: string
+                  example: "Zapper is currently not working, please notify customers."
+                  description: More in depth summary, usually used for a body.
+                severity:
+                  type: string
+                  enum: ["info", "warning", "critical"]
+                  example: "info"
+                  description: Level of notification.
+                start_time:
+                  type: string
+                  example: "2024-07-12T10:37:06.203Z"
+                  description: Start time that the notification should be shown.
+                end_time:
+                  type: string
+                  example: "2024-07-15T10:37:06.203Z"
+                  description: End time that the notification should be hidden.
+                created_at:
+                  type: string
+                  example: "2024-07-12T10:37:06.203Z"
+                active:
+                  type: boolean
+              required: [ "summary", "severity", "start_time", "end_time", "active" ]
+      responses:
+        '200':
+          description: Returns notification object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NotificationsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "summary": "Zapper Downtime",
+                        "description": "Zapper is currently not working, please notify customers.",
+                        "severity": "info",
+                        "start_time": "2024-07-12T10:37:06.203Z",
+                        "end_time": "2024-07-15T10:37:06.203Z",
+                        "created_at": "2024-07-12T10:37:06.203Z",
+                        "active": false,
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723628631562
+                  }
+
+  '/notifications/{id}':
+    get:
+      tags:
+        - Data
+        - Notifications
+      operationId: getNotifications
+      summary: Get object for notifications
+      responses:
+        '200':
+          description: Returns an array of "notification" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NotificationsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "summary": "Zapper Downtime",
+                        "description": "Zapper is currently not working, please notify customers.",
+                        "severity": "info",
+                        "start_time": "2024-07-12T10:37:06.203Z",
+                        "end_time": "2024-07-15T10:37:06.203Z",
+                        "created_at": "2024-07-12T10:37:06.203Z",
+                        "active": false,
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723628631562
+                  }
+    put:
+      tags:
+        - Data
+        - Notifications
+      summary: Update object for notifications
+      operationId: updateNotifications
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                id:
+                  type: integer
+                summary:
+                  type: string
+                  example: "Zapper Downtime"
+                  description: Short summary, usually used for a title.
+                description:
+                  type: string
+                  example: "Zapper is currently not working, please notify customers."
+                  description: More in depth summary, usually used for a body.
+                severity:
+                  type: string
+                  enum: ["info", "warning", "critical"]
+                  example: "info"
+                  description: Level of notification.
+                start_time:
+                  type: string
+                  example: "2024-07-12T10:37:06.203Z"
+                  description: Start time that the notification should be shown.
+                end_time:
+                  type: string
+                  example: "2024-07-15T10:37:06.203Z"
+                  description: End time that the notification should be hidden.
+                created_at:
+                  type: string
+                  example: "2024-07-12T10:37:06.203Z"
+                active:
+                  type: boolean
+      responses:
+        '200':
+          description: Returns an array of "notification" items updated by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NotificationsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "summary": "Zapper Downtime",
+                        "description": "Zapper is currently not working, please notify customers.",
+                        "severity": "info",
+                        "start_time": "2024-07-12T10:37:06.203Z",
+                        "end_time": "2024-07-15T10:37:06.203Z",
+                        "created_at": "2024-07-12T10:37:06.203Z",
+                        "active": false,
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723628631562
+                  }
+    delete:
+      tags:
+        - Data
+        - Notifications
+      summary: Delete object for notifications
+      operationId: deleteNotifications
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DeleteResponse"
+              example:
+                {
+                  "success": true,
+                  "data": "Successfully deleted record. [1]",
+                  "timestamp": 1723108298846
+                }
+          description: Returns result of delete
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
 
 components:
   securitySchemes:
@@ -5085,7 +5300,7 @@ components:
           type: integer
           description: Integer Value to divide the incoming paid value by.
         unit_price:
-          type: integer
+          type: number
           description: The price per unit.
         ssid:
           type: string
@@ -5603,6 +5818,19 @@ components:
           type: integer
         customer_uid:
           type: string
+    NotificationsResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        summary:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+        active:
+          type: boolean
     DeleteResponse:
       type: object
       properties:
@@ -5612,6 +5840,70 @@ components:
           type: string
         timestamp:
           type: string
+
+    # Status codes
+    ValidationFailResponse:
+      type: object
+      properties:
+        err:
+          type: object
+          example:
+            {
+              "err": [
+                {
+                  "instancePath": "/requestBody",
+                  "schemaPath": "#/properties/requestBody/additionalProperties",
+                  "keyword": "additionalProperties",
+                  "params": {
+                    "additionalProperty": "emulation_id"
+                  },
+                  "message": "must NOT have additional properties"
+                }
+              ]
+            }
+    AccountNotActiveResponse:
+      type: object
+      properties:
+        err:
+          type: string
+          example:
+            {
+              "err": "Account is not active. [John Doe]"
+            }
+          description: User has been deactivated.
+    AccountPasswordResetResponse:
+      type: object
+      properties:
+        err:
+          type: string
+          example:
+            {
+              "err": "Please reset password before login. [John Doe]"
+            }
+          description: User needs to reset their password before being allowed login access again.
+    UnauthorizedResponse:
+      type: object
+      properties:
+        err:
+          type: string
+          example:
+            {
+              "err": "Unauthorized. [getUserAccess]"
+            }
+          description: User does not have permissions to access endpoint operation.
+    ErrorResponse:
+      type: object
+      properties:
+        err:
+          type: string
+          example:
+            {
+              "success": false,
+              "error": "[INTERNAL] error: insert or update on table \"devices\" violates foreign key constraint \"devices_host_hardware_id_fk\"",
+              "timestamp": 1725273348975
+            }
+          description: Any internal error is returned here.
+
 
 
     numberIndex:
@@ -5715,3 +6007,5 @@ components:
 security:
   - XUserToken: [ ]
   - XApiKey: [ ]
+
+
