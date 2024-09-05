@@ -170,6 +170,9 @@ paths:
         This end-point handles both Firebase (Email and Password) and Google Login methods. 
         
         **It is important you store this session token in a secure way as tokens do not expire.**
+        
+        Returned with the user object, the users access and roles are accessible as well.
+        Please reference the API documentation for access and role logic.
 
       operationId: authentication
       requestBody:
@@ -203,29 +206,55 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/AuthenticationResponse"
+                  - $ref: "#/components/schemas/AuthenticationResponse"
+                  - $ref: "#/components/schemas/AccessResponse"
+                  - $ref: "#/components/schemas/RolesResponse"
                 example:
                   {
-                    "success": 1,
-                    "data": [
-                      {
-                        "id": 1,
-                        "token": "7ecc242c-c40d-4fd1-ba02-62220b4t8c6b",
-                        "contact_number": "+27834567123",
-                        "currency": "R",
-                        "delimiter": ";",
-                        "displayname": "Ryan Pomario",
-                        "email": "ryan@iqt.co.za",
-                        "email_verified": true,
-                        "firebase_id": "Reu8oIQWf898E4K1hIJdPpKIpOe93",
-                        "google_id": "null",
-                        "sidebar_toggled": false,
-                        "password_reset": true,
-                        "active": true
-                      }
-                    ],
-                    "entries": 1,
-                    "timestamp": 1723108298846
+                    "success": true,
+                    "data": {
+                      "user": [
+                        {
+                          "id": 1,
+                          "token": "7ecc242c-c40d-4fd1-ba02-62220b4t8c6b",
+                          "contact_number": "+27834567123",
+                          "currency": "R",
+                          "delimiter": ";",
+                          "displayname": "Ryan Pomario",
+                          "email": "ryan@iqt.co.za",
+                          "email_verified": true,
+                          "firebase_id": "Reu8oIQWf898E4K1hIJdPpKIpOe93",
+                          "google_id": "null",
+                          "sidebar_toggled": false,
+                          "password_reset": true,
+                          "active": true
+                        }
+                      ],
+                      "access": [
+                        {
+                          "id": 1,
+                          "name": "Create Access",
+                          "operation_id": "createAccess",
+                          "can_access": true
+                        }
+                      ],
+                      "roles": [
+                        {
+                          "id": 5,
+                          "reseller_id": 1,
+                          "organisation_id": 7,
+                          "company_id_list": [
+                            "2",
+                            "3"
+                          ],
+                          "site_id_list": [ ],
+                          "device_id_list": [ ],
+                          "is_reseller": false,
+                          "name": "New Role"
+                        }
+                      ]
+                    },
+                    "timestamp": 1725523937144
                   }
 
   '/authentication/reset-password':
@@ -419,7 +448,7 @@ paths:
                 example:
                   {
                     "success": true,
-                    "data": "Successfully deleted record. [1]",
+                    "data": "Successfully deleted record(s). [1]",
                     "timestamp": 1723108298846
                   }
           description: Returns result of delete
@@ -670,7 +699,7 @@ paths:
                 example:
                   {
                     "success": true,
-                    "data": "Successfully deleted record. [1]",
+                    "data": "Successfully deleted record(s). [1]",
                     "timestamp": 1723108298846
                   }
           description: Returns result of delete
@@ -946,7 +975,7 @@ paths:
               example:
                 {
                   "success": true,
-                  "data": "Successfully deleted record. [1]",
+                  "data": "Successfully deleted record(s). [1]",
                   "timestamp": 1723108298846
                 }
           description: Returns result of delete
@@ -1091,7 +1120,7 @@ paths:
               example:
                 {
                   "success": true,
-                  "data": "Successfully deleted record. [1]",
+                  "data": "Successfully deleted record(s). [1]",
                   "timestamp": 1723108298846
                 }
           description: Returns result of delete
@@ -1202,7 +1231,7 @@ paths:
               example:
                 {
                   "success": true,
-                  "data": "Successfully deleted record. [1]",
+                  "data": "Successfully deleted record(s). [1]",
                   "timestamp": 1723108298846
                 }
           description: Returns result of delete
@@ -1496,7 +1525,7 @@ paths:
               example:
                 {
                   "success": true,
-                  "data": "Successfully deleted record. [1]",
+                  "data": "Successfully deleted record(s). [1]",
                   "timestamp": 1723108298846
                 }
           description: Returns result of delete
@@ -1699,7 +1728,7 @@ paths:
               example:
                 {
                   "success": true,
-                  "data": "Successfully deleted record. [1]",
+                  "data": "Successfully deleted record(s). [1]",
                   "timestamp": 1723108298846
                 }
           description: Returns result of delete
@@ -1900,7 +1929,7 @@ paths:
               example:
                 {
                   "success": true,
-                  "data": "Successfully deleted record. [1]",
+                  "data": "Successfully deleted record(s). [1]",
                   "timestamp": 1723108298846
                 }
           description: Returns result of delete
@@ -2045,7 +2074,7 @@ paths:
               example:
                 {
                   "success": true,
-                  "data": "Successfully deleted record. [1]",
+                  "data": "Successfully deleted record(s). [1]",
                   "timestamp": 1723108298846
                 }
           description: Returns result of delete
@@ -2261,7 +2290,7 @@ paths:
               example:
                 {
                   "success": true,
-                  "data": "Successfully deleted record. [1]",
+                  "data": "Successfully deleted record(s). [1]",
                   "timestamp": 1723108298846
                 }
           description: Returns result of delete
@@ -2489,7 +2518,7 @@ paths:
               example:
                 {
                   "success": true,
-                  "data": "Successfully deleted record. [1]",
+                  "data": "Successfully deleted record(s). [1]",
                   "timestamp": 1723108298846
                 }
           description: Returns result of delete
@@ -2892,7 +2921,7 @@ paths:
               example:
                 {
                   "success": true,
-                  "data": "Successfully deleted record. [1]",
+                  "data": "Successfully deleted record(s). [1]",
                   "timestamp": 1723108298846
                 }
           description: Returns result of delete
@@ -4773,7 +4802,7 @@ paths:
               example:
                 {
                   "success": true,
-                  "data": "Successfully deleted record. [1]",
+                  "data": "Successfully deleted record(s). [1]",
                   "timestamp": 1723108298846
                 }
           description: Returns result of delete
@@ -4816,7 +4845,7 @@ paths:
                   description: More in depth summary, usually used for a body.
                 severity:
                   type: string
-                  enum: ["info", "warning", "critical"]
+                  enum: [ "info", "warning", "critical" ]
                   example: "info"
                   description: Level of notification.
                 start_time:
@@ -4921,7 +4950,7 @@ paths:
                   description: More in depth summary, usually used for a body.
                 severity:
                   type: string
-                  enum: ["info", "warning", "critical"]
+                  enum: [ "info", "warning", "critical" ]
                   example: "info"
                   description: Level of notification.
                 start_time:
@@ -4981,7 +5010,7 @@ paths:
               example:
                 {
                   "success": true,
-                  "data": "Successfully deleted record. [1]",
+                  "data": "Successfully deleted record(s). [1]",
                   "timestamp": 1723108298846
                 }
           description: Returns result of delete
@@ -5000,10 +5029,6 @@ components:
       type: apiKey
       in: header
       name: x-user-token
-    XApiKey:
-      type: apiKey
-      in: header
-      name: x-api-key
   schemas:
     AccessResponse:
       type: object
@@ -6006,6 +6031,5 @@ components:
 
 security:
   - XUserToken: [ ]
-  - XApiKey: [ ]
 
 

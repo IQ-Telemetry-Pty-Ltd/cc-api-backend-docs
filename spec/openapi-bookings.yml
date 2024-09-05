@@ -525,10 +525,6 @@ components:
       type: apiKey
       in: header
       name: x-user-token
-    XApiKey:
-      type: apiKey
-      in: header
-      name: x-api-key
   schemas:
     BookingsResponseDevice:
       type: object
@@ -727,4 +723,3 @@ components:
 
 security:
   - XUserToken: [ ]
-  - XApiKey: [ ]
