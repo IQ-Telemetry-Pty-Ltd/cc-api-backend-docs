@@ -115,6 +115,18 @@ paths:
                   type: boolean
               required: [ "username" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "user" items from the database
           content:
@@ -147,6 +159,18 @@ paths:
       operationId: getUser
       summary: Get object for user
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "user" items from the database
           content:
@@ -189,6 +213,18 @@ paths:
                 active:
                   type: boolean
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: List of user objects
           content:
@@ -232,6 +268,18 @@ paths:
 
       operationId: getTransaction
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "transaction" items from the database
           content:
@@ -321,6 +369,18 @@ paths:
                   type: boolean
               required: [ "user_id", "name", "active" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Obtain an array of "site" items from the database
           content:
@@ -354,6 +414,18 @@ paths:
       operationId: getSite
       summary: Get object for site
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "site" items from the database
           content:
@@ -410,6 +482,18 @@ paths:
                 active:
                   type: boolean
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "site" items updated by query
           content:
@@ -486,6 +570,18 @@ paths:
                   type: boolean
               required: [ "user_id", "description", "active" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns product object created by query
           content:
@@ -520,6 +616,18 @@ paths:
       operationId: getProduct
       summary: Get object for product
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "product" items from the database
           content:
@@ -584,6 +692,18 @@ paths:
                 active:
                   type: boolean
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "product" items updated by query
           content:
@@ -644,6 +764,18 @@ paths:
                   type: boolean
               required: [ "site_id", "cardholder_id", "user_id", "active" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns cardholder site object created by query
           content:
@@ -676,6 +808,18 @@ paths:
       operationId: getCardholderSite
       summary: Get object for cardholder site
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "cardholder site" items from the database
           content:
@@ -723,6 +867,18 @@ paths:
                 active:
                   type: boolean
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "cardholder site" items updated by query
           content:
@@ -753,6 +909,18 @@ paths:
       operationId: deleteCardholderSite
       summary: Delete object for cardholders sites
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           content:
             application/json:
@@ -815,6 +983,18 @@ paths:
                   type: boolean
               required: [ "cardholder_id", "product_id", "user_id", "active" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns cardholder product created by query
           content:
@@ -851,6 +1031,18 @@ paths:
       operationId: getCardholderProduct
       summary: Get object for cardholder product
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "cardholder product" items from the database
           content:
@@ -914,6 +1106,18 @@ paths:
                 active:
                   type: boolean
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "cardholder product" items updated by query
           content:
@@ -948,6 +1152,18 @@ paths:
       operationId: deleteCardholderProduct
       summary: Delete object for cardholders products
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           content:
             application/json:
@@ -1038,6 +1254,18 @@ paths:
                   type: boolean
               required: [ "user_id", "card_no", "active" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns cardholder object created by query
           content:
@@ -1089,6 +1317,18 @@ paths:
       operationId: getCardholder
       summary: Get object for cardholder
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "cardholder" items from the database
           content:
@@ -1197,6 +1437,18 @@ paths:
                 active:
                   type: boolean
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: List of user objects
           content:
@@ -1466,6 +1718,69 @@ components:
           type: string
         timestamp:
           type: string
+
+    # Status codes
+    ValidationFailResponse:
+      type: object
+      properties:
+        err:
+          type: string
+      example:
+        {
+          "err": [
+            {
+              "instancePath": "/requestBody",
+              "schemaPath": "#/properties/requestBody/additionalProperties",
+              "keyword": "additionalProperties",
+              "params": {
+                "additionalProperty": "emulation_id"
+              },
+              "message": "must NOT have additional properties"
+            }
+          ]
+        }
+    AccountNotActiveResponse:
+      type: object
+      properties:
+        err:
+          type: string
+          description: User has been deactivated.
+      example:
+        {
+          "err": "Account is not active. [John Doe]"
+        }
+    AccountPasswordResetResponse:
+      type: object
+      properties:
+        err:
+          type: string
+          description: User needs to reset their password before being allowed login access again.
+      example:
+        {
+          "err": "Please reset password before login. [John Doe]"
+        }
+    UnauthorizedResponse:
+      type: object
+      properties:
+        err:
+          type: string
+          description: User does not have permissions to access endpoint operation.
+      example:
+        {
+          "err": "Unauthorized. [getUserAccess]"
+        }
+    ErrorResponse:
+      type: object
+      properties:
+        err:
+          type: string
+          description: Any internal error is returned here.
+      example:
+        {
+          "success": false,
+          "error": "[INTERNAL] error: insert or update on table \"devices\" violates foreign key constraint \"devices_host_hardware_id_fk\"",
+          "timestamp": 1723639902458
+        }
 
     numberIndex:
       type: string
