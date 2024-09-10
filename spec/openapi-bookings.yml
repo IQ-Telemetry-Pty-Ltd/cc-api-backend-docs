@@ -91,6 +91,18 @@ paths:
 
       operationId: getBookingsAllByDevice
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Obtain an array of "booking" items from the database
           content:
@@ -224,6 +236,18 @@ paths:
         Each customer has a daily booking limited defined and can be blocked from the API. These values can be found in the customers table.
 
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Obtain an array of "booking" items from the database
           content:
@@ -350,6 +374,18 @@ paths:
 
       operationId: createBookingsReserve
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns status of attempted booking
           content:
@@ -389,6 +425,18 @@ paths:
 
       operationId: releaseBooking
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns status of attempted release
           content:
@@ -445,6 +493,18 @@ paths:
                   description: End-user provided email.
               required: [ "email" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns email used for attempted verification
           content:
@@ -474,7 +534,7 @@ paths:
         The x-customer-token is used to identify and restrict customers to the correct resources in this API. 
         
         Once verified for the first time, the "verified" boolean is set in the customers table.
-      
+        
         **NOTE:** The x-customer-token does not expire. It should be store securely due to the nature of the type of authentication. x-customer-token's
         will only "expire" on new successful verification as a new token is generated.
 
@@ -495,6 +555,18 @@ paths:
                   description: End-user provided email.
               required: [ "email" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns result of attempted verification
           content:
@@ -623,6 +695,69 @@ components:
           type: string
         reason:
           type: string
+
+    # Status codes
+    ValidationFailResponse:
+      type: object
+      properties:
+        err:
+          type: string
+      example:
+        {
+          "err": [
+            {
+              "instancePath": "/requestBody",
+              "schemaPath": "#/properties/requestBody/additionalProperties",
+              "keyword": "additionalProperties",
+              "params": {
+                "additionalProperty": "emulation_id"
+              },
+              "message": "must NOT have additional properties"
+            }
+          ]
+        }
+    AccountNotActiveResponse:
+      type: object
+      properties:
+        err:
+          type: string
+          description: User has been deactivated.
+      example:
+        {
+          "err": "Account is not active. [John Doe]"
+        }
+    AccountPasswordResetResponse:
+      type: object
+      properties:
+        err:
+          type: string
+          description: User needs to reset their password before being allowed login access again.
+      example:
+        {
+          "err": "Please reset password before login. [John Doe]"
+        }
+    UnauthorizedResponse:
+      type: object
+      properties:
+        err:
+          type: string
+          description: User does not have permissions to access endpoint operation.
+      example:
+        {
+          "err": "Unauthorized. [getUserAccess]"
+        }
+    ErrorResponse:
+      type: object
+      properties:
+        err:
+          type: string
+          description: Any internal error is returned here.
+      example:
+        {
+          "success": false,
+          "error": "[INTERNAL] error: insert or update on table \"devices\" violates foreign key constraint \"devices_host_hardware_id_fk\"",
+          "timestamp": 1723639902458
+        }
 
 
     numberIndex:
