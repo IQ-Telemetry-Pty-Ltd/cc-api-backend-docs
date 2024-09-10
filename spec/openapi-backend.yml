@@ -15,12 +15,12 @@ info:
     
     NOTE: Access restricted, logged, rate limited API.
   
-
+  
   contact:
     name: Ryan Pomario
     email: ryan@iqt.co.za
 
-  version: 1.0.3
+  version: 1.0.4
 
 externalDocs:
   description: Click here to learn more about Payway.
@@ -92,6 +92,11 @@ tags:
     description: Endpoints that relate to bookings.
   - name: Notifications
     description: Endpoints that relate to application notification centers.
+  - name: Modules
+    description: Endpoints that relate to modules.
+  - name: Access Levels
+    description: Endpoints that relate to access levels.
+
 
 
 x-tagGroups:
@@ -115,6 +120,8 @@ x-tagGroups:
       - Pos Types
       - Providers
       - Status Codes
+      - Modules
+      - Access Levels
 
   - name: Hierarchical Platform Structure
     tags:
@@ -173,6 +180,8 @@ paths:
         
         Returned with the user object, the users access and roles are accessible as well.
         Please reference the API documentation for access and role logic.
+        
+        You cannot authenticate with a proxy user account. You will be notified if you do so.
 
       operationId: authentication
       requestBody:
@@ -199,6 +208,18 @@ paths:
                   enum: [ "firebase", "google" ]
               required: [ "client_email", "client_secret", "authority" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns authenticated users object
           content:
@@ -227,15 +248,19 @@ paths:
                           "google_id": "null",
                           "sidebar_toggled": false,
                           "password_reset": true,
+                          "super_admin": true,
                           "active": true
                         }
                       ],
                       "access": [
                         {
-                          "id": 1,
-                          "name": "Create Access",
-                          "operation_id": "createAccess",
-                          "can_access": true
+                          "module": "access",
+                          "access": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true
+                          }
                         }
                       ],
                       "roles": [
@@ -250,7 +275,8 @@ paths:
                           "site_id_list": [ ],
                           "device_id_list": [ ],
                           "is_reseller": false,
-                          "name": "New Role"
+                          "name": "New Role",
+                          "access_level_id": 9
                         }
                       ]
                     },
@@ -290,6 +316,18 @@ paths:
                   enum: [ "firebase" ]
               required: [ "client_email", "authority" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns status of password reset attempt
           content:
@@ -318,6 +356,7 @@ paths:
         
         If a user encounters the message: **"Unauthorized. [${operationId}]"**, they most likely do not have an access entry linked to their account.
         All access to endpoints is denied by default, expect for a few select around user authentication.
+      
 
       operationId: createAccess
       requestBody:
@@ -341,8 +380,26 @@ paths:
                     These values can be found in the OpenAPI spec, and are defined under every endpoint type.
                 can_access:
                   type: boolean
-              required: [ "name", "operation_id", "can_access" ]
+                module_fk:
+                  type: number
+                  minimum: 0
+                action:
+                  type: string
+                  enum: [ "read", "create", "delete", "update" ]
+              required: [ "name", "operation_id", "can_access", "module_fk", "action" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns access object created by query
           content:
@@ -359,10 +416,13 @@ paths:
                       "id": 1,
                       "name": "Delete Customers",
                       "operation_id": "deleteCustomers",
-                      "can_access": true
+                      "can_access": true,
+                      "module_fk": 3,
+                      "action": "delete"
                     }
                   ],
                   "entries": 1,
+                  "total_count": null,
                   "timestamp": 1723108298846
                 }
 
@@ -374,6 +434,18 @@ paths:
       summary: Get object for operation id / endpoint
       operationId: getAccess
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Obtain an array of "access" items from the database
           content:
@@ -387,13 +459,16 @@ paths:
                     "success": true,
                     "data": [
                       {
-                        "id": 85,
+                        "id": 1,
                         "name": "Update Device Activity Audit",
                         "operation_id": "updateDeviceActivityAudit",
-                        "can_access": true
+                        "can_access": true,
+                        "module_fk": 16,
+                        "action": "update"
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
     put:
@@ -424,7 +499,24 @@ paths:
                     These values can be found in the OpenAPI spec, and are defined under every endpoint type.
                 can_access:
                   type: boolean
+                module_fk:
+                  type: number
+                  minimum: 0
+                action:
+                  type: string
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "access" items updated by query
           content:
@@ -440,6 +532,18 @@ paths:
       summary: Delete object for operation id / endpoint
       operationId: deleteAccess
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           content:
             application/json:
@@ -537,7 +641,11 @@ paths:
                 is_reseller:
                   type: boolean
                   description: If role is set to reseller, this role will have access to all resources under the reseller. Similar to a "super-user" account.
-              required: [ "name", "reseller_id","organisation_id" ]
+                access_level_id:
+                  type: integer
+                  description: Foreign key access level identification.
+                  example: 4
+              required: [ "name", "reseller_id", "organisation_id" ]
               example:
                 {
                   "name": "New Role",
@@ -546,10 +654,23 @@ paths:
                   "company_id_list": [ 1,2 ],
                   "site_id_list": [ 1,2 ],
                   "device_id_list": [ ],
-                  "is_reseller": false
+                  "is_reseller": false,
+                  "access_level_id": 4
                 }
 
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns role object created by query
           content:
@@ -571,9 +692,11 @@ paths:
                         "reseller_id": 1,
                         "site_id_list": [ ],
                         "is_reseller": false,
+                        "access_level_id": 4
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
 
@@ -585,6 +708,18 @@ paths:
       operationId: getRoles
       summary: Get object for roles
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "role" items from the database
           content:
@@ -605,11 +740,12 @@ paths:
                         "organisation_id": 10,
                         "reseller_id": 1,
                         "site_id_list": [ ],
-                        "is_reseller": false
-
+                        "is_reseller": false,
+                        "access_level_id": 4
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
 
@@ -656,7 +792,23 @@ paths:
                 is_reseller:
                   type: boolean
                   description: If role is set to reseller, this role will have access to all resources under the reseller. Similar to a "super-user" account.
+                access_level_id:
+                  type: integer
+                  description: Foreign key access level identification.
+                  example: 4
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "role" items updated by query
           content:
@@ -677,11 +829,12 @@ paths:
                         "organisation_id": 10,
                         "reseller_id": 1,
                         "site_id_list": [ ],
-                        "is_reseller": false
-
+                        "is_reseller": false,
+                        "access_level_id": 4
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
     delete:
@@ -691,6 +844,18 @@ paths:
       summary: Delete object for roles
       operationId: deleteRoles
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           content:
             application/json:
@@ -746,6 +911,9 @@ paths:
         Proxy users (or service accounts) are NOT to be used by user facing websites or mobile applications. 
         Proxy users are meant to be used by applications that require restricted access to API resources. 
         Proxy users act like normal users, having the same access and role based controls.
+        
+        If the proxy user field is set, an automatic static token is generated. Any email, existing or not, can be used if not already used in
+        the Payway system.
 
       operationId: createUsers
       requestBody:
@@ -789,8 +957,20 @@ paths:
                   description: Special user that should only be used in certain cases.
                 active:
                   type: boolean
-              required: [ "displayname", "email", "currency", "delimiter" ]
+              required: [ "displayname", "email", "currency", "delimiter", "proxy_user" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns user object created by query
           content:
@@ -825,6 +1005,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
 
@@ -836,6 +1017,18 @@ paths:
       operationId: getUsers
       summary: Get object for user
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "user" items from the database
           content:
@@ -867,6 +1060,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
     put:
@@ -923,6 +1117,18 @@ paths:
                 active:
                   type: boolean
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "user" items updated by query
           content:
@@ -965,6 +1171,18 @@ paths:
       summary: Delete object for users
       operationId: deleteUsers
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           content:
             application/json:
@@ -1018,6 +1236,18 @@ paths:
                   description: Access ID can be found in the access resource.
               required: [ "user_id", "access_id" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns user access object created by query
           content:
@@ -1037,6 +1267,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
 
@@ -1048,6 +1279,18 @@ paths:
       summary: Get object for user access by a user id
       operationId: getUserAccessDetailByUserId
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "user access" items from the database
           content:
@@ -1069,6 +1312,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
     parameters:
@@ -1082,6 +1326,18 @@ paths:
       summary: Get object for user access
       operationId: getUserAccess
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "user access" items from the database
           content:
@@ -1101,6 +1357,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
     delete:
@@ -1110,6 +1367,18 @@ paths:
       operationId: deleteUserAccess
       summary: Delete object for user access
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           content:
             application/json:
@@ -1162,6 +1431,18 @@ paths:
                   description: Roles ID can be found in the roles resource.
               required: [ "user_id", "role_id" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns user roles object created by query
           content:
@@ -1181,6 +1462,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
 
@@ -1192,6 +1474,18 @@ paths:
       operationId: getUserRoles
       summary: Get object for user roles
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "user roles" items from the database
           content:
@@ -1211,6 +1505,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
 
@@ -1221,6 +1516,18 @@ paths:
       operationId: deleteUserRoles
       summary: Delete object for user roles
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           content:
             application/json:
@@ -1251,6 +1558,18 @@ paths:
       operationId: getUserRolesByUserId
       summary: Get object for user roles by user id
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "user roles" items from the database
           content:
@@ -1270,6 +1589,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
     parameters:
@@ -1348,6 +1668,18 @@ paths:
                   description: Amount of times a login request has been sent.
               required: [ "first_name", "last_name", "email", "user_id" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns customer object created by query
           content:
@@ -1377,6 +1709,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
 
@@ -1388,6 +1721,18 @@ paths:
       summary: Get object for customers
       operationId: getCustomers
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "customer" items from the database
           content:
@@ -1417,6 +1762,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
     put:
@@ -1477,6 +1823,18 @@ paths:
                   example: 5
                   description: Amount of times a login request has been sent.
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "customer" items updated by query
           content:
@@ -1506,6 +1864,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
     delete:
@@ -1515,6 +1874,18 @@ paths:
       operationId: deleteCustomers
       summary: Delete object for customers
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           content:
             application/json:
@@ -1586,6 +1957,18 @@ paths:
                   type: boolean
               required: [ "name","address", "contact_number", "contact_person", "lat_lng", "active" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns reseller object created by query
           content:
@@ -1609,6 +1992,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723628631562
                   }
 
@@ -1620,6 +2004,18 @@ paths:
       operationId: getResellers
       summary: Get object for resellers
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "reseller" items from the database
           content:
@@ -1643,6 +2039,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
     put:
@@ -1686,6 +2083,18 @@ paths:
                 active:
                   type: boolean
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "reseller" items updated by query
           content:
@@ -1709,6 +2118,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
     delete:
@@ -1718,6 +2128,18 @@ paths:
       summary: Delete object for resellers
       operationId: deleteResellers
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           content:
             application/json:
@@ -1787,6 +2209,18 @@ paths:
                   type: boolean
               required: [ "name", "address", "contact_number", "contact_person", "active" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns organisation object created by query
           content:
@@ -1810,6 +2244,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723628631562
                   }
 
@@ -1821,6 +2256,18 @@ paths:
       operationId: getOrganisations
       summary: Get object for organisation
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "organisation" items from the database
           content:
@@ -1844,6 +2291,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723628631562
                   }
     put:
@@ -1887,6 +2335,18 @@ paths:
                 active:
                   type: boolean
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "organisation" items updated by query
           content:
@@ -1910,6 +2370,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723628631562
                   }
     delete:
@@ -1919,6 +2380,18 @@ paths:
       operationId: deleteOrganisations
       summary: Delete object for organisations
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           content:
             application/json:
@@ -1969,6 +2442,18 @@ paths:
                   example: 1
               required: [ "reseller_id", "organisation_id" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns reseller organisation link created by query
           content:
@@ -1988,6 +2473,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
 
@@ -1999,6 +2485,18 @@ paths:
       summary: Get object for reseller organisation link by reseller id
       operationId: getResellersOrganisationsByResellerId
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "reseller organisation" items from the database
           content:
@@ -2018,6 +2516,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
     parameters:
@@ -2036,6 +2535,18 @@ paths:
       summary: Get object for reseller organisation link
       operationId: getResellersOrganisations
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "reseller organisation" items from the database
           content:
@@ -2055,6 +2566,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
     delete:
@@ -2064,6 +2576,18 @@ paths:
       summary: Delete object for resellers organisations
       operationId: deleteResellersOrganisations
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           content:
             application/json:
@@ -2138,6 +2662,18 @@ paths:
                   type: boolean
               required: [ "name", "address", "contact_number", "contact_person", "organisation_id", "active" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns company object created by query
           content:
@@ -2163,6 +2699,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723639902458
                   }
 
@@ -2174,6 +2711,18 @@ paths:
       operationId: getCompanies
       summary: Get object for company
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "companies" items from the database
           content:
@@ -2199,6 +2748,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723639902458
                   }
     put:
@@ -2248,6 +2798,18 @@ paths:
                 active:
                   type: boolean
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "companies" items updated by query
           content:
@@ -2271,6 +2833,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723628631562
                   }
     delete:
@@ -2280,6 +2843,18 @@ paths:
       operationId: deleteCompanies
       summary: Delete object for companies
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           content:
             application/json:
@@ -2357,6 +2932,18 @@ paths:
                   type: boolean
               required: [ "name", "address", "contact_number", "contact_person", "companies_id", "active" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns site object created by query
           content:
@@ -2384,6 +2971,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723628631562
                   }
 
@@ -2395,6 +2983,18 @@ paths:
       operationId: getSites
       summary: Get object for sites
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "site" items from the database
           content:
@@ -2422,6 +3022,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723628631562
                   }
     put:
@@ -2472,6 +3073,18 @@ paths:
                 active:
                   type: boolean
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "site" items updated by query
           content:
@@ -2499,6 +3112,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723628631562
                   }
     delete:
@@ -2508,6 +3122,18 @@ paths:
       summary: Delete object for sites
       operationId: deleteSites
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           content:
             application/json:
@@ -2628,6 +3254,18 @@ paths:
                   type: boolean
               required: [ "name", "uid", "imsi", "site_id", "pos_type_id", "host_hardware_id", "polling_frequency", "scale_factor", "time_zone", "screen_fitted", "multiplier", "divider", "unit_price", "active" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns device object created by query
           content:
@@ -2685,6 +3323,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723628631562
                   }
 
@@ -2696,6 +3335,18 @@ paths:
       operationId: getDevices
       summary: Get object for devices
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "device" items from the database
           content:
@@ -2753,6 +3404,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723628631562
                   }
     put:
@@ -2845,6 +3497,18 @@ paths:
                 active:
                   type: boolean
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "device" items updated by query
           content:
@@ -2902,6 +3566,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723628631562
                   }
     delete:
@@ -2911,6 +3576,18 @@ paths:
       summary: Delete object for devices
       operationId: deleteDevices
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           content:
             application/json:
@@ -2944,6 +3621,18 @@ paths:
         This endpoint holds all Fatal Logs generated in the Payway Payment Engine.
 
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "fatal log" items from the database
           content:
@@ -2972,6 +3661,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
 
@@ -2994,6 +3684,18 @@ paths:
       description: |-
         This endpoint holds all Info Logs generated in the Payway Payment Engine.
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "info log" items from the database
           content:
@@ -3022,6 +3724,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723715090987
                   }
     parameters:
@@ -3042,6 +3745,18 @@ paths:
       description: |-
         This endpoint holds all Warning Logs generated in the Payway Payment Engine.
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "warning log" items from the database
           content:
@@ -3070,6 +3785,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723715090987
                   }
     parameters:
@@ -3117,6 +3833,18 @@ paths:
                   type: boolean
               required: [ "name", "active" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns provider object created by query
           content:
@@ -3138,6 +3866,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723628631562
                   }
 
@@ -3150,6 +3879,18 @@ paths:
       operationId: getProviders
       summary: Get object for providers
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "provider" items from the database
           content:
@@ -3171,6 +3912,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723628631562
                   }
     put:
@@ -3202,6 +3944,18 @@ paths:
                 active:
                   type: boolean
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "provider" items updated by query
           content:
@@ -3223,6 +3977,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723628631562
                   }
     parameters:
@@ -3266,6 +4021,18 @@ paths:
                   type: boolean
               required: [ "name", "active" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns pos type object created by query
           content:
@@ -3286,6 +4053,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
 
@@ -3297,6 +4065,18 @@ paths:
       operationId: getPosTypes
       summary: Get object for pos types
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "pos type" items from the database
           content:
@@ -3317,6 +4097,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
     put:
@@ -3346,6 +4127,18 @@ paths:
                 active:
                   type: boolean
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "pos type" items updated by query
           content:
@@ -3366,6 +4159,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
     parameters:
@@ -3427,6 +4221,18 @@ paths:
                   type: boolean
               required: [ "name", "hardware_type_id", "reseller_id", "emulation_id", "active" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns host hardware object created by query
           content:
@@ -3452,6 +4258,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723639902458
                   }
 
@@ -3464,6 +4271,18 @@ paths:
       operationId: getHostHardware
       summary: Get object for host hardware
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "host hardware" items from the database
           content:
@@ -3489,6 +4308,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723639902458
                   }
     put:
@@ -3533,6 +4353,18 @@ paths:
                 active:
                   type: boolean
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "host hardware" items updated by query
           content:
@@ -3558,6 +4390,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723639902458
                   }
     parameters:
@@ -3612,6 +4445,18 @@ paths:
                   type: boolean
               required: [ "name", "code", "color", "refund_sale", "success", "active" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns status code object created by query
           content:
@@ -3635,6 +4480,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
 
@@ -3647,6 +4493,18 @@ paths:
       operationId: getStatusCodes
       summary: Get object for status code
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "status code" items from the database
           content:
@@ -3670,6 +4528,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
     put:
@@ -3710,6 +4569,18 @@ paths:
                 active:
                   type: boolean
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "status code" items updated by query
           content:
@@ -3733,6 +4604,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
     parameters:
@@ -3771,6 +4643,18 @@ paths:
                   type: boolean
               required: [ "name", "active" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns emulation object created by query
           content:
@@ -3790,6 +4674,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
 
@@ -3801,6 +4686,18 @@ paths:
       summary: Get object for emulation
       operationId: getEmulations
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "emulation" items from the database
           content:
@@ -3820,6 +4717,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
     put:
@@ -3844,6 +4742,18 @@ paths:
                 active:
                   type: boolean
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "emulation" items updated by query
           content:
@@ -3863,6 +4773,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
     parameters:
@@ -3886,6 +4797,18 @@ paths:
         * **sfN** ---- Session frequency for hour of day __N__.
 
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: List of connectivity history objects
           content:
@@ -3949,6 +4872,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
       parameters:
@@ -4008,6 +4932,18 @@ paths:
                   type: boolean
               required: [ "provider_id", "company_id", "allow_refund", "active" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns company provider object created by query
           content:
@@ -4033,6 +4969,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723639902458
                   }
 
@@ -4044,6 +4981,18 @@ paths:
       operationId: getCompaniesProviders
       summary: Get object for company provider
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "company provider" items from the database
           content:
@@ -4069,6 +5018,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723639902458
                   }
     put:
@@ -4113,6 +5063,18 @@ paths:
                 active:
                   type: boolean
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "company provider" items updated by query
           content:
@@ -4138,6 +5100,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723639902458
                   }
     parameters:
@@ -4158,6 +5121,18 @@ paths:
       description: |-
         This endpoint is used to retrieve and view transactions. This is a history of transactions processed by the Payway Payment Engine.
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "transaction" items from the database
           content:
@@ -4200,6 +5175,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
       parameters:
@@ -4218,6 +5194,18 @@ paths:
       operationId: getRefunds
       summary: Get object for refunds
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "refund" items from the database
           content:
@@ -4245,6 +5233,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
     parameters:
@@ -4288,6 +5277,18 @@ paths:
                   type: boolean
               required: [ "state", "reseller_id", "active" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns asset state object created by query
           content:
@@ -4308,6 +5309,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
 
@@ -4319,6 +5321,18 @@ paths:
       operationId: getAssetStates
       summary: Get object for asset states
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "asset state" items from the database
           content:
@@ -4339,6 +5353,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
     put:
@@ -4365,6 +5380,18 @@ paths:
                 active:
                   type: boolean
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "asset state" items updated by query
           content:
@@ -4385,6 +5412,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723108298846
                   }
     parameters:
@@ -4434,6 +5462,18 @@ paths:
                   description: Time of entry creation in UTC.
               required: [ "device_id", "user_id", "site_id", "asset_state_id" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns device activity audit object created by query
           content:
@@ -4457,6 +5497,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723628631562
                   }
 
@@ -4468,6 +5509,18 @@ paths:
       operationId: getDeviceActivityAudit
       summary: Get object for device activity audit
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "device activity audit" items from the database
           content:
@@ -4491,6 +5544,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723628631562
                   }
     put:
@@ -4528,6 +5582,18 @@ paths:
                   example: "2024-08-13T10:33:38.323Z"
                   description: Time of entry creation in UTC.
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: List of device activity audit objects
           content:
@@ -4551,6 +5617,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723628631562
                   }
     parameters:
@@ -4580,8 +5647,20 @@ paths:
         customer_id ---- [0,2,6,1,0,0,4,6,5,8,0,1,3,0,0,0,0,0,0,0,0,0,0,0]
         * Position 3 of array, customer id "6", is the 3rd hour / 03:00 in the day. 
       
-
+      
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "booking" items from the database
           content:
@@ -4732,6 +5811,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723715090987
                   }
     parameters:
@@ -4758,6 +5838,18 @@ paths:
         Customers are blocked automatically after TODO missed bookings.
 
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "missed bookings" items from the database
           content:
@@ -4783,6 +5875,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723715090987
                   }
     delete:
@@ -4792,6 +5885,18 @@ paths:
       summary: Delete object for missed bookings
       operationId: deleteMissedBookings
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           content:
             application/json:
@@ -4863,6 +5968,18 @@ paths:
                   type: boolean
               required: [ "summary", "severity", "start_time", "end_time", "active" ]
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns notification object created by query
           content:
@@ -4887,6 +6004,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723628631562
                   }
 
@@ -4898,6 +6016,18 @@ paths:
       operationId: getNotifications
       summary: Get object for notifications
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "notification" items from the database
           content:
@@ -4922,6 +6052,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723628631562
                   }
     put:
@@ -4967,6 +6098,18 @@ paths:
                 active:
                   type: boolean
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           description: Returns an array of "notification" items updated by query
           content:
@@ -4991,6 +6134,7 @@ paths:
                       }
                     ],
                     "entries": 1,
+                    "total_count": null,
                     "timestamp": 1723628631562
                   }
     delete:
@@ -5000,6 +6144,18 @@ paths:
       summary: Delete object for notifications
       operationId: deleteNotifications
       responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '200':
           content:
             application/json:
@@ -5014,6 +6170,311 @@ paths:
                   "timestamp": 1723108298846
                 }
           description: Returns result of delete
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/activity_logs/{id}':
+    get:
+      tags:
+        - Data
+        - Logs
+      operationId: getActivityLogs
+      summary: Get object for activity logs
+      description: |-
+        This endpoint holds all activity logs for PUT, POST and DELETE endpoints.
+        This acts as a audit trail to understand what actions have been performed by users.
+
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of "activity logs" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityLogsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "user_id": 125,
+                        "timestamp": "2024-09-06T05:06:37.709Z",
+                        "action": "POST",
+                        "operation_id": "createUserAccess",
+                        "body": "{\"user_id\":125,\"access_id\":104}",
+                        "parameters": "{}"
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723628631562
+                  }
+
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/modules':
+    post:
+      tags:
+        - Data
+        - Modules
+      summary: Create object for modules
+      description: |-
+        This endpoint is used to allow access restriction and different views for many times of users for our Payway website.
+        All names should be in lower case, have no spaces and contain "_" as a replacement for spaces.
+
+      operationId: createModules
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  maxLength: 50
+                  pattern: ^[a-zA-Z_]+
+              required: [ "name" ]
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns modules object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ModulesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "organisations",
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723628631562
+                  }
+
+  '/modules/{id}':
+    get:
+      tags:
+        - Data
+        - Modules
+      operationId: getModules
+      summary: Get object for modules
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of "module" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ModulesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "organisations",
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723628631562
+                  }
+    put:
+      tags:
+        - Data
+        - Modules
+      summary: Update object for modules
+      operationId: updateModules
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  maxLength: 50
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of "module" items updated by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ModulesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "organisations",
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723628631562
+                  }
+    delete:
+      tags:
+        - Data
+        - Modules
+      summary: Delete object for modules
+      operationId: deleteModules
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DeleteResponse"
+              example:
+                {
+                  "success": true,
+                  "data": "Successfully deleted record(s). [1]",
+                  "timestamp": 1723108298846
+                }
+          description: Returns result of delete
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+
+  '/access_levels/{id}':
+    get:
+      tags:
+        - Data
+        - Access Levels
+      operationId: getAccessLevels
+      summary: Get object for access levels
+      description: |-
+        This endpoint is used to define access levels for operations. This endpoint acts as a link to the roles table and contains more information about
+        the access level.
+
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of "access level" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AccessLevelsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "Reseller",
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723628631562
+                  }
     parameters:
       - $ref: "#/components/parameters/idParam"
       - $ref: "#/components/parameters/limitParam"
@@ -5044,6 +6505,11 @@ components:
             These values can be found in the OpenAPI spec, and are defined under every endpoint type.
         can_access:
           type: boolean
+        module_fk:
+          type: number
+        action:
+          type: string
+          enum: [ "read", "create", "delete", "update" ]
     RolesResponse:
       type: object
       properties:
@@ -5072,6 +6538,8 @@ components:
             type: integer
         is_reseller:
           type: boolean
+        access_level_id:
+          type: integer
     UsersResponse:
       type: object
       properties:
@@ -5135,6 +6603,8 @@ components:
         google_id:
           type: string
         sidebar_toggled:
+          type: boolean
+        super_admin:
           type: boolean
         active:
           type: boolean
@@ -5856,6 +7326,41 @@ components:
           type: string
         active:
           type: boolean
+    ActivityLogsResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        timestamp:
+          type: string
+        action:
+          type: string
+          description: HTTP request type.
+        operation_id:
+          type: string
+          description: OpenAPI operation / path identifier.
+        body:
+          type: string
+          description: All contents of the requests body.
+        parameters:
+          type: string
+          description: All query parameters of the request.
+    ModulesResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    AccessLevelsResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
     DeleteResponse:
       type: object
       properties:
@@ -5871,64 +7376,63 @@ components:
       type: object
       properties:
         err:
-          type: object
-          example:
+          type: string
+      example:
+        {
+          "err": [
             {
-              "err": [
-                {
-                  "instancePath": "/requestBody",
-                  "schemaPath": "#/properties/requestBody/additionalProperties",
-                  "keyword": "additionalProperties",
-                  "params": {
-                    "additionalProperty": "emulation_id"
-                  },
-                  "message": "must NOT have additional properties"
-                }
-              ]
+              "instancePath": "/requestBody",
+              "schemaPath": "#/properties/requestBody/additionalProperties",
+              "keyword": "additionalProperties",
+              "params": {
+                "additionalProperty": "emulation_id"
+              },
+              "message": "must NOT have additional properties"
             }
+          ]
+        }
     AccountNotActiveResponse:
       type: object
       properties:
         err:
           type: string
-          example:
-            {
-              "err": "Account is not active. [John Doe]"
-            }
           description: User has been deactivated.
+      example:
+        {
+          "err": "Account is not active. [John Doe]"
+        }
     AccountPasswordResetResponse:
       type: object
       properties:
         err:
           type: string
-          example:
-            {
-              "err": "Please reset password before login. [John Doe]"
-            }
           description: User needs to reset their password before being allowed login access again.
+      example:
+        {
+          "err": "Please reset password before login. [John Doe]"
+        }
     UnauthorizedResponse:
       type: object
       properties:
         err:
           type: string
-          example:
-            {
-              "err": "Unauthorized. [getUserAccess]"
-            }
           description: User does not have permissions to access endpoint operation.
+      example:
+        {
+          "err": "Unauthorized. [getUserAccess]"
+        }
     ErrorResponse:
       type: object
       properties:
         err:
           type: string
-          example:
-            {
-              "success": false,
-              "error": "[INTERNAL] error: insert or update on table \"devices\" violates foreign key constraint \"devices_host_hardware_id_fk\"",
-              "timestamp": 1725273348975
-            }
           description: Any internal error is returned here.
-
+      example:
+        {
+          "success": false,
+          "error": "[INTERNAL] error: insert or update on table \"devices\" violates foreign key constraint \"devices_host_hardware_id_fk\"",
+          "timestamp": 1723639902458
+        }
 
 
     numberIndex:
