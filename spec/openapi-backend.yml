@@ -20,7 +20,7 @@ info:
     name: Ryan Pomario
     email: ryan@iqt.co.za
 
-  version: 1.0.4
+  version: 1.0.6
 
 externalDocs:
   description: Click here to learn more about Payway.
@@ -228,7 +228,7 @@ paths:
                 type: array
                 items:
                   - $ref: "#/components/schemas/AuthenticationResponse"
-                  - $ref: "#/components/schemas/AccessResponse"
+                  - $ref: "#/components/schemas/UsersAccessResponse"
                   - $ref: "#/components/schemas/RolesResponse"
                 example:
                   {
@@ -645,7 +645,7 @@ paths:
                   type: integer
                   description: Foreign key access level identification.
                   example: 4
-              required: [ "name", "reseller_id", "organisation_id" ]
+              required: [ "name", "reseller_id" ]
               example:
                 {
                   "name": "New Role",
@@ -1205,6 +1205,93 @@ paths:
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
 
+
+  '/users/access/{id}':
+    get:
+      tags:
+        - Data
+        - Users
+      operationId: getUsersAccess
+      summary: Get object for user access
+      description: |-
+        This endpoint is used to return a users permissions, access and roles for use for the Payway website.
+
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of "user access" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  - $ref: "#/components/schemas/UsersResponse"
+                  - $ref: "#/components/schemas/UsersAccessResponse"
+                  - $ref: "#/components/schemas/RolesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": {
+                      "user": [
+                        {
+                          "id": 125,
+                          "contact_number": "+27824959395",
+                          "email": "ryan@iqt.co.za",
+                          "email_verified": true,
+                          "last_login_at": "2024-09-11T05:09:22.000Z",
+                          "last_login_error": "success",
+                          "currency": "R",
+                          "delimiter": ";",
+                          "displayname": "Ryan Pomario",
+                          "sidebar_toggled": false,
+                          "firebase_id": "RvGoIQWf5aNW4K1hIJdPpKIhpX93",
+                          "proxy_user": false,
+                          "super_admin": true,
+                          "active": true
+                        }
+                      ],
+                      "access": [
+                        {
+                          "module": "access",
+                          "access": {
+                            "create": true,
+                            "read": true,
+                            "update": true,
+                            "delete": true
+                          }
+                        }
+                      ],
+                      "roles": [
+                        {
+                          "id": 1,
+                          "reseller_id": 1,
+                          "organisation_id": 7,
+                          "company_id_list": [ ],
+                          "site_id_list": [ ],
+                          "device_id_list": [ ],
+                          "is_reseller": true,
+                          "name": "Super Admin",
+                          "access_level_id": 1
+                        }
+                      ]
+                    },
+                    "total_count": null,
+                    "timestamp": 1726038406541
+                  }
+    parameters:
+      - $ref: "#/components/parameters/idSingleParam"
+      - $ref: "#/components/parameters/tokenParam"
 
   '/user_access':
     post:
@@ -2205,9 +2292,14 @@ paths:
                   maxLength: 50
                   example: "-18.08011,-34.73830"
                   pattern: '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$'
+                reseller_id:
+                  type: array
+                  items:
+                    type: integer
+                  example: [ 7, 1 ]
                 active:
                   type: boolean
-              required: [ "name", "address", "contact_number", "contact_person", "active" ]
+              required: [ "name", "address", "contact_number", "contact_person", "reseller_id", "active" ]
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -2332,8 +2424,14 @@ paths:
                   maxLength: 50
                   example: "-18.08011,-34.73830"
                   pattern: '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$'
+                reseller_id:
+                  type: array
+                  items:
+                    type: integer
+                  example: [ 7, 1 ]
                 active:
                   type: boolean
+
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -3657,6 +3755,7 @@ paths:
                         "calling_url": "",
                         "reason": "Internal Server Error occurred",
                         "payload": "",
+                        "severity": "fatal",
                         "created": "2024-07-02T13:00:59.773Z"
                       }
                     ],
@@ -3720,6 +3819,7 @@ paths:
                         "calling_url": "",
                         "reason": "unknown",
                         "payload": "",
+                        "severity": "info",
                         "created": "2024-07-02T12:52:29.482Z"
                       }
                     ],
@@ -3781,6 +3881,7 @@ paths:
                         "calling_url": "",
                         "reason": "unknown",
                         "payload": "",
+                        "severity": "warn",
                         "created": "2024-07-02T12:52:29.482Z"
                       }
                     ],
@@ -3788,6 +3889,71 @@ paths:
                     "total_count": null,
                     "timestamp": 1723715090987
                   }
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+
+  '/logs_combined/{id}':
+    get:
+      tags:
+        - Data
+        - Logs
+      operationId: getLogsCombined
+      summary: Get object for combined logs
+      description: |-
+        This endpoint will return all logs, warning, fatal and info. This is done by a union and id does not represent
+        link to individual log type.
+
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of "combined log" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LogsCombinedResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "webhook_timestamp": null,
+                        "provider": "none",
+                        "provider_id": null,
+                        "uuid": "none",
+                        "application": "cc_payment_gateway_logic",
+                        "application_timestamp": null,
+                        "application_version": "2.0.0",
+                        "calling_url": "",
+                        "reason": "Internal Server Error occurred",
+                        "payload": "",
+                        "severity": "fatal",
+                        "created": "2024-07-02T13:00:59.773Z"
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723108298846
+                  }
+
     parameters:
       - $ref: "#/components/parameters/idParam"
       - $ref: "#/components/parameters/limitParam"
@@ -5835,7 +6001,7 @@ paths:
         When a customer does not start the booked device within 20 minutes of their booking
         booking slot, machine not activated by customer, their missed booking is placed automatically into this table.
         
-        Customers are blocked automatically after TODO missed bookings.
+        Customers are blocked automatically after 5 missed bookings.
 
       responses:
         '401':
@@ -6576,6 +6742,9 @@ components:
         password_reset:
           type: boolean
           description: Define if password reset required.
+        super_user:
+          type: boolean
+          description: Highest level of access in Payway system.
         active:
           type: boolean
     AuthenticationResponse:
@@ -6857,6 +7026,35 @@ components:
           type: string
         reason:
           type: string
+        severity:
+          type: string
+        payload:
+          type: string
+    LogsCombinedResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        webhook_timestamp:
+          type: integer
+        provider:
+          type: string
+        provider_id:
+          type: integer
+        uuid:
+          type: string
+        application:
+          type: string
+        application_timestamp:
+          type: integer
+        application_version:
+          type: string
+        calling_url:
+          type: string
+        reason:
+          type: string
+        severity:
+          type: string
         payload:
           type: string
     LogsInfoResponse:
@@ -6882,6 +7080,8 @@ components:
           type: string
         reason:
           type: string
+        severity:
+          type: string
         payload:
           type: string
     LogsWarningResponse:
@@ -6906,6 +7106,8 @@ components:
         calling_url:
           type: string
         reason:
+          type: string
+        severity:
           type: string
         payload:
           type: string
@@ -7361,6 +7563,22 @@ components:
           type: integer
         name:
           type: string
+    UsersAccessResponse:
+      type: object
+      properties:
+        module:
+          type: string
+        access:
+          type: object
+          properties:
+            create:
+              type: boolean
+            read:
+              type: boolean
+            update:
+              type: boolean
+            delete:
+              type: boolean
     DeleteResponse:
       type: object
       properties:
@@ -7456,9 +7674,35 @@ components:
         id:
           value: 12
           summary: Search by specific primary key aka "id".
+        idList:
+          value: 1,2,6
+          summary: Search by multiple specific primary key aka "id".
         all:
           value: '_all'
           summary: Search by all accessible objects.
+    idSingleParam:
+      in: path
+      name: id
+      required: true
+      schema:
+        allOf:
+          - $ref: "#/components/schemas/numberIndex"
+      examples:
+        id:
+          value: 12
+          summary: Search by specific primary key aka "id".
+    tokenParam:
+      in: path
+      name: id
+      required: true
+      schema:
+        allOf:
+          - type: string
+            pattern: ^[a-z A-Z-0-9]+
+      examples:
+        token:
+          value: "7ecc242c-c40d-4fd1-ba02-62220b4t8c6b"
+          summary: Search by user token.
 
     offsetParam:
       in: query
