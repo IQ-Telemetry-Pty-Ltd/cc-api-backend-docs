@@ -417,8 +417,11 @@ paths:
                       "name": "Delete Customers",
                       "operation_id": "deleteCustomers",
                       "can_access": true,
-                      "module_fk": 3,
-                      "action": "delete"
+                      "action": "delete",
+                      "modules": {
+                        "id": 20,
+                        "name": "bookings"
+                      }
                     }
                   ],
                   "entries": 1,
@@ -463,8 +466,11 @@ paths:
                         "name": "Update Device Activity Audit",
                         "operation_id": "updateDeviceActivityAudit",
                         "can_access": true,
-                        "module_fk": 16,
-                        "action": "update"
+                        "action": "update",
+                        "modules": {
+                          "id": 20,
+                          "name": "bookings"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -525,6 +531,27 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/AccessResponse"
+              example:
+                {
+                  "success": true,
+                  "data": [
+                    {
+                      "id": 1,
+                      "name": "Delete Customers",
+                      "operation_id": "deleteCustomers",
+                      "can_access": true,
+                      "action": "delete",
+                      "modules": {
+                        "id": 20,
+                        "name": "bookings"
+                      }
+                    }
+                  ],
+                  "entries": 1,
+                  "total_count": null,
+                  "timestamp": 1723108298846
+                }
+
     delete:
       tags:
         - Data
@@ -692,11 +719,31 @@ paths:
                         "name": "New Role",
                         "company_id_list": [ ],
                         "device_id_list": [ 1, 2, 10, 3 ],
-                        "organisation_id": 10,
-                        "reseller_id": 1,
                         "site_id_list": [ ],
                         "is_reseller": false,
-                        "access_level_id": 4
+                        "resellers": {
+                          "id": 1,
+                          "name": "IQT Holdings"
+                        },
+                        "organisations": {
+                          "id": 10,
+                          "name": "Chilli Mobile"
+                        },
+                        "access_levels": {
+                          "id": 9,
+                          "name": "Standard User"
+                        },
+                        "access": {
+                          "id": [
+                            110
+                          ],
+                          "name": [
+                            "Get Access Levels"
+                          ],
+                          "action": [
+                            "read"
+                          ]
+                        }
                       }
                     ],
                     "entries": 1,
@@ -741,11 +788,8 @@ paths:
                         "name": "New Role",
                         "company_id_list": [ ],
                         "device_id_list": [ 1, 2, 10, 3 ],
-                        "organisation_id": 10,
-                        "reseller_id": 1,
                         "site_id_list": [ ],
                         "is_reseller": false,
-                        "access_level_id": 4,
                         "resellers": {
                           "id": 1,
                           "name": "IQT Holdings"
@@ -850,14 +894,34 @@ paths:
                     "data": [
                       {
                         "id": 7,
-                        "name": "Updated Role",
+                        "name": "New Role",
                         "company_id_list": [ ],
                         "device_id_list": [ 1, 2, 10, 3 ],
-                        "organisation_id": 10,
-                        "reseller_id": 1,
                         "site_id_list": [ ],
                         "is_reseller": false,
-                        "access_level_id": 4
+                        "resellers": {
+                          "id": 1,
+                          "name": "IQT Holdings"
+                        },
+                        "organisations": {
+                          "id": 10,
+                          "name": "Chilli Mobile"
+                        },
+                        "access_levels": {
+                          "id": 9,
+                          "name": "Standard User"
+                        },
+                        "access": {
+                          "id": [
+                            110
+                          ],
+                          "name": [
+                            "Get Access Levels"
+                          ],
+                          "action": [
+                            "read"
+                          ]
+                        }
                       }
                     ],
                     "entries": 1,
@@ -2402,7 +2466,18 @@ paths:
                         "contact_person": "John Doe",
                         "lat_lng": "-18.08011,-34.73830",
                         "logo_url": "https://google.com",
-                        "active": true
+                        "active": true,
+                        "resellers": {
+                          "id": [
+                            4
+                          ],
+                          "name": [
+                            "360 Laundry Solutions"
+                          ],
+                          "id_name": [
+                            "4,360 Laundry Solutions"
+                          ]
+                        }
                       }
                     ],
                     "entries": 1,
@@ -2551,7 +2626,18 @@ paths:
                         "contact_person": "John Doe",
                         "lat_lng": "-18.08011,-34.73830",
                         "logo_url": "https://google.com",
-                        "active": true
+                        "active": true,
+                        "resellers": {
+                          "id": [
+                            4
+                          ],
+                          "name": [
+                            "360 Laundry Solutions"
+                          ],
+                          "id_name": [
+                            "4,360 Laundry Solutions"
+                          ]
+                        }
                       }
                     ],
                     "entries": 1,
@@ -2658,7 +2744,9 @@ paths:
                       {
                         "id": 1,
                         "reseller_id": 3,
-                        "organisation_id": 1
+                        "organisation_id": 1,
+                        "reseller_name": "IQT Holdings",
+                        "organisation_name": "Kiddies Rides"
                       }
                     ],
                     "entries": 1,
@@ -2842,10 +2930,24 @@ paths:
                         "contact_number": "+27876545611",
                         "contact_person": "John Doe",
                         "lat_lng": "-18.08011,-34.73830",
-                        "organisation_id": 4,
                         "email_template": "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",
                         "logo_url": "https://google.com",
-                        "active": true
+                        "active": true,
+                        "resellers": {
+                          "id": [
+                            4
+                          ],
+                          "name": [
+                            "360 Laundry Solutions"
+                          ],
+                          "id_name": [
+                            "4,360 Laundry Solutions"
+                          ]
+                        },
+                        "organisations": {
+                          "id": 320,
+                          "name": "Rezi Buubles"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -2892,7 +2994,6 @@ paths:
                         "contact_number": "+27876545611",
                         "contact_person": "John Doe",
                         "lat_lng": "-18.08011,-34.73830",
-                        "organisation_id": 4,
                         "email_template": "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",
                         "logo_url": "https://google.com",
                         "active": true,
@@ -2908,8 +3009,8 @@ paths:
                           ]
                         },
                         "organisations": {
-                          "id": 1,
-                          "name": "LS360"
+                          "id": 320,
+                          "name": "Rezi Buubles"
                         }
                       }
                     ],
@@ -3000,7 +3101,22 @@ paths:
                         "contact_person": "John Doe",
                         "lat_lng": "-18.08011,-34.73830",
                         "logo_url": "https://google.com",
-                        "active": true
+                        "active": true,
+                        "resellers": {
+                          "id": [
+                            4
+                          ],
+                          "name": [
+                            "360 Laundry Solutions"
+                          ],
+                          "id_name": [
+                            "4,360 Laundry Solutions"
+                          ]
+                        },
+                        "organisations": {
+                          "id": 320,
+                          "name": "Rezi Buubles"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -3135,13 +3251,31 @@ paths:
                         "id": 1,
                         "name": "HighTech Site",
                         "address": "109 BigTech Street, Cape Town 8800",
-                        "company_id": 50,
                         "contact_number": "+27876545611",
                         "contact_person": "John Doe",
                         "lat_lng": "{\"latLng\":{\"lat\":-33.848106900673486,\"lng\":18.5385}}",
                         "mifare_site_id": 17,
                         "allow_booking": false,
-                        "active": true
+                        "active": true,
+                        "resellers": {
+                          "id": [
+                            4
+                          ],
+                          "name": [
+                            "360 Laundry Solutions"
+                          ],
+                          "id_name": [
+                            "4,360 Laundry Solutions"
+                          ]
+                        },
+                        "organisations": {
+                          "id": 1,
+                          "name": "LS360"
+                        },
+                        "companies": {
+                          "id": 1,
+                          "name": "Supreme Vending"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -3185,7 +3319,6 @@ paths:
                         "id": 1,
                         "name": "HighTech Site",
                         "address": "109 BigTech Street, Cape Town 8800",
-                        "company_id": 50,
                         "contact_number": "+27876545611",
                         "contact_person": "John Doe",
                         "lat_lng": "{\"latLng\":{\"lat\":-33.848106900673486,\"lng\":18.5385}}",
@@ -3293,13 +3426,31 @@ paths:
                         "id": 1,
                         "name": "HighTech Site",
                         "address": "109 BigTech Street, Cape Town 8800",
-                        "company_id": 50,
                         "contact_number": "+27876545611",
                         "contact_person": "John Doe",
                         "lat_lng": "{\"latLng\":{\"lat\":-33.848106900673486,\"lng\":18.5385}}",
                         "mifare_site_id": 17,
                         "allow_booking": false,
-                        "active": true
+                        "active": true,
+                        "resellers": {
+                          "id": [
+                            4
+                          ],
+                          "name": [
+                            "360 Laundry Solutions"
+                          ],
+                          "id_name": [
+                            "4,360 Laundry Solutions"
+                          ]
+                        },
+                        "organisations": {
+                          "id": 1,
+                          "name": "LS360"
+                        },
+                        "companies": {
+                          "id": 1,
+                          "name": "Supreme Vending"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -3388,10 +3539,6 @@ paths:
                   pattern: ^[a-zA-Z1-9]+
                   description: International Mobile Subscriber Identity or Service Set Identifier (SSID).
                   example: '17654337383999700'
-                site_code:
-                  type: integer
-                  description: Unique customer site code.
-                  example: 'ABC123'
                 pos_type_id:
                   type: integer
                 host_hardware_id:
@@ -3476,45 +3623,84 @@ paths:
                       {
                         "id": 1,
                         "async_ratio": "0.00",
-                        "callback": 0,
-                        "calls": 23,
+                        "callback": 2,
+                        "calls": 11841,
                         "channels": 0,
                         "connected_at": "never",
-                        "csq": "22,0",
-                        "dip": 14,
-                        "divider": 10,
+                        "csq": "11,0",
+                        "dip": 5,
+                        "divider": 1,
                         "firmware_version": "04.13",
                         "heartbeat_rate": "0.00",
-                        "host_hardware_id": null,
                         "imsi": "not reported",
-                        "life_days": 1542,
-                        "local_time": "2024-05-27 15:05:47",
-                        "mdb_online": false,
+                        "life_days": 1572,
+                        "local_time": "2024-05-27 15:05:32",
+                        "mdb_online": true,
                         "minutes_connected": "0.00",
                         "multiplier": 1,
-                        "name": "21Tim",
-                        "password": "P@ss",
+                        "name": "1STFloor",
+                        "password": "L$36o",
                         "peer_host": "0.0.0.0",
                         "polling_frequency": 30,
-                        "pos_type_id": 2,
                         "protocol": "unknown",
                         "scale_factor": 1,
                         "screen_fitted": false,
-                        "seq": 32457,
-                        "site_id": 56,
+                        "seq": 31606,
                         "ssid": "LS360",
-                        "status_code": null,
                         "time_offset": -1,
                         "time_zone": 2,
                         "timestamp": "2024-05-26T22:05:04.000Z",
-                        "uid": "869867035272279",
-                        "unit_price": "10.00",
+                        "uid": "861359035223765",
+                        "unit_price": "0.00",
                         "vmc_expansion_id": "",
-                        "asset_state_id": 1,
-                        "coupon_price": "10.00",
-                        "short_name": "T21",
-                        "machine_serial_number": "878-484e",
-                        "active": false,
+                        "coupon_price": "0.00",
+                        "short_name": null,
+                        "machine_serial_number": null,
+                        "active": true,
+                        "resellers": {
+                          "id": [
+                            1
+                          ],
+                          "name": [
+                            "IQT Holdings"
+                          ],
+                          "id_name": [
+                            "1,IQT Holdings"
+                          ]
+                        },
+                        "organisations": {
+                          "id": 5,
+                          "name": "Supreme Vending"
+                        },
+                        "companies": {
+                          "id": 5,
+                          "name": "Supreme Vending"
+                        },
+                        "sites": {
+                          "id": 5,
+                          "name": "CSG"
+                        },
+                        "status_codes": {
+                          "id": 51,
+                          "name": "AVAILABLE"
+                        },
+                        "asset_states": {
+                          "id": 1,
+                          "name": "Production"
+                        },
+                        "pos_types": {
+                          "id": 2,
+                          "name": "LTE",
+                          "version": "1.0"
+                        },
+                        "host_hardware": {
+                          "id": 1,
+                          "name": "SQ Dryer"
+                        },
+                        "emulations": {
+                          "id": 1,
+                          "name": "Bills"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -3557,62 +3743,57 @@ paths:
                       {
                         "id": 1,
                         "async_ratio": "0.00",
-                        "callback": 0,
-                        "calls": 23,
+                        "callback": 2,
+                        "calls": 11841,
                         "channels": 0,
                         "connected_at": "never",
-                        "csq": "22,0",
-                        "dip": 14,
-                        "divider": 10,
+                        "csq": "11,0",
+                        "dip": 5,
+                        "divider": 1,
                         "firmware_version": "04.13",
                         "heartbeat_rate": "0.00",
-                        "host_hardware_id": null,
                         "imsi": "not reported",
-                        "life_days": 1542,
-                        "local_time": "2024-05-27 15:05:47",
-                        "mdb_online": false,
+                        "life_days": 1572,
+                        "local_time": "2024-05-27 15:05:32",
+                        "mdb_online": true,
                         "minutes_connected": "0.00",
                         "multiplier": 1,
-                        "name": "21Tim",
-                        "password": "P@ss",
+                        "name": "1STFloor",
+                        "password": "L$36o",
                         "peer_host": "0.0.0.0",
                         "polling_frequency": 30,
-                        "pos_type_id": 2,
                         "protocol": "unknown",
                         "scale_factor": 1,
                         "screen_fitted": false,
-                        "seq": 32457,
-                        "site_id": 56,
+                        "seq": 31606,
                         "ssid": "LS360",
-                        "status_code": null,
                         "time_offset": -1,
                         "time_zone": 2,
                         "timestamp": "2024-05-26T22:05:04.000Z",
-                        "uid": "869867035272279",
-                        "unit_price": "10.00",
+                        "uid": "861359035223765",
+                        "unit_price": "0.00",
                         "vmc_expansion_id": "",
-                        "asset_state_id": 1,
-                        "coupon_price": "10.00",
-                        "short_name": "T21",
-                        "machine_serial_number": "878-484e",
-                        "active": false,
+                        "coupon_price": "0.00",
+                        "short_name": null,
+                        "machine_serial_number": null,
+                        "active": true,
                         "resellers": {
                           "id": [
-                            4
+                            1
                           ],
                           "name": [
-                            "360 Laundry Solutions"
+                            "IQT Holdings"
                           ],
                           "id_name": [
-                            "4,360 Laundry Solutions"
+                            "1,IQT Holdings"
                           ]
                         },
                         "organisations": {
-                          "id": 1,
-                          "name": "LS360"
+                          "id": 5,
+                          "name": "Supreme Vending"
                         },
                         "companies": {
-                          "id": 1,
+                          "id": 5,
                           "name": "Supreme Vending"
                         },
                         "sites": {
@@ -3676,10 +3857,6 @@ paths:
                   pattern: ^[a-zA-Z1-9]+
                   description: International Mobile Subscriber Identity or Service Set Identifier (SSID).
                   example: '17654337383999700'
-                site_code:
-                  type: integer
-                  description: Unique customer site code.
-                  example: 'ABC123'
                 pos_type_id:
                   type: integer
                 host_hardware_id:
@@ -3763,45 +3940,84 @@ paths:
                       {
                         "id": 1,
                         "async_ratio": "0.00",
-                        "callback": 0,
-                        "calls": 23,
+                        "callback": 2,
+                        "calls": 11841,
                         "channels": 0,
                         "connected_at": "never",
-                        "csq": "22,0",
-                        "dip": 14,
-                        "divider": 10,
+                        "csq": "11,0",
+                        "dip": 5,
+                        "divider": 1,
                         "firmware_version": "04.13",
                         "heartbeat_rate": "0.00",
-                        "host_hardware_id": null,
                         "imsi": "not reported",
-                        "life_days": 1542,
-                        "local_time": "2024-05-27 15:05:47",
-                        "mdb_online": false,
+                        "life_days": 1572,
+                        "local_time": "2024-05-27 15:05:32",
+                        "mdb_online": true,
                         "minutes_connected": "0.00",
                         "multiplier": 1,
-                        "name": "21Tim",
-                        "password": "P@ss",
+                        "name": "1STFloor",
+                        "password": "L$36o",
                         "peer_host": "0.0.0.0",
                         "polling_frequency": 30,
-                        "pos_type_id": 2,
                         "protocol": "unknown",
                         "scale_factor": 1,
                         "screen_fitted": false,
-                        "seq": 32457,
-                        "site_id": 56,
+                        "seq": 31606,
                         "ssid": "LS360",
-                        "status_code": null,
                         "time_offset": -1,
                         "time_zone": 2,
                         "timestamp": "2024-05-26T22:05:04.000Z",
-                        "uid": "869867035272279",
-                        "unit_price": "10.00",
+                        "uid": "861359035223765",
+                        "unit_price": "0.00",
                         "vmc_expansion_id": "",
-                        "asset_state_id": 1,
-                        "coupon_price": "10.00",
-                        "short_name": "T21",
-                        "machine_serial_number": "878-484e",
-                        "active": false,
+                        "coupon_price": "0.00",
+                        "short_name": null,
+                        "machine_serial_number": null,
+                        "active": true,
+                        "resellers": {
+                          "id": [
+                            1
+                          ],
+                          "name": [
+                            "IQT Holdings"
+                          ],
+                          "id_name": [
+                            "1,IQT Holdings"
+                          ]
+                        },
+                        "organisations": {
+                          "id": 5,
+                          "name": "Supreme Vending"
+                        },
+                        "companies": {
+                          "id": 5,
+                          "name": "Supreme Vending"
+                        },
+                        "sites": {
+                          "id": 5,
+                          "name": "CSG"
+                        },
+                        "status_codes": {
+                          "id": 51,
+                          "name": "AVAILABLE"
+                        },
+                        "asset_states": {
+                          "id": 1,
+                          "name": "Production"
+                        },
+                        "pos_types": {
+                          "id": 2,
+                          "name": "LTE",
+                          "version": "1.0"
+                        },
+                        "host_hardware": {
+                          "id": 1,
+                          "name": "SQ Dryer"
+                        },
+                        "emulations": {
+                          "id": 1,
+                          "name": "Bills"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -4583,13 +4799,20 @@ paths:
                       {
                         "id": 1,
                         "name": "Washer 3000",
-                        "reseller_id": 1,
                         "hardware_type_id": 3,
                         "notes": "The best washer ever!",
                         "cycle_signal_source": 1,
                         "cycle_time": 30,
-                        "emulation_id": 2,
-                        "active": true
+                        "active": true,
+                        "resellers": {
+                          "id": 1,
+                          "name": "IQT Holdings"
+                        },
+                        "emulations": {
+                          "id": 1,
+                          "name": "Bills"
+                        },
+                        "cycle_signal_source_name": "Theoretical"
                       }
                     ],
                     "entries": 1,
@@ -4633,12 +4856,10 @@ paths:
                       {
                         "id": 1,
                         "name": "Washer 3000",
-                        "reseller_id": 1,
                         "hardware_type_id": 3,
                         "notes": "The best washer ever!",
                         "cycle_signal_source": 1,
                         "cycle_time": 30,
-                        "emulation_id": 2,
                         "active": true,
                         "resellers": {
                           "id": 1,
@@ -4724,13 +4945,20 @@ paths:
                       {
                         "id": 1,
                         "name": "Washer 3000",
-                        "reseller_id": 1,
                         "hardware_type_id": 3,
                         "notes": "The best washer ever!",
                         "cycle_signal_source": 1,
                         "cycle_time": 30,
-                        "emulation_id": 2,
-                        "active": true
+                        "active": true,
+                        "resellers": {
+                          "id": 1,
+                          "name": "IQT Holdings"
+                        },
+                        "emulations": {
+                          "id": 1,
+                          "name": "Bills"
+                        },
+                        "cycle_signal_source_name": "Theoretical"
                       }
                     ],
                     "entries": 1,
@@ -5314,14 +5542,35 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "provider_id": 1,
-                        "company_id": 5,
                         "merchant_id": "6789A",
                         "pos_token": "373-034534-ad354-a335",
                         "provider_site_id": "47724",
                         "callback_url": "https://zapper.com/webhook",
                         "allow_refund": false,
-                        "active": true
+                        "active": true,
+                        "resellers": {
+                          "id": [
+                            1
+                          ],
+                          "name": [
+                            "IQT Holdings"
+                          ],
+                          "id_name": [
+                            "1,IQT Holdings"
+                          ]
+                        },
+                        "organisations": {
+                          "id": 5,
+                          "name": "Supreme Vending"
+                        },
+                        "companies": {
+                          "id": 5,
+                          "name": "Supreme Vending"
+                        },
+                        "providers": {
+                          "id": 1,
+                          "name": "Zapper"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -5363,14 +5612,35 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "provider_id": 1,
-                        "company_id": 5,
                         "merchant_id": "6789A",
                         "pos_token": "373-034534-ad354-a335",
                         "provider_site_id": "47724",
                         "callback_url": "https://zapper.com/webhook",
                         "allow_refund": false,
-                        "active": true
+                        "active": true,
+                        "resellers": {
+                          "id": [
+                            1
+                          ],
+                          "name": [
+                            "IQT Holdings"
+                          ],
+                          "id_name": [
+                            "1,IQT Holdings"
+                          ]
+                        },
+                        "organisations": {
+                          "id": 5,
+                          "name": "Supreme Vending"
+                        },
+                        "companies": {
+                          "id": 5,
+                          "name": "Supreme Vending"
+                        },
+                        "providers": {
+                          "id": 1,
+                          "name": "Zapper"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -5445,14 +5715,35 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "provider_id": 1,
-                        "company_id": 5,
                         "merchant_id": "6789A",
                         "pos_token": "373-034534-ad354-a335",
                         "provider_site_id": "47724",
                         "callback_url": "https://zapper.com/webhook",
                         "allow_refund": false,
-                        "active": true
+                        "active": true,
+                        "resellers": {
+                          "id": [
+                            1
+                          ],
+                          "name": [
+                            "IQT Holdings"
+                          ],
+                          "id_name": [
+                            "1,IQT Holdings"
+                          ]
+                        },
+                        "organisations": {
+                          "id": 5,
+                          "name": "Supreme Vending"
+                        },
+                        "companies": {
+                          "id": 5,
+                          "name": "Supreme Vending"
+                        },
+                        "providers": {
+                          "id": 1,
+                          "name": "Zapper"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -5506,32 +5797,57 @@ paths:
                     "success": true,
                     "data": [
                       {
-                        "id": 131,
+                        "id": 1,
                         "acknowledged": 80,
                         "amount": "32.00",
-                        "company_id": 7,
                         "credit": "0.00",
                         "customer_name": "unknown",
-                        "device_id": 4010,
                         "divider": 1,
-                        "emulation_id": 3,
                         "end_run": 0,
                         "end_time": null,
                         "item": null,
                         "multiplier": 1,
-                        "organisation_id": 7,
                         "payment_date": "24-07-12 10:37:06",
                         "payment_id": "691100-53416",
                         "payment_reference": "ae6ec0-803a-11bb-88e6-11634890y2f7",
-                        "provider_id": 2,
                         "retry": 0,
-                        "site_id": 153,
                         "start_run": 0,
                         "start_time": null,
                         "time": "2024-07-12T10:37:06.203Z",
                         "timestamp": 1720780626202,
                         "uid": "e465b8a4ed60    ",
-                        "uuid": "aee5eec0-403a-11ef-88e6-116a4589c2f7"
+                        "uuid": "aee5eec0-403a-11ef-88e6-116a4589c2f7",
+                        "status_codes": {
+                          "id": 32,
+                          "name": "SOURCE PAYMENT FAILED"
+                        },
+                        "providers": {
+                          "id": 2,
+                          "name": "SnapScan",
+                          "logo_url": "snapscan.png",
+                          "color": "#309dbe"
+                        },
+                        "emulations": {
+                          "id": 3,
+                          "name": "Mifare Coin Pulse"
+                        },
+                        "devices": {
+                          "id": 4010,
+                          "name": "QA TEST UNIT",
+                          "uid": "e465b8a4ed60"
+                        },
+                        "sites": {
+                          "id": 153,
+                          "name": "UNALLOCATED"
+                        },
+                        "companies": {
+                          "id": 7,
+                          "name": "IQ Telemetry Test Account"
+                        },
+                        "organisations": {
+                          "id": 7,
+                          "name": "IQ Telemetry Test Account"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -5670,6 +5986,10 @@ paths:
                         "reseller_id": 1,
                         "state": "Out of order",
                         "active": true,
+                        "resellers": {
+                          "id": 1,
+                          "name": "IQT Holdings"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -5714,6 +6034,10 @@ paths:
                         "reseller_id": 1,
                         "state": "Out of order",
                         "active": true,
+                        "resellers": {
+                          "id": 1,
+                          "name": "IQT Holdings"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -5773,6 +6097,10 @@ paths:
                         "reseller_id": 1,
                         "state": "Out of order",
                         "active": true,
+                        "resellers": {
+                          "id": 1,
+                          "name": "IQT Holdings"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -5859,12 +6187,32 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "device_id": 104,
-                        "asset_state_id": 1,
-                        "site_id": 9,
-                        "user_id": 4,
                         "notes": "Testing this device",
-                        "timestamp": "2024-08-13T10:33:38.323Z"
+                        "timestamp": "2024-08-13T10:33:38.323Z",
+                        "devices": {
+                          "id": 1,
+                          "name": "New Device",
+                          "uid": "aabbccddff"
+                        },
+                        "sites": {
+                          "id": 4,
+                          "name": "NSRI Constantia Village"
+                        },
+                        "users": {
+                          "id": 2,
+                          "name": "Test Account",
+                          "contact_number": ""
+                        },
+                        "asset_states": {
+                          "id": 2,
+                          "state": "Testing"
+                        },
+                        "resellers": {
+                          "id": 7,
+                          "name": "Homii",
+                          "contact_number": "",
+                          "logo_url": null
+                        }
                       }
                     ],
                     "entries": 1,
@@ -5906,16 +6254,12 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "device_id": 104,
-                        "asset_state_id": 1,
-                        "site_id": 9,
-                        "user_id": 4,
                         "notes": "Testing this device",
                         "timestamp": "2024-08-13T10:33:38.323Z",
                         "devices": {
                           "id": 1,
                           "name": "New Device",
-                          "uid": "aaa-bbb-ccc"
+                          "uid": "aabbccddff"
                         },
                         "sites": {
                           "id": 4,
@@ -5927,12 +6271,12 @@ paths:
                           "contact_number": ""
                         },
                         "asset_states": {
-                          "id": 1,
-                          "state": "Production"
+                          "id": 2,
+                          "state": "Testing"
                         },
                         "resellers": {
-                          "id": 4,
-                          "name": "360 Laundry Solutions",
+                          "id": 7,
+                          "name": "Homii",
                           "contact_number": "",
                           "logo_url": null
                         }
@@ -6006,12 +6350,32 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "device_id": 104,
-                        "asset_state_id": 1,
-                        "site_id": 9,
-                        "user_id": 4,
                         "notes": "Testing this device",
-                        "timestamp": "2024-08-13T10:33:38.323Z"
+                        "timestamp": "2024-08-13T10:33:38.323Z",
+                        "devices": {
+                          "id": 1,
+                          "name": "New Device",
+                          "uid": "aabbccddff"
+                        },
+                        "sites": {
+                          "id": 4,
+                          "name": "NSRI Constantia Village"
+                        },
+                        "users": {
+                          "id": 2,
+                          "name": "Test Account",
+                          "contact_number": ""
+                        },
+                        "asset_states": {
+                          "id": 2,
+                          "state": "Testing"
+                        },
+                        "resellers": {
+                          "id": 7,
+                          "name": "Homii",
+                          "contact_number": "",
+                          "logo_url": null
+                        }
                       }
                     ],
                     "entries": 1,
@@ -6931,11 +7295,16 @@ components:
             These values can be found in the OpenAPI spec, and are defined under every endpoint type.
         can_access:
           type: boolean
-        module_fk:
-          type: number
         action:
           type: string
           enum: [ "read", "create", "delete", "update" ]
+        modules:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
     RolesResponse:
       type: object
       properties:
@@ -6943,10 +7312,6 @@ components:
           type: integer
         name:
           type: string
-        reseller_id:
-          type: integer
-        organisation_id:
-          type: integer
         company_id_list:
           type: array
           description: If array is empty, access to all companies linked to user. If not empty, only defined companies in array are accessible by user.
@@ -6964,8 +7329,6 @@ components:
             type: integer
         is_reseller:
           type: boolean
-        access_level_id:
-          type: integer
         resellers:
           type: object
           properties:
@@ -7182,8 +7545,6 @@ components:
           type: integer
         name:
           type: string
-        organisation_id:
-          type: string
         address:
           type: string
         contact_number:
@@ -7236,8 +7597,8 @@ components:
           type: string
         lat_lng:
           type: string
-        company_id:
-          type: integer
+        allow_booking:
+          type: boolean
         mifare_site_id:
           type: integer
         active:
@@ -7284,15 +7645,6 @@ components:
         imsi:
           type: string
           description: International Mobile Subscriber Identity or Service Set Identifier (SSID).
-        site_code:
-          type: integer
-          description: Unique customer site code.
-        site_id:
-          type: integer
-        pos_type_id:
-          type: integer
-        host_hardware_id:
-          type: integer
         polling_frequency:
           type: integer
           description: Expected number of polled calls from the device.
@@ -7601,10 +7953,6 @@ components:
           description: Indicates whether the cycle signal is coming from the machine (0) or theoretical time (1).
         hardware_type_id:
           type: integer
-        reseller_id:
-          type: integer
-        emulation_id:
-          type: integer
         active:
           type: boolean
         resellers:
@@ -7763,10 +8111,6 @@ components:
       properties:
         id:
           type: integer
-        provider_id:
-          type: integer
-        company_id:
-          type: integer
         merchant_id:
           type: string
         pos_token:
@@ -7815,18 +8159,6 @@ components:
         id:
           type: integer
         acknowledged:
-          type: integer
-        emulation_id:
-          type: integer
-        provider_id:
-          type: integer
-        company_id:
-          type: integer
-        organisation_id:
-          type: integer
-        site_id:
-          type: integer
-        device_id:
           type: integer
         uid:
           type: string
@@ -7930,6 +8262,13 @@ components:
           type: integer
         active:
           type: boolean
+        resellers:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
     RefundsResponse:
       type: object
       properties:
@@ -7959,14 +8298,6 @@ components:
       type: object
       properties:
         id:
-          type: integer
-        device_id:
-          type: integer
-        user_id:
-          type: integer
-        site_id:
-          type: integer
-        asset_state_id:
           type: integer
         notes:
           type: string
@@ -8150,6 +8481,7 @@ components:
           type: integer
         name:
           type: string
+
     UsersAccessResponse:
       type: object
       properties:
