@@ -20,7 +20,7 @@ info:
     name: Ryan Pomario
     email: ryan@iqt.co.za
 
-  version: 1.0.6
+  version: 1.0.8
 
 externalDocs:
   description: Click here to learn more about Payway.
@@ -564,6 +564,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
 
   '/roles':
@@ -741,7 +745,30 @@ paths:
                         "reseller_id": 1,
                         "site_id_list": [ ],
                         "is_reseller": false,
-                        "access_level_id": 4
+                        "access_level_id": 4,
+                        "resellers": {
+                          "id": 1,
+                          "name": "IQT Holdings"
+                        },
+                        "organisations": {
+                          "id": 10,
+                          "name": "Chilli Mobile"
+                        },
+                        "access_levels": {
+                          "id": 9,
+                          "name": "Standard User"
+                        },
+                        "access": {
+                          "id": [
+                            110
+                          ],
+                          "name": [
+                            "Get Access Levels"
+                          ],
+                          "action": [
+                            "read"
+                          ]
+                        }
                       }
                     ],
                     "entries": 1,
@@ -875,6 +902,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/users':
     post:
@@ -1204,6 +1235,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
 
   '/users/access/{id}':
@@ -1487,6 +1522,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/user_roles':
     post:
@@ -1636,6 +1675,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/user_roles/user/{id}':
     get:
@@ -1686,6 +1729,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/customers':
     post:
@@ -1995,6 +2042,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
 
   '/resellers':
@@ -2040,9 +2091,13 @@ paths:
                   maxLength: 50
                   example: "-18.08011,-34.73830"
                   pattern: '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$'
+                logo_url:
+                  type: string
+                  example: 'https://google.com/image.png'
+                  description: Link to png used for logo
                 active:
                   type: boolean
-              required: [ "name","address", "contact_number", "contact_person", "lat_lng", "active" ]
+              required: [ "name", "address", "contact_number", "contact_person", "lat_lng", "active" ]
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -2122,6 +2177,7 @@ paths:
                         "contact_number": "+2712795494",
                         "contact_person": "John Doe",
                         "lat_lng": "-18.08011,-34.73830",
+                        "logo_url": "https://google.com",
                         "active": true
                       }
                     ],
@@ -2167,6 +2223,10 @@ paths:
                   maxLength: 50
                   example: "-18.08011,-34.73830"
                   pattern: '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$'
+                logo_url:
+                  type: string
+                  example: 'https://google.com/image.png'
+                  description: Link to png used for logo
                 active:
                   type: boolean
       responses:
@@ -2201,6 +2261,7 @@ paths:
                         "contact_number": "+2712795494",
                         "contact_person": "John Doe",
                         "lat_lng": "-18.08011,-34.73830",
+                        "logo_url": "https://google.com",
                         "active": true
                       }
                     ],
@@ -2248,6 +2309,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/organisations':
     post:
@@ -2297,6 +2362,10 @@ paths:
                   items:
                     type: integer
                   example: [ 7, 1 ]
+                logo_url:
+                  type: string
+                  example: 'https://google.com/image.png'
+                  description: Link to png used for logo
                 active:
                   type: boolean
               required: [ "name", "address", "contact_number", "contact_person", "reseller_id", "active" ]
@@ -2332,6 +2401,7 @@ paths:
                         "contact_number": "+2712795494",
                         "contact_person": "John Doe",
                         "lat_lng": "-18.08011,-34.73830",
+                        "logo_url": "https://google.com",
                         "active": true
                       }
                     ],
@@ -2379,7 +2449,19 @@ paths:
                         "contact_number": "+2712795494",
                         "contact_person": "John Doe",
                         "lat_lng": "-18.08011,-34.73830",
-                        "active": true
+                        "url_logo": "https://google.com",
+                        "active": true,
+                        "resellers": {
+                          "id": [
+                            4
+                          ],
+                          "name": [
+                            "360 Laundry Solutions"
+                          ],
+                          "id_name": [
+                            "4,360 Laundry Solutions"
+                          ]
+                        }
                       }
                     ],
                     "entries": 1,
@@ -2429,6 +2511,10 @@ paths:
                   items:
                     type: integer
                   example: [ 7, 1 ]
+                logo_url:
+                  type: string
+                  example: 'https://google.com/image.png'
+                  description: Link to png used for logo
                 active:
                   type: boolean
 
@@ -2464,6 +2550,7 @@ paths:
                         "contact_number": "+2712795494",
                         "contact_person": "John Doe",
                         "lat_lng": "-18.08011,-34.73830",
+                        "logo_url": "https://google.com",
                         "active": true
                       }
                     ],
@@ -2511,6 +2598,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/resellers_organisations':
     post:
@@ -2575,56 +2666,6 @@ paths:
                     "timestamp": 1723108298846
                   }
 
-  '/resellers_organisations/reseller/{id}':
-    get:
-      tags:
-        - Data
-        - Resellers Organisations
-      summary: Get object for reseller organisation link by reseller id
-      operationId: getResellersOrganisationsByResellerId
-      responses:
-        '401':
-          description: Authorization information is missing or invalid.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UnauthorizedResponse"
-        '400':
-          description: Bad request.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        '200':
-          description: Returns an array of "reseller organisation" items from the database
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/ResellersOrganisationsResponse"
-                example:
-                  {
-                    "success": true,
-                    "data": [
-                      {
-                        "id": 1,
-                        "reseller_id": 3,
-                        "organisation_id": 1
-                      }
-                    ],
-                    "entries": 1,
-                    "total_count": null,
-                    "timestamp": 1723108298846
-                  }
-    parameters:
-      - $ref: "#/components/parameters/idParam"
-      - $ref: "#/components/parameters/limitParam"
-      - $ref: "#/components/parameters/offsetParam"
-      - $ref: "#/components/parameters/orderParam"
-      - $ref: "#/components/parameters/countParam"
-      - $ref: "#/components/parameters/others"
-
   '/resellers_organisations/{id}':
     get:
       tags:
@@ -2660,7 +2701,9 @@ paths:
                       {
                         "id": 1,
                         "reseller_id": 3,
-                        "organisation_id": 1
+                        "organisation_id": 1,
+                        "reseller_name": "IQT Holdings",
+                        "organisation_name": "Kiddies Rides"
                       }
                     ],
                     "entries": 1,
@@ -2707,6 +2750,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/companies':
     post:
@@ -2756,6 +2803,10 @@ paths:
                 email_template:
                   type: string
                   description: GZIPed string of custom HTML used for email templates.
+                logo_url:
+                  type: string
+                  example: 'https://google.com/image.png'
+                  description: Link to png used for logo
                 active:
                   type: boolean
               required: [ "name", "address", "contact_number", "contact_person", "organisation_id", "active" ]
@@ -2793,7 +2844,8 @@ paths:
                         "lat_lng": "-18.08011,-34.73830",
                         "organisation_id": 4,
                         "email_template": "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",
-                        "active": true,
+                        "logo_url": "https://google.com",
+                        "active": true
                       }
                     ],
                     "entries": 1,
@@ -2842,7 +2894,23 @@ paths:
                         "lat_lng": "-18.08011,-34.73830",
                         "organisation_id": 4,
                         "email_template": "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",
+                        "logo_url": "https://google.com",
                         "active": true,
+                        "resellers": {
+                          "id": [
+                            4
+                          ],
+                          "name": [
+                            "360 Laundry Solutions"
+                          ],
+                          "id_name": [
+                            "4,360 Laundry Solutions"
+                          ]
+                        },
+                        "organisations": {
+                          "id": 1,
+                          "name": "LS360"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -2893,6 +2961,10 @@ paths:
                 email_template:
                   type: string
                   description: GZIPed string of custom HTML used for email templates.
+                logo_url:
+                  type: string
+                  example: 'https://google.com/image.png'
+                  description: Link to png used for logo
                 active:
                   type: boolean
       responses:
@@ -2927,6 +2999,7 @@ paths:
                         "contact_number": "+27876545611",
                         "contact_person": "John Doe",
                         "lat_lng": "-18.08011,-34.73830",
+                        "logo_url": "https://google.com",
                         "active": true
                       }
                     ],
@@ -2974,6 +3047,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/sites':
     post:
@@ -3018,7 +3095,7 @@ paths:
                   type: string
                   example: "{\"latLng\":{\"lat\":-33.848106900673486,\"lng\":18.5385}}"
                   pattern: '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$'
-                companies_id:
+                company_id:
                   type: integer
                   example: 5
                 mifare_site_id:
@@ -3028,7 +3105,7 @@ paths:
                   type: boolean
                 active:
                   type: boolean
-              required: [ "name", "address", "contact_number", "contact_person", "companies_id", "active" ]
+              required: [ "name", "address", "contact_number", "contact_person", "company_id", "active" ]
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -3058,14 +3135,13 @@ paths:
                         "id": 1,
                         "name": "HighTech Site",
                         "address": "109 BigTech Street, Cape Town 8800",
-                        "companies_id": 50,
+                        "company_id": 50,
                         "contact_number": "+27876545611",
                         "contact_person": "John Doe",
                         "lat_lng": "{\"latLng\":{\"lat\":-33.848106900673486,\"lng\":18.5385}}",
                         "mifare_site_id": 17,
                         "allow_booking": false,
                         "active": true
-
                       }
                     ],
                     "entries": 1,
@@ -3109,14 +3185,32 @@ paths:
                         "id": 1,
                         "name": "HighTech Site",
                         "address": "109 BigTech Street, Cape Town 8800",
-                        "companies_id": 50,
+                        "company_id": 50,
                         "contact_number": "+27876545611",
                         "contact_person": "John Doe",
                         "lat_lng": "{\"latLng\":{\"lat\":-33.848106900673486,\"lng\":18.5385}}",
                         "mifare_site_id": 17,
                         "allow_booking": false,
-                        "active": true
-
+                        "active": true,
+                        "resellers": {
+                          "id": [
+                            4
+                          ],
+                          "name": [
+                            "360 Laundry Solutions"
+                          ],
+                          "id_name": [
+                            "4,360 Laundry Solutions"
+                          ]
+                        },
+                        "organisations": {
+                          "id": 1,
+                          "name": "LS360"
+                        },
+                        "companies": {
+                          "id": 1,
+                          "name": "Supreme Vending"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -3160,7 +3254,7 @@ paths:
                   type: string
                   example: "{\"latLng\":{\"lat\":-33.848106900673486,\"lng\":18.5385}}"
                   pattern: '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$'
-                companies_id:
+                company_id:
                   type: integer
                   example: 5
                 mifare_site_id:
@@ -3199,14 +3293,13 @@ paths:
                         "id": 1,
                         "name": "HighTech Site",
                         "address": "109 BigTech Street, Cape Town 8800",
-                        "companies_id": 50,
+                        "company_id": 50,
                         "contact_number": "+27876545611",
                         "contact_person": "John Doe",
                         "lat_lng": "{\"latLng\":{\"lat\":-33.848106900673486,\"lng\":18.5385}}",
                         "mifare_site_id": 17,
                         "allow_booking": false,
                         "active": true
-
                       }
                     ],
                     "entries": 1,
@@ -3253,6 +3346,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/devices':
     post:
@@ -3350,7 +3447,7 @@ paths:
                   example: 'SWMN20045XY2323223'
                 active:
                   type: boolean
-              required: [ "name", "uid", "imsi", "site_id", "pos_type_id", "host_hardware_id", "polling_frequency", "scale_factor", "time_zone", "screen_fitted", "multiplier", "divider", "unit_price", "active" ]
+              required: [ "name", "uid", "imsi", "site_id", "pos_type_id", "asset_state_id", "host_hardware_id", "polling_frequency", "scale_factor", "time_zone", "screen_fitted", "multiplier", "divider", "unit_price", "active" ]
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -3499,6 +3596,50 @@ paths:
                         "short_name": "T21",
                         "machine_serial_number": "878-484e",
                         "active": false,
+                        "resellers": {
+                          "id": [
+                            4
+                          ],
+                          "name": [
+                            "360 Laundry Solutions"
+                          ],
+                          "id_name": [
+                            "4,360 Laundry Solutions"
+                          ]
+                        },
+                        "organisations": {
+                          "id": 1,
+                          "name": "LS360"
+                        },
+                        "companies": {
+                          "id": 1,
+                          "name": "Supreme Vending"
+                        },
+                        "sites": {
+                          "id": 5,
+                          "name": "CSG"
+                        },
+                        "status_codes": {
+                          "id": 51,
+                          "name": "AVAILABLE"
+                        },
+                        "asset_states": {
+                          "id": 1,
+                          "name": "Production"
+                        },
+                        "pos_types": {
+                          "id": 2,
+                          "name": "LTE",
+                          "version": "1.0"
+                        },
+                        "host_hardware": {
+                          "id": 1,
+                          "name": "SQ Dryer"
+                        },
+                        "emulations": {
+                          "id": 1,
+                          "name": "Bills"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -3707,6 +3848,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/logs_fatal/{id}':
     get:
@@ -3771,6 +3916,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
 
   '/logs_info/{id}':
@@ -3834,6 +3983,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/logs_warning/{id}':
     get:
@@ -3896,6 +4049,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/logs_combined/{id}':
     get:
@@ -3961,6 +4118,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/providers':
     post:
@@ -4153,6 +4314,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/pos_types':
     post:
@@ -4335,6 +4500,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/host_hardware':
     post:
@@ -4420,7 +4589,7 @@ paths:
                         "cycle_signal_source": 1,
                         "cycle_time": 30,
                         "emulation_id": 2,
-                        "active": true,
+                        "active": true
                       }
                     ],
                     "entries": 1,
@@ -4471,6 +4640,15 @@ paths:
                         "cycle_time": 30,
                         "emulation_id": 2,
                         "active": true,
+                        "resellers": {
+                          "id": 1,
+                          "name": "IQT Holdings"
+                        },
+                        "emulations": {
+                          "id": 1,
+                          "name": "Bills"
+                        },
+                        "cycle_signal_source_name": "Theoretical"
                       }
                     ],
                     "entries": 1,
@@ -4552,7 +4730,7 @@ paths:
                         "cycle_signal_source": 1,
                         "cycle_time": 30,
                         "emulation_id": 2,
-                        "active": true,
+                        "active": true
                       }
                     ],
                     "entries": 1,
@@ -4566,6 +4744,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/status_codes':
     post:
@@ -4780,6 +4962,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/emulations':
     post:
@@ -4949,6 +5135,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/connectivity_history/{id}':
     get:
@@ -5276,6 +5466,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/transactions/{id}':
     get:
@@ -5387,7 +5581,7 @@ paths:
                       {
                         "id": 4,
                         "organisation_id": 10,
-                        "companies_id": 10,
+                        "company_id": 10,
                         "amount": 10,
                         "device_uid": 736e740b,
                         "refund_reference": null,
@@ -5409,6 +5603,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/asset_states':
     post:
@@ -5588,6 +5786,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/device_activity_audit':
     post:
@@ -5626,7 +5828,10 @@ paths:
                   type: string
                   example: "2024-08-13T10:33:38.323Z"
                   description: Time of entry creation in UTC.
-              required: [ "device_id", "user_id", "site_id", "asset_state_id" ]
+                reseller_id:
+                  type: integer
+                  example: 4
+              required: [ "device_id", "user_id", "site_id", "asset_state_id", "reseller_id" ]
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -5706,7 +5911,31 @@ paths:
                         "site_id": 9,
                         "user_id": 4,
                         "notes": "Testing this device",
-                        "timestamp": "2024-08-13T10:33:38.323Z"
+                        "timestamp": "2024-08-13T10:33:38.323Z",
+                        "devices": {
+                          "id": 1,
+                          "name": "New Device",
+                          "uid": "aaa-bbb-ccc"
+                        },
+                        "sites": {
+                          "id": 4,
+                          "name": "NSRI Constantia Village"
+                        },
+                        "users": {
+                          "id": 2,
+                          "name": "Test Account",
+                          "contact_number": ""
+                        },
+                        "asset_states": {
+                          "id": 1,
+                          "state": "Production"
+                        },
+                        "resellers": {
+                          "id": 4,
+                          "name": "360 Laundry Solutions",
+                          "contact_number": "",
+                          "logo_url": null
+                        }
                       }
                     ],
                     "entries": 1,
@@ -5747,6 +5976,9 @@ paths:
                   type: string
                   example: "2024-08-13T10:33:38.323Z"
                   description: Time of entry creation in UTC.
+                reseller_id:
+                  type: integer
+                  example: 4
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -5793,6 +6025,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/bookings/{id}':
     get:
@@ -5987,6 +6223,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/missed_bookings/{id}':
     get:
@@ -6084,6 +6324,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/notifications':
     post:
@@ -6343,6 +6587,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/activity_logs/{id}':
     get:
@@ -6402,6 +6650,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/modules':
     post:
@@ -6594,6 +6846,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
 
   '/access_levels/{id}':
@@ -6648,6 +6904,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
 
 components:
@@ -6706,6 +6966,42 @@ components:
           type: boolean
         access_level_id:
           type: integer
+        resellers:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        organisations:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        access_levels:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        access:
+          type: object
+          properties:
+            id:
+              type: array
+              items:
+                type: integer
+            name:
+              type: array
+              items:
+                type: string
+            action:
+              type: array
+              items:
+                type: string
     UsersResponse:
       type: object
       properties:
@@ -6807,6 +7103,10 @@ components:
           type: integer
         organisation_id:
           type: integer
+        reseller_name:
+          type: string
+        organisation_name:
+          type: string
     UserAccessDetailResponse:
       type: object
       properties:
@@ -6837,6 +7137,8 @@ components:
           type: string
         lat_lng:
           type: string
+        logo_url:
+          type: string
         active:
           type: boolean
     OrganisationsResponse:
@@ -6854,8 +7156,25 @@ components:
           type: string
         lat_lng:
           type: string
+        logo_url:
+          type: string
         active:
           type: boolean
+        resellers:
+          type: object
+          properties:
+            id:
+              type: array
+              items:
+                type: integer
+            name:
+              type: array
+              items:
+                type: string
+            id_name:
+              type: array
+              items:
+                type: string
     CompaniesResponse:
       type: object
       properties:
@@ -6876,8 +7195,32 @@ components:
         email_template:
           type: string
           description: GZIPed string of custom HTML used for email templates.
+        logo_url:
+          type: string
         active:
           type: boolean
+        resellers:
+          type: object
+          properties:
+            id:
+              type: array
+              items:
+                type: integer
+            name:
+              type: array
+              items:
+                type: string
+            id_name:
+              type: array
+              items:
+                type: string
+        organisations:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
     SitesResponse:
       type: object
       properties:
@@ -6893,12 +7236,41 @@ components:
           type: string
         lat_lng:
           type: string
-        companies_id:
+        company_id:
           type: integer
         mifare_site_id:
           type: integer
         active:
           type: boolean
+        resellers:
+          type: object
+          properties:
+            id:
+              type: array
+              items:
+                type: integer
+            name:
+              type: array
+              items:
+                type: string
+            id_name:
+              type: array
+              items:
+                type: string
+        organisations:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        companies:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
     DevicesResponse:
       type: object
       properties:
@@ -7003,6 +7375,79 @@ components:
           description: Serial number of the physical machine.
         active:
           type: boolean
+        resellers:
+          type: object
+          properties:
+            id:
+              type: array
+              items:
+                type: integer
+            name:
+              type: array
+              items:
+                type: string
+            id_name:
+              type: array
+              items:
+                type: string
+        organisations:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        companies:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        sites:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        status_codes:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        asset_states:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        pos_types:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            version:
+              type: string
+        host_hardware:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        emulations:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
     LogsFatalResponse:
       type: object
       properties:
@@ -7162,6 +7607,22 @@ components:
           type: integer
         active:
           type: boolean
+        resellers:
+          type: object
+          properties:
+            id:
+              type: array
+              items:
+                type: integer
+        emulations:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        cycle_signal_source_name:
+          type: string
     StatusCodesResponse:
       type: object
       properties:
@@ -7320,6 +7781,34 @@ components:
           type: boolean
         active:
           type: boolean
+        resellers:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        organisations:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        companies:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        providers:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
     TransactionsResponse:
       type: object
       properties:
@@ -7375,6 +7864,61 @@ components:
           type: integer
         end_time:
           type: integer
+        status_code:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        providers:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            logo_url:
+              type: string
+            color:
+              type: string
+        emulations:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        devices:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            uid:
+              type: string
+        sites:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        companies:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        organisations:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
     AssetStatesResponse:
       type: object
       properties:
@@ -7391,7 +7935,7 @@ components:
       properties:
         id:
           type: integer
-        companies_id:
+        company_id:
           type: integer
         organisations_id:
           type: integer
@@ -7430,6 +7974,49 @@ components:
         timestamp:
           type: string
           description: Time of entry creation in UTC.
+        devices:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            uid:
+              type: string
+        sites:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        users:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            contact_number:
+              type: string
+        asset_states:
+          type: object
+          properties:
+            id:
+              type: integer
+            state:
+              type: string
+        resellers:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            contact_number:
+              type: string
+            logo_url:
+              type: string
     CustomersResponse:
       type: object
       properties:
@@ -7632,24 +8219,50 @@ components:
     UnauthorizedResponse:
       type: object
       properties:
-        err:
+        success:
+          type: boolean
+        error:
           type: string
-          description: User does not have permissions to access endpoint operation.
+          description: Error returned by backend.
+        details:
+          type: string
+          description: Any extra information around the error.
+        type:
+          type: string
+          description: Type of error encountered.
+        timestamp:
+          type: string
       example:
         {
-          "err": "Unauthorized. [getUserAccess]"
+          "success": false,
+          "error": "Account not found or setup correctly.",
+          "details": "x-user-token: undefined",
+          "type": "internal",
+          "timestamp": 1723108298846
         }
     ErrorResponse:
       type: object
       properties:
-        err:
+        success:
+          type: boolean
+        error:
           type: string
-          description: Any internal error is returned here.
+          description: Error returned by backend.
+        details:
+          type: string
+          description: Any extra information around the error.
+        type:
+          type: string
+          description: Type of error encountered.
+        timestamp:
+          type: string
       example:
         {
           "success": false,
-          "error": "[INTERNAL] error: insert or update on table \"devices\" violates foreign key constraint \"devices_host_hardware_id_fk\"",
-          "timestamp": 1723639902458
+          "error": "insert or update on table \"asset_states\" violates foreign key constraint \"asset_states_resellers_id_fk\"",
+          "details": null,
+          "type": "internal",
+          "timestamp": 1723108298846
         }
 
 
@@ -7674,9 +8287,6 @@ components:
         id:
           value: 12
           summary: Search by specific primary key aka "id".
-        idList:
-          value: 1,2,6
-          summary: Search by multiple specific primary key aka "id".
         all:
           value: '_all'
           summary: Search by all accessible objects.
@@ -7733,7 +8343,7 @@ components:
           - type: array
             items:
               type: string
-            pattern: ^\w+:(asc|desc)$
+              pattern: ^\w+:(asc|desc)$
       examples:
         asc:
           value: "field:asc"
@@ -7741,6 +8351,106 @@ components:
         desc:
           value: "field:desc"
           summary: Filters the field specific by descending order.
+    smallerThanParam:
+      in: query
+      name: st
+      required: false
+      schema:
+        anyOf:
+          - type: string
+            pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
+          - type: string
+            pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+          - type: array
+            items:
+              type: string
+              pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
+          - type: array
+            items:
+              type: string
+              pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+      examples:
+        asc:
+          value: "st:100"
+          summary: Filters the field smaller than provided number.
+        desc:
+          value: "st:2024-04-10 00:00:00"
+          summary: Filters the field smaller than the provided date.
+    greaterThanParam:
+      in: query
+      name: gt
+      required: false
+      schema:
+        anyOf:
+          - type: string
+            pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
+          - type: string
+            pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+          - type: array
+            items:
+              type: string
+              pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
+          - type: array
+            items:
+              type: string
+              pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+      examples:
+        asc:
+          value: "st:100"
+          summary: Filters the field greater than provided number.
+        desc:
+          value: "st:2024-04-10 00:00:00"
+          summary: Filters the field greater than the provided date.
+    smallerThanEqualParam:
+      in: query
+      name: ste
+      required: false
+      schema:
+        anyOf:
+          - type: string
+            pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
+          - type: string
+            pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+          - type: array
+            items:
+              type: string
+              pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
+          - type: array
+            items:
+              type: string
+              pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+      examples:
+        asc:
+          value: "ste:100"
+          summary: Filters the field smaller than and equal to provided number.
+        desc:
+          value: "ste:2024-04-10 00:00:00"
+          summary: Filters the field smaller than and equal to the provided date.
+    greaterThanEqualParam:
+      in: query
+      name: gte
+      required: false
+      schema:
+        anyOf:
+          - type: string
+            pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
+          - type: string
+            pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+          - type: array
+            items:
+              type: string
+              pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
+          - type: array
+            items:
+              type: string
+              pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+      examples:
+        asc:
+          value: "gte:100"
+          summary: Filters the field greater than and equal to provided number.
+        desc:
+          value: "gte:2024-04-10 00:00:00"
+          summary: Filters the field greater than and equal to the provided date.
 
     countParam:
       in: query
@@ -7774,8 +8484,9 @@ components:
         dateFind:
           value: "2024-08-01 00:00:00"
           summary: Searches in specific field for date equaling to "2024-08-01 00:00:00".
-
-
+        multipleParam:
+          value: "1,2,10"
+          summary: Searches in specific field for 1 OR 2 OR 10.
 
 security:
   - XUserToken: [ ]
