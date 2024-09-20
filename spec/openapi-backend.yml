@@ -194,7 +194,7 @@ paths:
               properties:
                 client_email:
                   type: string
-                  pattern: '^(([^+<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
+                  pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
                   example: 'test@iqt.co.za'
                   maxLength: 320
                   description: Email needs to be working otherwise Firebase verification will not work.
@@ -307,7 +307,7 @@ paths:
               properties:
                 client_email:
                   type: string
-                  pattern: '^(([^+<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
+                  pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
                   example: 'test@iqt.co.za'
                   description: Email needs to be working otherwise Firebase reset email will not work.
                   maxLength: 320
@@ -676,7 +676,7 @@ paths:
                   type: integer
                   description: Foreign key access level identification.
                   example: 4
-              required: [ "name", "reseller_id" ]
+              required: [ "name", "reseller_id", "organisation_id" ]
               example:
                 {
                   "name": "New Role",
@@ -1028,7 +1028,7 @@ paths:
                   type: string
                   example: 'john.doe@gmail.com'
                   maxLength: 320
-                  pattern: '^(([^+<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
+                  pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
                 email_verified:
                   type: boolean
                 contact_number:
@@ -1050,9 +1050,14 @@ paths:
                 proxy_user:
                   type: boolean
                   description: Special user that should only be used in certain cases.
+                users_roles:
+                  type: array
+                  items:
+                    type: integer
+                  description: Special user that should only be used in certain cases.
                 active:
                   type: boolean
-              required: [ "displayname", "email", "currency", "delimiter", "proxy_user" ]
+              required: [ "displayname", "email", "currency", "delimiter", "proxy_user", "users_roles" ]
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -1181,7 +1186,7 @@ paths:
                   type: string
                   maxLength: 320
                   example: 'john.doe@gmail.com'
-                  pattern: '^(([^+<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
+                  pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
                 email_verified:
                   type: boolean
                 contact_number:
@@ -1209,6 +1214,10 @@ paths:
                 password:
                   type: string
                   description: New password provided by user.
+                users_roles:
+                  type: array
+                  items:
+                    type: integer
                 active:
                   type: boolean
       responses:
@@ -1420,6 +1429,9 @@ paths:
                   type: integer
                   example: 3
                   description: Access ID can be found in the access resource.
+                can_access:
+                  type: boolean
+                  description: User has access to the endpoint.
               required: [ "user_id", "access_id" ]
       responses:
         '401':
@@ -1449,7 +1461,8 @@ paths:
                       {
                         "id": 1,
                         "user_id": 1,
-                        "access_id": 3
+                        "access_id": 3,
+                        "can_access": true
                       }
                     ],
                     "entries": 1,
@@ -1539,13 +1552,69 @@ paths:
                       {
                         "id": 1,
                         "access_id": 77,
-                        "user_id": 1
+                        "user_id": 1,
+                        "can_access": true
                       }
                     ],
                     "entries": 1,
                     "total_count": null,
                     "timestamp": 1723108298846
                   }
+    put:
+      tags:
+        - Data
+        - Users Access
+      summary: Update object for user access
+      operationId: updateUserAccess
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                can_access:
+                  type: boolean
+                  description: User has access to the endpoint.
+              required: ["can_access"]
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of "user access" items updated by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserAccessResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "access_id": 77,
+                        "user_id": 1,
+                        "can_access": true
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723108298846
+                  }
+
     delete:
       tags:
         - Data
@@ -1836,7 +1905,7 @@ paths:
                 email:
                   type: string
                   maxLength: 100
-                  pattern: '^(([^+<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
+                  pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
                 contact_number:
                   type: string
                   example: '+27876545611'
@@ -1897,13 +1966,18 @@ paths:
                         "last_name": "Doe",
                         "contact_number": "+27876545611",
                         "customer_identification": "0456744907613",
-                        "user_id": 125,
                         "consent_number": true,
                         "consent_email": true,
                         "daily_booking_limit": 5,
                         "blocked": false,
                         "verified": true,
-                        "email_sent_amount": 4
+                        "email_sent_amount": 4,
+                        "verify_token": "3305",
+                        "users": {
+                          "id": 1,
+                          "displayname": "Chris Groenewald",
+                          "active": true
+                        }
                       }
                     ],
                     "entries": 1,
@@ -1956,7 +2030,13 @@ paths:
                         "daily_booking_limit": 5,
                         "blocked": false,
                         "verified": true,
-                        "email_sent_amount": 4
+                        "email_sent_amount": 4,
+                        "verify_token": "3305",
+                        "users": {
+                          "id": 1,
+                          "displayname": "Chris Groenewald",
+                          "active": true
+                        }
                       }
                     ],
                     "entries": 1,
@@ -1992,7 +2072,7 @@ paths:
                 email:
                   type: string
                   maxLength: 100
-                  pattern: '^(([^+<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$'
+                  pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
                 contact_number:
                   type: string
                   example: '+27876545611'
@@ -2058,7 +2138,13 @@ paths:
                         "daily_booking_limit": 5,
                         "blocked": false,
                         "verified": true,
-                        "email_sent_amount": 4
+                        "email_sent_amount": 4,
+                        "verify_token": "3305",
+                        "users": {
+                          "id": 1,
+                          "displayname": "Chris Groenewald",
+                          "active": true
+                        }
                       }
                     ],
                     "entries": 1,
@@ -6412,8 +6498,7 @@ paths:
         e.g:
         customer_id ---- [0,2,6,1,0,0,4,6,5,8,0,1,3,0,0,0,0,0,0,0,0,0,0,0]
         * Position 3 of array, customer id "6", is the 3rd hour / 03:00 in the day. 
-      
-      
+
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -6468,7 +6553,6 @@ paths:
                           "57e8ffc4-558e-11ef-af9f-4303c2637358",
                           "57e8ffc5-558e-11ef-af9f-8b4b07af0656"
                         ],
-                        "device_id": 2523,
                         "status": [
                           0,
                           0,
@@ -6573,7 +6657,34 @@ paths:
                           23,
                           24
                         ],
-                        "site_id": 30
+                        "resellers": {
+                          "id": [
+                            4
+                          ],
+                          "name": [
+                            "360 Laundry Solutions"
+                          ],
+                          "id_name": [
+                            "4,360 Laundry Solutions"
+                          ]
+                        },
+                        "organisations": {
+                          "id": 14,
+                          "name": "Nano Living"
+                        },
+                        "companies": {
+                          "id": 14,
+                          "name": "Nano Living"
+                        },
+                        "sites": {
+                          "id": 30,
+                          "name": "Herb Street, Johannesburg"
+                        },
+                        "devices": {
+                          "id": 2439,
+                          "name": "Washer01",
+                          "uid": "34865dadc478"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -7448,6 +7559,8 @@ components:
           type: integer
         access_id:
           type: integer
+        can_access:
+          type: boolean
     UserRolesResponse:
       type: object
       properties:
@@ -8367,9 +8480,6 @@ components:
           type: boolean
         consent_email:
           type: boolean
-        user_id:
-          type: integer
-          description: The id of the proxy user (service account).
         blocked:
           type: boolean
           description: Prevents user from accessing the API.
@@ -8381,6 +8491,18 @@ components:
           description: Has the user verified their email?
         email_sent_amount:
           type: integer
+        verify_token:
+          type: string
+        users:
+          type: object
+          properties:
+            id:
+              type: integer
+            displayname:
+              type: string
+            active:
+              type: boolean
+
     BookingsResponse:
       type: object
       properties:
@@ -8392,8 +8514,6 @@ components:
           type: array
           items:
             type: string
-        device_id:
-          type: integer
         status:
           type: array
           items:
@@ -8410,8 +8530,51 @@ components:
           type: array
           items:
             type: integer
-        site_id:
-          type: integer
+        resellers:
+          type: object
+          properties:
+            id:
+              type: array
+              items:
+                type: integer
+            name:
+              type: array
+              items:
+                type: string
+            id_name:
+              type: array
+              items:
+                type: string
+        organisations:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        companies:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        sites:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        devices:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            uid:
+              type: string
     MissedBookingsResponse:
       type: object
       properties:
