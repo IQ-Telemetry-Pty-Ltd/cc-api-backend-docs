@@ -1577,7 +1577,7 @@ paths:
                 can_access:
                   type: boolean
                   description: User has access to the endpoint.
-              required: ["can_access"]
+              required: [ "can_access" ]
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -6703,6 +6703,100 @@ paths:
       - $ref: "#/components/parameters/smallerThanEqualParam"
       - $ref: "#/components/parameters/greaterThanEqualParam"
 
+  '/bookings/booked/{id}':
+    get:
+      tags:
+        - Data
+        - Bookings
+      operationId: getBookedBookings
+      summary: Get object for booked bookings (Status = 1)
+      description: |-
+        This endpoint is used to obtain all booking objects with a status = 1 (Booked).       
+        Status, booking_guid (randomly generated unique identifier), version and customer_id fields are all [parallel arrays](https://www.geeksforgeeks.org/parallel-array/) of 24 length. Each position in the array represents a hour
+        in the day.
+        
+        e.g:
+        customer_id ---- [0,2,6,1,0,0,4,6,5,8,0,1,3,0,0,0,0,0,0,0,0,0,0,0]
+        * Position 3 of array, customer id "6", is the 3rd hour / 03:00 in the day. 
+
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of "booking" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BookingsBookedResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "status": 1,
+                        "booking_guid": "758f17f2-6e3e-11ef-af9f-1bedd2e9e918",
+                        "resellers": {
+                          "id": 4,
+                          "name": "360 Laundry Solutions"
+                        },
+                        "organisations": {
+                          "id": 14,
+                          "name": "Nano Living"
+                        },
+                        "companies": {
+                          "id": 14,
+                          "name": "Nano Living"
+                        },
+                        "sites": {
+                          "id": 30,
+                          "name": "Herb Street, Johannesburg"
+                        },
+                        "devices": {
+                          "id": 2523,
+                          "name": "Washer04",
+                          "uid": "7821844c4ac0"
+                        },
+                        "customers": {
+                          "id": 8,
+                          "first_name": "Brent",
+                          "last_name": "Blake",
+                          "identification": "1234555",
+                          "email": "brent99blake@gmail.com",
+                          "contact_number": "+27765679609",
+                          "daily_booking_limit": 5
+                        },
+                        "date": "2024-09-20T08:00:00.000Z"
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723715090987
+                  }
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
+
   '/missed_bookings/{id}':
     get:
       tags:
@@ -6849,6 +6943,21 @@ paths:
                 created_at:
                   type: string
                   example: "2024-07-12T10:37:06.203Z"
+                reseller_id:
+                  type: array
+                  items:
+                    type: integer
+                  example: [ 2, 10 ]
+                  description: "Restrict notification to certain reseller(s). If empty array, no restriction applied."
+                organisation_id:
+                  type: array
+                  items:
+                    type: integer
+                  example: [ 8 ]
+                  description: "Restrict notification to certain organisation(s). If empty array, no restriction applied."
+                banner:
+                  type: boolean
+                  description: "Should the notification be shown as a banner on the frontend?"
                 active:
                   type: boolean
               required: [ "summary", "severity", "start_time", "end_time", "active" ]
@@ -6885,7 +6994,11 @@ paths:
                         "start_time": "2024-07-12T10:37:06.203Z",
                         "end_time": "2024-07-15T10:37:06.203Z",
                         "created_at": "2024-07-12T10:37:06.203Z",
-                        "active": false,
+                        "reseller_id": [ ],
+                        "organisation_id": [
+                          "7"
+                        ],
+                        "banner": false,
                       }
                     ],
                     "entries": 1,
@@ -6933,6 +7046,11 @@ paths:
                         "start_time": "2024-07-12T10:37:06.203Z",
                         "end_time": "2024-07-15T10:37:06.203Z",
                         "created_at": "2024-07-12T10:37:06.203Z",
+                        "reseller_id": [ ],
+                        "organisation_id": [
+                          "7"
+                        ],
+                        "banner": false,
                         "active": false,
                       }
                     ],
@@ -6980,6 +7098,21 @@ paths:
                 created_at:
                   type: string
                   example: "2024-07-12T10:37:06.203Z"
+                reseller_id:
+                  type: array
+                  items:
+                    type: integer
+                  example: [ 2, 10 ]
+                  description: "Restrict notification to certain reseller(s). If empty array, no restriction applied."
+                organisation_id:
+                  type: array
+                  items:
+                    type: integer
+                  example: [ 8 ]
+                  description: "Restrict notification to certain organisation(s). If empty array, no restriction applied."
+                banner:
+                  type: boolean
+                  description: "Should the notification be shown as a banner on the frontend?"
                 active:
                   type: boolean
       responses:
@@ -7015,6 +7148,11 @@ paths:
                         "start_time": "2024-07-12T10:37:06.203Z",
                         "end_time": "2024-07-15T10:37:06.203Z",
                         "created_at": "2024-07-12T10:37:06.203Z",
+                        "reseller_id": [ ],
+                        "organisation_id": [
+                          "7"
+                        ],
+                        "banner": false,
                         "active": false,
                       }
                     ],
@@ -8596,6 +8734,69 @@ components:
           type: integer
         customer_uid:
           type: string
+    BookingsBookedResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          type: integer
+        booking_guid:
+          type: string
+        resellers:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        organisations:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        companies:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        sites:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        devices:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            uid:
+              type: string
+        customers:
+          type: object
+          properties:
+            id:
+              type: integer
+            first_name:
+              type: string
+            last_name:
+              type: string
+            identification:
+              type: string
+            email:
+              type: string
+            contact_number:
+              type: string
+            daily_booking_limit:
+              type: integer
     NotificationsResponse:
       type: object
       properties:
@@ -8607,6 +8808,16 @@ components:
           type: string
         created_at:
           type: string
+        reseller_id:
+          type: array
+          items:
+            type: integer
+        organisations_id:
+          type: array
+          items:
+            type: integer
+        banner:
+          type: boolean
         active:
           type: boolean
     ActivityLogsResponse:
@@ -8865,11 +9076,11 @@ components:
               type: string
               pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
       examples:
-        asc:
-          value: "st:100"
+        smallerThan:
+          value: "field_name:100"
           summary: Filters the field smaller than provided number.
-        desc:
-          value: "st:2024-04-10 00:00:00"
+        smallerThanDate:
+          value: "field_name:2024-04-10 00:00:00"
           summary: Filters the field smaller than the provided date.
     greaterThanParam:
       in: query
@@ -8890,11 +9101,11 @@ components:
               type: string
               pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
       examples:
-        asc:
-          value: "st:100"
+        greaterThanEqual:
+          value: "field_name:100"
           summary: Filters the field greater than provided number.
-        desc:
-          value: "st:2024-04-10 00:00:00"
+        greaterThanEqualDate:
+          value: "field_name:2024-04-10 00:00:00"
           summary: Filters the field greater than the provided date.
     smallerThanEqualParam:
       in: query
@@ -8915,11 +9126,11 @@ components:
               type: string
               pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
       examples:
-        asc:
-          value: "ste:100"
+        smallerThanEqual:
+          value: "field_name:100"
           summary: Filters the field smaller than and equal to provided number.
-        desc:
-          value: "ste:2024-04-10 00:00:00"
+        smallerThanEqualDate:
+          value: "field_name:2024-04-10 00:00:00"
           summary: Filters the field smaller than and equal to the provided date.
     greaterThanEqualParam:
       in: query
@@ -8940,11 +9151,11 @@ components:
               type: string
               pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
       examples:
-        asc:
-          value: "gte:100"
+        smallerThanEqual:
+          value: "field_name:100"
           summary: Filters the field greater than and equal to provided number.
-        desc:
-          value: "gte:2024-04-10 00:00:00"
+        smallerThanEqualDate:
+          value: "field_name:2024-04-10 00:00:00"
           summary: Filters the field greater than and equal to the provided date.
 
     countParam:
