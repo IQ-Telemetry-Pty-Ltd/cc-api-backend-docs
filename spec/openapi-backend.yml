@@ -1046,7 +1046,8 @@ paths:
                   type: string
                   example: ';'
                   maxLength: 1
-                  pattern: ^[;]*$
+                  pattern: ^[,;|]
+                  description: Delimiter used in CSV/Table exports for frontend.
                 proxy_user:
                   type: boolean
                   description: Special user that should only be used in certain cases.
@@ -1204,7 +1205,8 @@ paths:
                   type: string
                   example: ';'
                   maxLength: 1
-                  pattern: ^[;]*$
+                  pattern: ^[,;|]
+                  description: Delimiter used in CSV/Table exports for frontend.
                 proxy_user:
                   type: boolean
                   description: Special user that should only be used in certain cases.
@@ -1503,11 +1505,46 @@ paths:
                     "success": true,
                     "data": [
                       {
-                        "id": 1,
-                        "access_id": 1,
-                        "name": "Create Access",
-                        "operation_id": "createAccess",
-                        "can_access": true
+                        "user_access": {
+                          "id": [
+                            937,
+                            969
+                          ],
+                          "user_id": [
+                            1559,
+                            1559
+                          ],
+                          "access_id": [
+                            104,
+                            164
+                          ],
+                          "can_access": [
+                            true,
+                            true
+                          ]
+                        },
+                        "modules": {
+                          "id": 29,
+                          "name": "Activity Logs"
+                        },
+                        "access": {
+                          "id": [
+                            104,
+                            164
+                          ],
+                          "name": [
+                            "Get Activity Logs",
+                            "View Activity Logs"
+                          ],
+                          "action": [
+                            "read",
+                            "view"
+                          ],
+                          "can_access": [
+                            true,
+                            true
+                          ]
+                        }
                       }
                     ],
                     "entries": 1,
@@ -1761,6 +1798,113 @@ paths:
                         "id": 2,
                         "role_id": 1,
                         "user_id": 100
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723108298846
+                  }
+
+    put:
+      tags:
+        - Data
+        - Users Roles
+      summary: Update object for user roles
+      description: |-
+        This endpoint is used as a linking table.
+        This tables relation is: 
+        * MANY-Users-to-MANY-Roles.
+
+      operationId: updateUserRolesByUserId
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                users_roles:
+                  type: array
+                  items:
+                    type: integer
+                  example: [ 1,2 ]
+                  description: User Roles ID's to link to the user
+              required: [ "user_roles" ]
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns user roles object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserAccessDetailResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "user_access": {
+                          "id": [
+                            939,
+                            940,
+                            781
+                          ],
+                          "user_id": [
+                            1559,
+                            1559,
+                            1559
+                          ],
+                          "access_id": [
+                            122,
+                            132,
+                            4
+                          ],
+                          "can_access": [
+                            true,
+                            true,
+                            true
+                          ]
+                        },
+                        "modules": {
+                          "id": 1,
+                          "name": "Access"
+                        },
+                        "access": {
+                          "id": [
+                            122,
+                            132,
+                            4
+                          ],
+                          "name": [
+                            "View Access",
+                            "View Access",
+                            "Get Access"
+                          ],
+                          "action": [
+                            "view",
+                            "view",
+                            "read"
+                          ],
+                          "can_access": [
+                            true,
+                            true,
+                            true
+                          ]
+                        }
                       }
                     ],
                     "entries": 1,
@@ -4845,9 +4989,6 @@ paths:
                   type: integer
                   example: 1
                   description: Indicates whether the cycle signal is coming from the machine (0) or theoretical time (1).
-                hardware_type_id:
-                  type: integer
-                  example: 3
                 reseller_id:
                   type: integer
                   example: 1
@@ -4856,7 +4997,7 @@ paths:
                   example: 7
                 active:
                   type: boolean
-              required: [ "name", "hardware_type_id", "reseller_id", "emulation_id", "active" ]
+              required: [ "name", "reseller_id", "emulation_id", "active" ]
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -4885,7 +5026,6 @@ paths:
                       {
                         "id": 1,
                         "name": "Washer 3000",
-                        "hardware_type_id": 3,
                         "notes": "The best washer ever!",
                         "cycle_signal_source": 1,
                         "cycle_time": 30,
@@ -4942,7 +5082,6 @@ paths:
                       {
                         "id": 1,
                         "name": "Washer 3000",
-                        "hardware_type_id": 3,
                         "notes": "The best washer ever!",
                         "cycle_signal_source": 1,
                         "cycle_time": 30,
@@ -4992,9 +5131,6 @@ paths:
                   type: integer
                   example: 1
                   description: Indicates whether the cycle signal is coming from the machine (0) or theoretical time (1).
-                hardware_type_id:
-                  type: integer
-                  example: 3
                 reseller_id:
                   type: integer
                   example: 1
@@ -5031,7 +5167,6 @@ paths:
                       {
                         "id": 1,
                         "name": "Washer 3000",
-                        "hardware_type_id": 3,
                         "notes": "The best washer ever!",
                         "cycle_signal_source": 1,
                         "cycle_time": 30,
@@ -6709,15 +6844,23 @@ paths:
         - Data
         - Bookings
       operationId: getBookedBookings
-      summary: Get object for booked bookings (Status = 1)
+      summary: Get object for booked bookings
       description: |-
-        This endpoint is used to obtain all booking objects with a status = 1 (Booked).       
+        This endpoint is used to obtain all booking objects with a status in (1, 5, 10)
         Status, booking_guid (randomly generated unique identifier), version and customer_id fields are all [parallel arrays](https://www.geeksforgeeks.org/parallel-array/) of 24 length. Each position in the array represents a hour
         in the day.
         
         e.g:
         customer_id ---- [0,2,6,1,0,0,4,6,5,8,0,1,3,0,0,0,0,0,0,0,0,0,0,0]
         * Position 3 of array, customer id "6", is the 3rd hour / 03:00 in the day. 
+        
+        * Status 0: Available.
+        * Status 1: Booked by someone.
+        * Status 2: Booked by you.
+        * Status 3: You missed booking.
+        * Status 4: Used by someone
+        * Status 5: Used by you
+        * Status 10: Missed booking by someone.
 
       responses:
         '401':
@@ -6897,6 +7040,59 @@ paths:
       - $ref: "#/components/parameters/greaterThanParam"
       - $ref: "#/components/parameters/smallerThanEqualParam"
       - $ref: "#/components/parameters/greaterThanEqualParam"
+
+  '/bookings/status':
+    get:
+      tags:
+        - Data
+        - Bookings
+      operationId: getBookingsStatus
+      summary: Get object for bookings status list
+      description: |-
+        This endpoint is used to obtain the bookings system status list
+        
+        * Status 0: Available.
+        * Status 1: Booked by someone.
+        * Status 2: Booked by you. (not returned by this endpoint)
+        * Status 3: You missed booking. (not returned by this endpoint)
+        * Status 4: Used by someone
+        * Status 5: Used by you (not returned by this endpoint)
+        * Status 10: Missed booking by someone.
+
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of statuses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BookingsStatusResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "status": 'Booked'
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723715090987
+                  }
 
   '/notifications':
     post:
@@ -7248,7 +7444,14 @@ paths:
                         "action": "POST",
                         "operation_id": "createUserAccess",
                         "body": "{\"user_id\":125,\"access_id\":104}",
-                        "parameters": "{}"
+                        "parameters": "{}",
+                        "users": {
+                          "id": 1,
+                          "displayname": "Ryan Pomario",
+                          "email": "ryan@iqt.co.za",
+                          "super_admin": false,
+                          "proxy_user": false
+                        }
                       }
                     ],
                     "entries": 1,
@@ -7464,6 +7667,64 @@ paths:
       - $ref: "#/components/parameters/smallerThanEqualParam"
       - $ref: "#/components/parameters/greaterThanEqualParam"
 
+  '/access_levels':
+    post:
+      tags:
+        - Data
+        - Access Levels
+      summary: Create object for access level
+      description: |-
+        This endpoint is used to define access levels for operations. This endpoint acts as a link to the roles table and contains more information about
+        the how access is given by default. This table acts as a "base" of permissions / access.
+
+      operationId: createAccessLevels
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  maxLength: 50
+                  example: "Organisation Admin"
+              required: [ "name" ]
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns modules object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AccessLevelsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "Organisation Admin",
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723628631562
+                  }
 
   '/access_levels/{id}':
     get:
@@ -7472,10 +7733,6 @@ paths:
         - Access Levels
       operationId: getAccessLevels
       summary: Get object for access levels
-      description: |-
-        This endpoint is used to define access levels for operations. This endpoint acts as a link to the roles table and contains more information about
-        the access level.
-
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -7503,13 +7760,98 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "name": "Reseller",
+                        "name": "Organisation Admin",
                       }
                     ],
                     "entries": 1,
                     "total_count": null,
                     "timestamp": 1723628631562
                   }
+    put:
+      tags:
+        - Data
+        - Access Levels
+      summary: Update object for access level
+      operationId: updateAccessLevels
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  maxLength: 50
+                  example: "Organisation Admin"
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of "access level" items updated by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AccessLevelsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "Organisation Admin",
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723628631562
+                  }
+    delete:
+      tags:
+        - Data
+        - Access Levels
+      summary: Delete object for access levels
+      operationId: deleteAccessLevels
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DeleteResponse"
+              example:
+                {
+                  "success": true,
+                  "data": "Successfully deleted record(s). [1]",
+                  "timestamp": 1723108298846
+                }
+          description: Returns result of delete
     parameters:
       - $ref: "#/components/parameters/idParam"
       - $ref: "#/components/parameters/limitParam"
@@ -7644,6 +7986,7 @@ components:
           description: Defines the type of current a user is using.
         delimiter:
           type: string
+          description: Delimiter used in CSV/Table exports for frontend.
         proxy_user:
           type: boolean
           description: Special user that should only be used in certain cases.
@@ -7669,6 +8012,7 @@ components:
           type: string
         delimiter:
           type: string
+          description: Delimiter used in CSV/Table exports for frontend.
         displayname:
           type: string
         email:
@@ -7724,18 +8068,51 @@ components:
     UserAccessDetailResponse:
       type: object
       properties:
-        id:
-          type: integer
-        user_id:
-          type: integer
-        access_id:
-          type: integer
-        name:
-          type: string
-        operation_id:
-          type: string
-        can_access:
-          type: boolean
+        users_access:
+          type: object
+          properties:
+            id:
+              type: array
+              items:
+                type: integer
+            user_id:
+              type: array
+              items:
+                type: integer
+            access_id:
+              type: array
+              items:
+                type: integer
+            can_access:
+              type: array
+              items:
+                type: boolean
+        modules:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        access:
+          type: object
+          properties:
+            id:
+              type: array
+              items:
+                type: integer
+            name:
+              type: array
+              items:
+                type: string
+            action:
+              type: array
+              items:
+                type: string
+            can_access:
+              type: array
+              items:
+                type: boolean
     ResellersResponse:
       type: object
       properties:
@@ -8202,8 +8579,6 @@ components:
         cycle_signal_source:
           type: integer
           description: Indicates whether the cycle signal is coming from the machine (0) or theoretical time (1).
-        hardware_type_id:
-          type: integer
         active:
           type: boolean
         resellers:
@@ -8640,7 +9015,13 @@ components:
               type: string
             active:
               type: boolean
-
+    BookingsStatusResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
     BookingsResponse:
       type: object
       properties:
@@ -8841,6 +9222,19 @@ components:
         parameters:
           type: string
           description: All query parameters of the request.
+        users:
+          type: object
+          properties:
+            id:
+              type: integer
+            displayname:
+              type: string
+            email:
+              type: string
+            super_admin:
+              type: boolean
+            proxy_user:
+              type: boolean
     ModulesResponse:
       type: object
       properties:
@@ -9045,11 +9439,11 @@ components:
       schema:
         anyOf:
           - type: string
-            pattern: ^\w+:(asc|desc)$
+            pattern: ^[A-Za-z\._]+:(asc|desc)$
           - type: array
             items:
               type: string
-              pattern: ^\w+:(asc|desc)$
+              pattern: ^[A-Za-z\._]+:(asc|desc)$
       examples:
         asc:
           value: "field:asc"
