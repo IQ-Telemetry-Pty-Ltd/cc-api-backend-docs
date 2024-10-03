@@ -230,6 +230,7 @@ paths:
                   - $ref: "#/components/schemas/AuthenticationResponse"
                   - $ref: "#/components/schemas/UsersAccessResponse"
                   - $ref: "#/components/schemas/RolesResponse"
+                  - $ref: "#/components/schemas/PreferencesResponse"
                 example:
                   {
                     "success": true,
@@ -277,6 +278,12 @@ paths:
                           "is_reseller": false,
                           "name": "New Role",
                           "access_level_id": 9
+                        }
+                      ],
+                      "preferences": [
+                        {
+                          reseller_logo: "logo.png",
+                          organisation_logo: "logo.png"
                         }
                       ]
                     },
@@ -2077,6 +2084,10 @@ paths:
                   type: integer
                   example: 5
                   description: Amount of times a login request has been sent.
+                companies_providers_id:
+                  type: integer
+                  example: 3
+                  description: Companies providers provides the pos token, or api key, used for MiFare API calls.
               required: [ "first_name", "last_name", "email", "user_id" ]
       responses:
         '401':
@@ -2117,9 +2128,16 @@ paths:
                         "verified": true,
                         "email_sent_amount": 4,
                         "verify_token": "3305",
+                        "companies_providers_id": 3,
+                        "mifare_card_number": '38362837a8aam332',
                         "users": {
                           "id": 1,
                           "displayname": "Chris Groenewald",
+                          "active": true
+                        },
+                        "companies_providers": {
+                          "id": 1,
+                          "pos_token": "aaabbbccc",
                           "active": true
                         }
                       }
@@ -2176,9 +2194,16 @@ paths:
                         "verified": true,
                         "email_sent_amount": 4,
                         "verify_token": "3305",
+                        "companies_providers_id": 3,
+                        "mifare_card_number": '38362837a8aam332',
                         "users": {
                           "id": 1,
                           "displayname": "Chris Groenewald",
+                          "active": true
+                        },
+                        "companies_providers": {
+                          "id": 1,
+                          "pos_token": "aaabbbccc",
                           "active": true
                         }
                       }
@@ -2244,6 +2269,14 @@ paths:
                   type: integer
                   example: 5
                   description: Amount of times a login request has been sent.
+                companies_providers_id:
+                  type: integer
+                  example: 3
+                  description: Companies providers provides the pos token, or api key, used for MiFare API calls.
+                mifare_card_number:
+                  type: string
+                  example: "38362837a8aam332"
+                  maxLength: 45
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -2284,9 +2317,16 @@ paths:
                         "verified": true,
                         "email_sent_amount": 4,
                         "verify_token": "3305",
+                        "companies_providers_id": 3,
+                        "mifare_card_number": '38362837a8aam332',
                         "users": {
                           "id": 1,
                           "displayname": "Chris Groenewald",
+                          "active": true
+                        },
+                        "companies_providers": {
+                          "id": 1,
+                          "pos_token": "aaabbbccc",
                           "active": true
                         }
                       }
@@ -3799,10 +3839,14 @@ paths:
                   example:
                   description: The price per unit.
                 ssid:
-                  type: string
-                  maxLength: 50
-                  pattern: '^[^!#;+\]\/"\t][^+\]\/"\t]{0,30}[^ !#;+\]\/"\t]$|^[^ !#;+\]\/"\t]$'
-                  description: Service Set Identifier for WiFi devices.
+                  oneOf:
+                    - type: string
+                      maxLength: 50
+                      pattern: '^[^!#;+\]\/"\t][^+\]\/"\t]{0,30}[^ !#;+\]\/"\t]$|^[^ !#;+\]\/"\t]$'
+                      description: Service Set Identifier for WiFi devices.
+                    - type: string
+                      minLength: 0
+                      maxLength: 0
                 password:
                   type: string
                   maxLength: 50
@@ -4117,10 +4161,14 @@ paths:
                   example:
                   description: The price per unit.
                 ssid:
-                  type: string
-                  maxLength: 50
-                  pattern: '^[^!#;+\]\/"\t][^+\]\/"\t]{0,30}[^ !#;+\]\/"\t]$|^[^ !#;+\]\/"\t]$'
-                  description: Service Set Identifier for WiFi devices.
+                  oneOf:
+                    - type: string
+                      maxLength: 50
+                      pattern: '^[^!#;+\]\/"\t][^+\]\/"\t]{0,30}[^ !#;+\]\/"\t]$|^[^ !#;+\]\/"\t]$'
+                      description: Service Set Identifier for WiFi devices.
+                    - type: string
+                      minLength: 0
+                      maxLength: 0
                 password:
                   type: string
                   maxLength: 50
@@ -6421,7 +6469,7 @@ paths:
                         },
                         "users": {
                           "id": 2,
-                          "name": "Test Account",
+                          "displayname": "Test Account",
                           "contact_number": ""
                         },
                         "asset_states": {
@@ -6488,7 +6536,7 @@ paths:
                         },
                         "users": {
                           "id": 2,
-                          "name": "Test Account",
+                          "displayname": "Test Account",
                           "contact_number": ""
                         },
                         "asset_states": {
@@ -6584,7 +6632,7 @@ paths:
                         },
                         "users": {
                           "id": 2,
-                          "name": "Test Account",
+                          "displayname": "Test Account",
                           "contact_number": ""
                         },
                         "asset_states": {
@@ -7190,11 +7238,28 @@ paths:
                         "start_time": "2024-07-12T10:37:06.203Z",
                         "end_time": "2024-07-15T10:37:06.203Z",
                         "created_at": "2024-07-12T10:37:06.203Z",
-                        "reseller_id": [ ],
-                        "organisation_id": [
-                          "7"
-                        ],
                         "banner": false,
+                        "active": true,
+                        "resellers": {
+                          "id": [
+                            7,
+                            8
+                          ],
+                          "name": [
+                            "Homii",
+                            "SouthPoint"
+                          ]
+                        },
+                        "organisations": {
+                          "id": [
+                            10,
+                            13
+                          ],
+                          "name": [
+                            "Chilli Mobile",
+                            "Peninsula Vending "
+                          ]
+                        }
                       }
                     ],
                     "entries": 1,
@@ -7242,12 +7307,28 @@ paths:
                         "start_time": "2024-07-12T10:37:06.203Z",
                         "end_time": "2024-07-15T10:37:06.203Z",
                         "created_at": "2024-07-12T10:37:06.203Z",
-                        "reseller_id": [ ],
-                        "organisation_id": [
-                          "7"
-                        ],
                         "banner": false,
-                        "active": false,
+                        "active": true,
+                        "resellers": {
+                          "id": [
+                            7,
+                            8
+                          ],
+                          "name": [
+                            "Homii",
+                            "SouthPoint"
+                          ]
+                        },
+                        "organisations": {
+                          "id": [
+                            10,
+                            13
+                          ],
+                          "name": [
+                            "Chilli Mobile",
+                            "Peninsula Vending "
+                          ]
+                        }
                       }
                     ],
                     "entries": 1,
@@ -7344,12 +7425,28 @@ paths:
                         "start_time": "2024-07-12T10:37:06.203Z",
                         "end_time": "2024-07-15T10:37:06.203Z",
                         "created_at": "2024-07-12T10:37:06.203Z",
-                        "reseller_id": [ ],
-                        "organisation_id": [
-                          "7"
-                        ],
                         "banner": false,
-                        "active": false,
+                        "active": true,
+                        "resellers": {
+                          "id": [
+                            7,
+                            8
+                          ],
+                          "name": [
+                            "Homii",
+                            "SouthPoint"
+                          ]
+                        },
+                        "organisations": {
+                          "id": [
+                            10,
+                            13
+                          ],
+                          "name": [
+                            "Chilli Mobile",
+                            "Peninsula Vending "
+                          ]
+                        }
                       }
                     ],
                     "entries": 1,
@@ -7389,6 +7486,90 @@ paths:
                   "timestamp": 1723108298846
                 }
           description: Returns result of delete
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
+
+  '/notifications/active/{id}':
+    get:
+      tags:
+        - Data
+        - Notifications
+      operationId: getNotificationsActive
+      summary: Get object for active notifications
+      description: |-
+        This endpoint is used to view notifications that are currently being shown to users. This contains announcements, alerts or any other
+        communication.
+
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of "notification" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NotificationsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "summary": "Zapper Downtime",
+                        "description": "Zapper is currently not working, please notify customers.",
+                        "severity": "info",
+                        "start_time": "2024-07-12T10:37:06.203Z",
+                        "end_time": "2024-07-15T10:37:06.203Z",
+                        "created_at": "2024-07-12T10:37:06.203Z",
+                        "banner": false,
+                        "active": true,
+                        "resellers": {
+                          "id": [
+                            7,
+                            8
+                          ],
+                          "name": [
+                            "Homii",
+                            "SouthPoint"
+                          ]
+                        },
+                        "organisations": {
+                          "id": [
+                            10,
+                            13
+                          ],
+                          "name": [
+                            "Chilli Mobile",
+                            "Peninsula Vending "
+                          ]
+                        }
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723628631562
+                  }
     parameters:
       - $ref: "#/components/parameters/idParam"
       - $ref: "#/components/parameters/limitParam"
@@ -7956,6 +8137,13 @@ components:
               type: array
               items:
                 type: string
+    PreferencesResponse:
+      type: object
+      properties:
+        reseller_logo:
+          type: string
+        organisation_logo:
+          type: string
     UsersResponse:
       type: object
       properties:
@@ -8952,7 +9140,7 @@ components:
           properties:
             id:
               type: integer
-            name:
+            displayname:
               type: string
             contact_number:
               type: string
@@ -9006,12 +9194,25 @@ components:
           type: integer
         verify_token:
           type: string
+        companies_providers_id:
+          type: integer
+        mifare_card_number:
+          type: string
         users:
           type: object
           properties:
             id:
               type: integer
             displayname:
+              type: string
+            active:
+              type: boolean
+        companies_providers:
+          type: object
+          properties:
+            id:
+              type: integer
+            pos_token:
               type: string
             active:
               type: boolean

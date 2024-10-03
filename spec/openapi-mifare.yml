@@ -256,6 +256,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/transactions/{id}':
     get:
@@ -327,6 +331,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/sites':
     post:
@@ -525,6 +533,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/products':
     post:
@@ -736,6 +748,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/cardholders_sites':
     post:
@@ -942,6 +958,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/cardholders_products':
     post:
@@ -1185,6 +1205,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/cardholders':
     post:
@@ -1250,6 +1274,12 @@ paths:
                   type: boolean
                   description: If set, the card wallet will automatically be reset on month end in accordance with the rules set
                     above.
+                image_guid:
+                  type: string
+                  description: Identification of image on disk.
+                link_sites:
+                  type: boolean
+                  description: When we create this cardholder, should we automatically link them in the cardholder_sites table?
                 active:
                   type: boolean
               required: [ "user_id", "card_no", "active" ]
@@ -1292,7 +1322,7 @@ paths:
                         "cost_centre": "testing",
                         "wallet": "0.00",
                         "topup_value": "10.00",
-                        "topup_reoccurance": false,
+                        "topup_reoccurrence": false,
                         "topup_date": null,
                         "topup_amount": null,
                         "last_transaction_device_uid": null,
@@ -1302,7 +1332,8 @@ paths:
                         "active": true,
                         "created_at": "2024-08-27T10:44:03.542Z",
                         "updated_at": "2024-08-27T10:44:03.542Z",
-                        "last_transaction_result": null
+                        "last_transaction_result": null,
+                        "image_guid": "67784-ehbe7-ea583-sne83"
                       }
                     ],
                     "entries": 1,
@@ -1355,7 +1386,7 @@ paths:
                         "cost_centre": "testing",
                         "wallet": "0.00",
                         "topup_value": "10.00",
-                        "topup_reoccurance": false,
+                        "topup_reoccurrence": false,
                         "topup_date": null,
                         "topup_amount": null,
                         "last_transaction_device_uid": null,
@@ -1365,7 +1396,8 @@ paths:
                         "active": true,
                         "created_at": "2024-08-27T10:44:03.542Z",
                         "updated_at": "2024-08-27T10:44:03.542Z",
-                        "last_transaction_result": null
+                        "last_transaction_result": null,
+                        "image_guid": "67784-ehbe7-ea583-sne83"
                       }
                     ],
                     "entries": 1,
@@ -1434,6 +1466,9 @@ paths:
                   type: boolean
                   description: If set, the card wallet will automatically be reset on month end in accordance with the rules set
                     above.
+                image_guid:
+                  type: string
+                  description: Identification of image on disk.
                 active:
                   type: boolean
       responses:
@@ -1475,7 +1510,7 @@ paths:
                         "cost_centre": "testing",
                         "wallet": "0.00",
                         "topup_value": "10.00",
-                        "topup_reoccurance": false,
+                        "topup_reoccurrence": false,
                         "topup_date": null,
                         "topup_amount": null,
                         "last_transaction_device_uid": null,
@@ -1485,12 +1520,108 @@ paths:
                         "active": true,
                         "created_at": "2024-08-27T10:44:03.542Z",
                         "updated_at": "2024-08-27T10:44:03.542Z",
-                        "last_transaction_result": null
+                        "last_transaction_result": null,
+                        "image_guid": "67784-ehbe7-ea583-sne83"
                       }
                     ],
                     "entries": 1,
                     "timestamp": 1724759082131
                   }
+    delete:
+      tags:
+        - Data
+        - Cardholders
+      operationId: deleteCardholder
+      summary: Delete object for cardholder
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DeleteResponse"
+              example:
+                {
+                  "success": true,
+                  "data": "Successfully deleted record(s). [1]",
+                  "timestamp": 1723108298846
+                }
+          description: Returns result of delete
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
+
+  '/activity_logs/{id}':
+    get:
+      tags:
+        - Data
+        - Logs
+      operationId: getActivityLogs
+      summary: Get object for activity logs
+      description: |-
+        This endpoint holds all activity logs for PUT, POST and DELETE endpoints.
+        This acts as a audit trail to understand what actions have been performed by users.
+
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of "activity logs" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityLogsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "user_id": 125,
+                        "timestamp": "2024-09-06T05:06:37.709Z",
+                        "action": "POST",
+                        "operation_id": "createUserAccess",
+                        "body": "{\"user_id\":125,\"access_id\":104}",
+                        "parameters": "{}"
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723628631562
+                  }
+
     parameters:
       - $ref: "#/components/parameters/idParam"
       - $ref: "#/components/parameters/limitParam"
@@ -1707,8 +1838,31 @@ components:
           type: string
         updated_at:
           type: string
+        image_guid:
+          type: string
         active:
           type: boolean
+    ActivityLogsResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        timestamp:
+          type: string
+        action:
+          type: string
+          description: HTTP request type.
+        operation_id:
+          type: string
+          description: OpenAPI operation / path identifier.
+        body:
+          type: string
+          description: All contents of the requests body.
+        parameters:
+          type: string
+          description: All query parameters of the request.
     DeleteResponse:
       type: object
       properties:
@@ -1762,24 +1916,50 @@ components:
     UnauthorizedResponse:
       type: object
       properties:
-        err:
+        success:
+          type: boolean
+        error:
           type: string
-          description: User does not have permissions to access endpoint operation.
+          description: Error returned by backend.
+        details:
+          type: string
+          description: Any extra information around the error.
+        type:
+          type: string
+          description: Type of error encountered.
+        timestamp:
+          type: string
       example:
         {
-          "err": "Unauthorized. [getUserAccess]"
+          "success": false,
+          "error": "Account not found or setup correctly.",
+          "details": "x-user-token: undefined",
+          "type": "internal",
+          "timestamp": 1723108298846
         }
     ErrorResponse:
       type: object
       properties:
-        err:
+        success:
+          type: boolean
+        error:
           type: string
-          description: Any internal error is returned here.
+          description: Error returned by backend.
+        details:
+          type: string
+          description: Any extra information around the error.
+        type:
+          type: string
+          description: Type of error encountered.
+        timestamp:
+          type: string
       example:
         {
           "success": false,
-          "error": "[INTERNAL] error: insert or update on table \"devices\" violates foreign key constraint \"devices_host_hardware_id_fk\"",
-          "timestamp": 1723639902458
+          "error": "insert or update on table \"asset_states\" violates foreign key constraint \"asset_states_resellers_id_fk\"",
+          "details": null,
+          "type": "internal",
+          "timestamp": 1723108298846
         }
 
     numberIndex:
@@ -1806,6 +1986,29 @@ components:
         all:
           value: '_all'
           summary: Search by all accessible objects.
+    idSingleParam:
+      in: path
+      name: id
+      required: true
+      schema:
+        allOf:
+          - $ref: "#/components/schemas/numberIndex"
+      examples:
+        id:
+          value: 12
+          summary: Search by specific primary key aka "id".
+    tokenParam:
+      in: path
+      name: id
+      required: true
+      schema:
+        allOf:
+          - type: string
+            pattern: ^[a-z A-Z-0-9]+
+      examples:
+        token:
+          value: "7ecc242c-c40d-4fd1-ba02-62220b4t8c6b"
+          summary: Search by user token.
 
     offsetParam:
       in: query
@@ -1832,11 +2035,11 @@ components:
       schema:
         anyOf:
           - type: string
-            pattern: ^\w+:(asc|desc)$
+            pattern: ^[A-Za-z\._]+:(asc|desc)$
           - type: array
             items:
               type: string
-            pattern: ^\w+:(asc|desc)$
+              pattern: ^[A-Za-z\._]+:(asc|desc)$
       examples:
         asc:
           value: "field:asc"
@@ -1844,6 +2047,106 @@ components:
         desc:
           value: "field:desc"
           summary: Filters the field specific by descending order.
+    smallerThanParam:
+      in: query
+      name: st
+      required: false
+      schema:
+        anyOf:
+          - type: string
+            pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
+          - type: string
+            pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+          - type: array
+            items:
+              type: string
+              pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
+          - type: array
+            items:
+              type: string
+              pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+      examples:
+        smallerThan:
+          value: "field_name:100"
+          summary: Filters the field smaller than provided number.
+        smallerThanDate:
+          value: "field_name:2024-04-10 00:00:00"
+          summary: Filters the field smaller than the provided date.
+    greaterThanParam:
+      in: query
+      name: gt
+      required: false
+      schema:
+        anyOf:
+          - type: string
+            pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
+          - type: string
+            pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+          - type: array
+            items:
+              type: string
+              pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
+          - type: array
+            items:
+              type: string
+              pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+      examples:
+        greaterThanEqual:
+          value: "field_name:100"
+          summary: Filters the field greater than provided number.
+        greaterThanEqualDate:
+          value: "field_name:2024-04-10 00:00:00"
+          summary: Filters the field greater than the provided date.
+    smallerThanEqualParam:
+      in: query
+      name: ste
+      required: false
+      schema:
+        anyOf:
+          - type: string
+            pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
+          - type: string
+            pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+          - type: array
+            items:
+              type: string
+              pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
+          - type: array
+            items:
+              type: string
+              pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+      examples:
+        smallerThanEqual:
+          value: "field_name:100"
+          summary: Filters the field smaller than and equal to provided number.
+        smallerThanEqualDate:
+          value: "field_name:2024-04-10 00:00:00"
+          summary: Filters the field smaller than and equal to the provided date.
+    greaterThanEqualParam:
+      in: query
+      name: gte
+      required: false
+      schema:
+        anyOf:
+          - type: string
+            pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
+          - type: string
+            pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+          - type: array
+            items:
+              type: string
+              pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
+          - type: array
+            items:
+              type: string
+              pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+      examples:
+        smallerThanEqual:
+          value: "field_name:100"
+          summary: Filters the field greater than and equal to provided number.
+        smallerThanEqualDate:
+          value: "field_name:2024-04-10 00:00:00"
+          summary: Filters the field greater than and equal to the provided date.
 
     countParam:
       in: query
@@ -1877,6 +2180,9 @@ components:
         dateFind:
           value: "2024-08-01 00:00:00"
           summary: Searches in specific field for date equaling to "2024-08-01 00:00:00".
+        multipleParam:
+          value: "1,2,10"
+          summary: Searches in specific field for 1 OR 2 OR 10.
 
 security:
   - XUserToken: [ ]
