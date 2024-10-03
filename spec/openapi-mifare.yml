@@ -84,7 +84,7 @@ paths:
       tags:
         - Data
         - Users
-      summary: Update object for users
+      summary: Create object for users
       description: |-
         Mifare Users are used to control access to resources.  Mifare Users do not require any form of
         authentication.  An access token is created when the user is created.  This token, `x-user-token`,  is present in the 
@@ -1212,6 +1212,9 @@ paths:
 
   '/cardholders':
     post:
+      tags:
+        - Data
+        - Cardholders
       summary: Create object for cardholders
       description: |-
         Card Holders are identified as Mifare cards.  Each card is identified by a unique `card_no` that
