@@ -20,7 +20,7 @@ info:
     name: Ryan Pomario
     email: ryan@iqt.co.za
 
-  version: 1.0.0
+  version: 1.0.4
 
 externalDocs:
   description: Click here to learn more about Payway.
@@ -87,16 +87,18 @@ paths:
       summary: Create object for users
       description: |-
         Mifare Users are used to control access to resources.  Mifare Users do not require any form of
-        authentication.  An access token is created when the user is created.  This token, `x-user-token`,  is present in the 
-        header of each call and is used to identify resources.  Tokens never expire.
+        authentication. An access token is created when the user is created. This token, `x-user-token`, is present in the 
+        header of each call and is used to identify resources. Tokens never expire.
         
-        Mifare users are NOT Payway users.  The MiFare user token is used in the PayWay Payment Provider
+        Mifare users are NOT Payway users. The MiFare user token is used in the PayWay Payment Provider
         configuration to identify and link the Mifare service to the PayWay Company entity via the `pos_token'
         field.
         (Refer to https://docs.iqt.co.za/pages/backend.html#tag/Companies-Providers for more detail)
         
         A mifare user only has the ability to access resources that they are directly associated too, 
         unless the "super_user" flag is set, in which case you have system wide access. 
+      
+      
 
       operationId: createUser
       requestBody:
@@ -314,11 +316,22 @@ paths:
                         "agent_name": "",
                         "payment_reference_1": "testing",
                         "payment_reference_2": "JIM001",
-                        "user_id": 1,
-                        "cardholder_id": 1,
-                        "site_id": 1,
                         "seq_key": "0",
-                        "created_at": "2024-08-05T07:02:15.650Z"
+                        "created_at": "2024-08-05T07:02:15.650Z",
+                        "users": {
+                          "id": 1,
+                          "username": "Testing User"
+                        },
+                        "cardholders": {
+                          "id": 1,
+                          "first_name": "testing",
+                          "last_name": "testing",
+                          "card_no": "123"
+                        },
+                        "sites": {
+                          "id": 1,
+                          "name": "testing"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -403,11 +416,14 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "user_id": 1,
                         "name": "BigTech Corp",
                         "address": "123 Street Lane Cape Town 7700",
                         "location": "Games Room",
-                        "active": true
+                        "active": true,
+                        "users": {
+                          "id": 1,
+                          "username": "Testing User"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -452,7 +468,11 @@ paths:
                         "name": "BigTech Corp",
                         "address": "123 Street Lane Cape Town 7700",
                         "location": "Games Room",
-                        "active": true
+                        "active": true,
+                        "users": {
+                          "id": 1,
+                          "username": "Testing User"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -520,7 +540,11 @@ paths:
                         "name": "BigTech Corp",
                         "address": "123 Street Lane Cape Town 7700",
                         "location": "Games Room",
-                        "active": true
+                        "active": true,
+                        "users": {
+                          "id": 1,
+                          "username": "Testing User"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -608,12 +632,15 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "user_id": 1,
                         "description": "Testing new product.",
                         "product_code": "A78J-HJ3B",
                         "sap_code": "3153",
                         "location": "Games Room",
-                        "active": true
+                        "active": true,
+                        "users": {
+                          "id": 1,
+                          "username": "Tes"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -654,12 +681,15 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "user_id": 1,
                         "description": "Testing new product.",
                         "product_code": "A78J-HJ3B",
                         "sap_code": "3153",
                         "location": "Games Room",
-                        "active": true
+                        "active": true,
+                        "users": {
+                          "id": 1,
+                          "username": "Tes"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -730,12 +760,15 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "user_id": 1,
                         "description": "Testing new product.",
                         "product_code": "A78J-HJ3B",
                         "sap_code": "3153",
                         "location": "Games Room",
-                        "active": true
+                        "active": true,
+                        "users": {
+                          "id": 1,
+                          "username": "Tes"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -1029,14 +1062,29 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "cardholder_id": 4,
-                        "product_id": 5,
                         "balance": 10,
                         "restock_flag": true,
                         "unlimited": true,
                         "active": true,
-                        "user_id": 1,
-                        "take_limit": 2
+                        "take_limit": 2,
+                        "users": {
+                          "id": 1,
+                          "username": "Testing User"
+                        },
+                        "products": {
+                          "id": 1,
+                          "description": "testing",
+                          "product_code": "JIM001",
+                          "sap_code": "testing",
+                          "location": "testing",
+                          "active": true
+                        },
+                        "cardholders": {
+                          "id": 1,
+                          "first_name": "Testing",
+                          "last_name": "Testing",
+                          "card_no": "V60357926"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -1077,14 +1125,29 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "cardholder_id": 4,
-                        "product_id": 5,
                         "balance": 10,
                         "restock_flag": true,
                         "unlimited": true,
                         "active": true,
-                        "user_id": 1,
-                        "take_limit": 2
+                        "take_limit": 2,
+                        "users": {
+                          "id": 1,
+                          "username": "Testing User"
+                        },
+                        "products": {
+                          "id": 1,
+                          "description": "testing",
+                          "product_code": "JIM001",
+                          "sap_code": "testing",
+                          "location": "testing",
+                          "active": true
+                        },
+                        "cardholders": {
+                          "id": 1,
+                          "first_name": "Testing",
+                          "last_name": "Testing",
+                          "card_no": "V60357926"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -1152,14 +1215,29 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "cardholder_id": 4,
-                        "product_id": 5,
                         "balance": 10,
                         "restock_flag": true,
                         "unlimited": true,
                         "active": true,
-                        "user_id": 1,
-                        "take_limit": 2
+                        "take_limit": 2,
+                        "users": {
+                          "id": 1,
+                          "username": "Testing User"
+                        },
+                        "products": {
+                          "id": 1,
+                          "description": "testing",
+                          "product_code": "JIM001",
+                          "sap_code": "testing",
+                          "location": "testing",
+                          "active": true
+                        },
+                        "cardholders": {
+                          "id": 1,
+                          "first_name": "Testing",
+                          "last_name": "Testing",
+                          "card_no": "V60357926"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -1312,8 +1390,7 @@ paths:
                     "success": true,
                     "data": [
                       {
-                        "id": 3,
-                        "user_id": 2,
+                        "id": 1,
                         "card_no": "123555",
                         "first_name": "Testing",
                         "last_name": "Name",
@@ -1332,11 +1409,15 @@ paths:
                         "last_transaction_timestamp": null,
                         "import_site_id": null,
                         "import_guid": null,
-                        "active": true,
                         "created_at": "2024-08-27T10:44:03.542Z",
                         "updated_at": "2024-08-27T10:44:03.542Z",
                         "last_transaction_result": null,
-                        "image_guid": "67784-ehbe7-ea583-sne83"
+                        "image_guid": "67784-ehbe7-ea583-sne83",
+                        "active": true,
+                        "users": {
+                          "id": 2,
+                          "username": "Testing"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -1376,8 +1457,7 @@ paths:
                     "success": true,
                     "data": [
                       {
-                        "id": 3,
-                        "user_id": 2,
+                        "id": 1,
                         "card_no": "123555",
                         "first_name": "Testing",
                         "last_name": "Name",
@@ -1396,11 +1476,15 @@ paths:
                         "last_transaction_timestamp": null,
                         "import_site_id": null,
                         "import_guid": null,
-                        "active": true,
                         "created_at": "2024-08-27T10:44:03.542Z",
                         "updated_at": "2024-08-27T10:44:03.542Z",
                         "last_transaction_result": null,
-                        "image_guid": "67784-ehbe7-ea583-sne83"
+                        "image_guid": "67784-ehbe7-ea583-sne83",
+                        "active": true,
+                        "users": {
+                          "id": 2,
+                          "username": "Testing"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -1500,8 +1584,7 @@ paths:
                     "success": true,
                     "data": [
                       {
-                        "id": 3,
-                        "user_id": 2,
+                        "id": 1,
                         "card_no": "123555",
                         "first_name": "Testing",
                         "last_name": "Name",
@@ -1520,11 +1603,15 @@ paths:
                         "last_transaction_timestamp": null,
                         "import_site_id": null,
                         "import_guid": null,
-                        "active": true,
                         "created_at": "2024-08-27T10:44:03.542Z",
                         "updated_at": "2024-08-27T10:44:03.542Z",
                         "last_transaction_result": null,
-                        "image_guid": "67784-ehbe7-ea583-sne83"
+                        "image_guid": "67784-ehbe7-ea583-sne83",
+                        "active": true,
+                        "users": {
+                          "id": 2,
+                          "username": "Testing"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -1613,12 +1700,16 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "user_id": 125,
                         "timestamp": "2024-09-06T05:06:37.709Z",
                         "action": "POST",
                         "operation_id": "createUserAccess",
                         "body": "{\"user_id\":125,\"access_id\":104}",
-                        "parameters": "{}"
+                        "parameters": "{}",
+                        "users": {
+                          "id": 1,
+                          "username": "Test Account",
+                          "super_user": true
+                        }
                       }
                     ],
                     "entries": 1,
@@ -1710,12 +1801,6 @@ components:
         payment_reference_2:
           type: integer
           description: Custom payment reference or used to cross-reference if a refund transaction
-        user_id:
-          type: integer
-        cardholder_id:
-          type: integer
-        site_id:
-          type: integer
         seq_key:
           type: string
           description: Unique sequence identifier to prevent duplication at POS
@@ -1726,8 +1811,6 @@ components:
       properties:
         id:
           type: integer
-        user_id:
-          type: integer
         name:
           type: string
         address:
@@ -1737,12 +1820,17 @@ components:
           description: Extra level of physical location identification can be used here.
         active:
           type: boolean
+        users:
+          type: object
+          properties:
+            id:
+              type: integer
+            username:
+              type: string
     ProductsResponse:
       type: object
       properties:
         id:
-          type: integer
-        user_id:
           type: integer
         description:
           type: string
@@ -1758,6 +1846,13 @@ components:
           description: Physical location of product
         active:
           type: boolean
+        users:
+          type: object
+          properties:
+            id:
+              type: integer
+            username:
+              type: string
     CardholdersSitesResponse:
       type: object
       properties:
@@ -1776,10 +1871,6 @@ components:
       properties:
         id:
           type: integer
-        cardholder_id:
-          type: integer
-        product_id:
-          type: integer
         balance:
           type: integer
         restock_flag:
@@ -1788,16 +1879,45 @@ components:
           type: boolean
         take_limit:
           type: integer
-        user_id:
-          type: integer
         active:
           type: boolean
+        users:
+          type: object
+          properties:
+            id:
+              type: integer
+            username:
+              type: string
+        products:
+          type: object
+          properties:
+            id:
+              type: integer
+            description:
+              type: string
+            product_code:
+              type: string
+            sap_code:
+              type: string
+            location:
+              type: string
+            active:
+              type: boolean
+        cardholders:
+          type: object
+          properties:
+            id:
+              type: integer
+            first_name:
+              type: string
+            last_name:
+              type: string
+            card_no:
+              type: string
     CardholdersResponse:
       type: object
       properties:
         id:
-          type: integer
-        user_id:
           type: integer
         card_no:
           type: string
@@ -1845,12 +1965,17 @@ components:
           type: string
         active:
           type: boolean
+        users:
+          type: object
+          properties:
+            id:
+              type: integer
+            username:
+              type: string
     ActivityLogsResponse:
       type: object
       properties:
         id:
-          type: integer
-        user_id:
           type: integer
         timestamp:
           type: string
@@ -1866,6 +1991,15 @@ components:
         parameters:
           type: string
           description: All query parameters of the request.
+        users:
+          type: object
+          properties:
+            id:
+              type: integer
+            username:
+              type: string
+            super_user:
+              type: boolean
     DeleteResponse:
       type: object
       properties:
