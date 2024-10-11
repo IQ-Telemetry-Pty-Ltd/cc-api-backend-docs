@@ -146,7 +146,6 @@ x-tagGroups:
       - Bookings
       - Notifications
 
-
 servers:
   - url: '{scheme}://payway.iqt.co.za/{version}/api'
     variables:
@@ -205,7 +204,7 @@ paths:
                   description: Client secret, or password, is provided by Firebase when a user is created. Not found in our database.
                 authority:
                   type: string
-                  enum: [ "firebase", "google" ]
+                  enum: [ "firebase", "google", "proxy" ]
               required: [ "client_email", "client_secret", "authority" ]
       responses:
         '401':
@@ -320,7 +319,7 @@ paths:
                   maxLength: 320
                 authority:
                   type: string
-                  enum: [ "firebase" ]
+                  enum: [ "firebase", "proxy" ]
               required: [ "client_email", "authority" ]
       responses:
         '401':
@@ -642,6 +641,13 @@ paths:
         are direct descendants.  
 
       operationId: createRoles
+      x-tag-permissions:
+        - roles
+        - resellers
+        - organisations
+        - companies
+        - devices
+        - sites
       requestBody:
         required: true
         content:
@@ -764,6 +770,10 @@ paths:
         - Data
         - Roles
       operationId: getRoles
+      x-tag-permissions:
+        - roles
+        - resellers
+        - organisations
       summary: Get object for roles
       responses:
         '401':
@@ -833,6 +843,13 @@ paths:
         - Roles
       summary: Update object for roles
       operationId: updateRoles
+      x-tag-permissions:
+        - roles
+        - resellers
+        - organisations
+        - companies
+        - devices
+        - sites
       requestBody:
         required: true
         content:
@@ -941,6 +958,8 @@ paths:
         - Roles
       summary: Delete object for roles
       operationId: deleteRoles
+      x-tag-permissions:
+        - roles
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -1018,6 +1037,9 @@ paths:
         the Payway system.
 
       operationId: createUsers
+      x-tag-permissions:
+        - users
+        - roles
       requestBody:
         required: true
         content:
@@ -1123,6 +1145,9 @@ paths:
         - Data
         - Users
       operationId: getUsers
+      x-tag-permissions:
+        - users
+        - roles
       summary: Get object for user
       responses:
         '401':
@@ -1177,6 +1202,9 @@ paths:
         - Users
       summary: Update object for users
       operationId: updateUsers
+      x-tag-permissions:
+        - users
+        - roles
       requestBody:
         required: true
         content:
@@ -1283,6 +1311,8 @@ paths:
         - Users
       summary: Delete object for users
       operationId: deleteUsers
+      x-tag-permissions:
+        - users
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -1329,6 +1359,8 @@ paths:
         - Data
         - Users
       operationId: getUsersAccess
+      x-tag-permissions:
+        - users
       summary: Get object for user access
       description: |-
         This endpoint is used to return a users permissions, access and roles for use for the Payway website.
@@ -1422,6 +1454,8 @@ paths:
         resource, this is the place to give them access.
 
       operationId: createUserAccess
+      x-tag-permissions:
+        - users
       requestBody:
         required: true
         content:
@@ -1486,6 +1520,8 @@ paths:
         - Users Access
       summary: Get object for user access by a user id
       operationId: getUserAccessDetailByUserId
+      x-tag-permissions:
+        - users
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -1568,6 +1604,8 @@ paths:
         - Users Access
       summary: Get object for user access
       operationId: getUserAccess
+      x-tag-permissions:
+        - users
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -1610,6 +1648,8 @@ paths:
         - Users Access
       summary: Update object for user access
       operationId: updateUserAccess
+      x-tag-permissions:
+        - users
       requestBody:
         required: true
         content:
@@ -1664,6 +1704,8 @@ paths:
         - Data
         - Users Access
       operationId: deleteUserAccess
+      x-tag-permissions:
+        - users
       summary: Delete object for user access
       responses:
         '401':
@@ -1716,6 +1758,9 @@ paths:
         * MANY-Users-to-MANY-Roles.
 
       operationId: createUserRoles
+      x-tag-permissions:
+        - users
+        - roles
       requestBody:
         required: true
         content:
@@ -1759,9 +1804,15 @@ paths:
                     "success": true,
                     "data": [
                       {
-                        "id": 2,
-                        "role_id": 1,
-                        "user_id": 100
+                        "id": 1,
+                        "roles": {
+                          "id": 1,
+                          "name": "IQT Holdings Reseller Admin"
+                        },
+                        "users": {
+                          "id": 125,
+                          "displayname": "Ryan Pomario"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -1775,6 +1826,9 @@ paths:
         - Data
         - Users Roles
       operationId: getUserRoles
+      x-tag-permissions:
+        - users
+        - roles
       summary: Get object for user roles
       responses:
         '401':
@@ -1802,9 +1856,15 @@ paths:
                     "success": true,
                     "data": [
                       {
-                        "id": 2,
-                        "role_id": 1,
-                        "user_id": 100
+                        "id": 1,
+                        "roles": {
+                          "id": 1,
+                          "name": "IQT Holdings Reseller Admin"
+                        },
+                        "users": {
+                          "id": 125,
+                          "displayname": "Ryan Pomario"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -1823,6 +1883,9 @@ paths:
         * MANY-Users-to-MANY-Roles.
 
       operationId: updateUserRolesByUserId
+      x-tag-permissions:
+        - users
+        - roles
       requestBody:
         required: true
         content:
@@ -1924,6 +1987,9 @@ paths:
         - Data
         - Users Roles
       operationId: deleteUserRoles
+      x-tag-permissions:
+        - users
+        - roles
       summary: Delete object for user roles
       responses:
         '401':
@@ -1970,6 +2036,9 @@ paths:
         - Data
         - Users Roles
       operationId: getUserRolesByUserId
+      x-tag-permissions:
+        - users
+        - roles
       summary: Get object for user roles by user id
       responses:
         '401':
@@ -1997,9 +2066,15 @@ paths:
                     "success": true,
                     "data": [
                       {
-                        "id": 2,
-                        "role_id": 1,
-                        "user_id": 100
+                        "id": 30,
+                        "roles": {
+                          "id": 1,
+                          "name": "IQT Holdings Reseller Admin"
+                        },
+                        "users": {
+                          "id": 125,
+                          "displayname": "Ryan Pomario"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -2033,6 +2108,13 @@ paths:
         in terms of the Access and Roles Based rules of the service account.
 
       operationId: createCustomers
+      x-tag-permissions:
+        - customers
+        - companies
+        - organisations
+        - resellers
+        - roles
+        - users
       requestBody:
         required: true
         content:
@@ -2084,10 +2166,6 @@ paths:
                   type: integer
                   example: 5
                   description: Amount of times a login request has been sent.
-                companies_providers_id:
-                  type: integer
-                  example: 3
-                  description: Companies providers provides the pos token, or api key, used for MiFare API calls.
               required: [ "first_name", "last_name", "email", "user_id" ]
       responses:
         '401':
@@ -2135,10 +2213,24 @@ paths:
                           "displayname": "Chris Groenewald",
                           "active": true
                         },
-                        "companies_providers": {
-                          "id": 1,
-                          "pos_token": "aaabbbccc",
-                          "active": true
+                        "resellers": {
+                          "id": [
+                            1
+                          ],
+                          "name": [
+                            "IQT Holdings"
+                          ],
+                          "id_name": [
+                            "1,IQT Holdings"
+                          ]
+                        },
+                        "organisations": {
+                          "id": 7,
+                          "name": "IQ Telemetry Test Account"
+                        },
+                        "companies": {
+                          "id": 7,
+                          "name": "IQ Telemetry Test Account"
                         }
                       }
                     ],
@@ -2154,6 +2246,13 @@ paths:
         - Customers
       summary: Get object for customers
       operationId: getCustomers
+      x-tag-permissions:
+        - customers
+        - companies
+        - organisations
+        - resellers
+        - roles
+        - users
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -2201,10 +2300,24 @@ paths:
                           "displayname": "Chris Groenewald",
                           "active": true
                         },
-                        "companies_providers": {
-                          "id": 1,
-                          "pos_token": "aaabbbccc",
-                          "active": true
+                        "resellers": {
+                          "id": [
+                            1
+                          ],
+                          "name": [
+                            "IQT Holdings"
+                          ],
+                          "id_name": [
+                            "1,IQT Holdings"
+                          ]
+                        },
+                        "organisations": {
+                          "id": 7,
+                          "name": "IQ Telemetry Test Account"
+                        },
+                        "companies": {
+                          "id": 7,
+                          "name": "IQ Telemetry Test Account"
                         }
                       }
                     ],
@@ -2218,6 +2331,13 @@ paths:
         - Customers
       summary: Update object for customers
       operationId: updateCustomers
+      x-tag-permissions:
+        - customers
+        - companies
+        - organisations
+        - resellers
+        - roles
+        - users
       requestBody:
         required: true
         content:
@@ -2269,10 +2389,6 @@ paths:
                   type: integer
                   example: 5
                   description: Amount of times a login request has been sent.
-                companies_providers_id:
-                  type: integer
-                  example: 3
-                  description: Companies providers provides the pos token, or api key, used for MiFare API calls.
                 mifare_card_number:
                   type: string
                   example: "38362837a8aam332"
@@ -2324,10 +2440,24 @@ paths:
                           "displayname": "Chris Groenewald",
                           "active": true
                         },
-                        "companies_providers": {
-                          "id": 1,
-                          "pos_token": "aaabbbccc",
-                          "active": true
+                        "resellers": {
+                          "id": [
+                            1
+                          ],
+                          "name": [
+                            "IQT Holdings"
+                          ],
+                          "id_name": [
+                            "1,IQT Holdings"
+                          ]
+                        },
+                        "organisations": {
+                          "id": 7,
+                          "name": "IQ Telemetry Test Account"
+                        },
+                        "companies": {
+                          "id": 7,
+                          "name": "IQ Telemetry Test Account"
                         }
                       }
                     ],
@@ -2341,6 +2471,13 @@ paths:
         - Customers
       operationId: deleteCustomers
       summary: Delete object for customers
+      x-tag-permissions:
+        - customers
+        - companies
+        - organisations
+        - resellers
+        - roles
+        - users
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -2393,6 +2530,8 @@ paths:
         Resellers are of the highest level in the Payway system. **Resellers may have MANY Organisations.**
 
       operationId: createResellers
+      x-tag-permissions:
+        - resellers
       requestBody:
         required: true
         content:
@@ -2478,6 +2617,8 @@ paths:
         - Data
         - Resellers
       operationId: getResellers
+      x-tag-permissions:
+        - resellers
       summary: Get object for resellers
       responses:
         '401':
@@ -2525,6 +2666,8 @@ paths:
         - Resellers
       summary: Update object for resellers
       operationId: updateResellers
+      x-tag-permissions:
+        - resellers
       requestBody:
         required: true
         content:
@@ -2609,6 +2752,8 @@ paths:
         - Resellers
       summary: Delete object for resellers
       operationId: deleteResellers
+      x-tag-permissions:
+        - resellers
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -2659,6 +2804,9 @@ paths:
         An Organisation may be linked to **MANY Resellers**, see "Organisations_Resellers", and may have many companies.
 
       operationId: createOrganisations
+      x-tag-permissions:
+        - organisations
+        - resellers
       requestBody:
         required: true
         content:
@@ -2761,6 +2909,8 @@ paths:
         - Data
         - Organisations
       operationId: getOrganisations
+      x-tag-permissions:
+        - organisations
       summary: Get object for organisation
       responses:
         '401':
@@ -2819,6 +2969,9 @@ paths:
         - Organisations
       summary: Update object for organisations
       operationId: updateOrganisations
+      x-tag-permissions:
+        - organisations
+        - resellers
       requestBody:
         required: true
         content:
@@ -2919,6 +3072,8 @@ paths:
         - Data
         - Organisations
       operationId: deleteOrganisations
+      x-tag-permissions:
+        - organisations
       summary: Delete object for organisations
       responses:
         '401':
@@ -2971,6 +3126,10 @@ paths:
         If this is not done, or done incorrectly, users will not be able to see their intended resources.
 
       operationId: createResellersOrganisations
+      x-tag-permissions:
+        - resellers_organisations
+        - resellers
+        - organisations
       requestBody:
         required: true
         content:
@@ -3031,6 +3190,10 @@ paths:
         - Resellers Organisations
       summary: Get object for reseller organisation link
       operationId: getResellersOrganisations
+      x-tag-permissions:
+        - resellers_organisations
+        - resellers
+        - organisations
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -3074,6 +3237,8 @@ paths:
         - Resellers Organisations
       summary: Delete object for resellers organisations
       operationId: deleteResellersOrganisations
+      x-tag-permissions:
+        - resellers_organisations
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -3123,6 +3288,10 @@ paths:
         Companies are the third level in the Payway system. **A company may only be linked to ONE parent Organisation.**
 
       operationId: createCompanies
+      x-tag-permissions:
+        - resellers
+        - organisations
+        - companies
       requestBody:
         required: true
         content:
@@ -3231,6 +3400,10 @@ paths:
         - Data
         - Companies
       operationId: getCompanies
+      x-tag-permissions:
+        - resellers
+        - organisations
+        - companies
       summary: Get object for company
       responses:
         '401':
@@ -3294,6 +3467,10 @@ paths:
         - Companies
       summary: Update object for companies
       operationId: updateCompanies
+      x-tag-permissions:
+        - resellers
+        - organisations
+        - companies
       requestBody:
         required: true
         content:
@@ -3398,6 +3575,8 @@ paths:
         - Data
         - Companies
       operationId: deleteCompanies
+      x-tag-permissions:
+        - companies
       summary: Delete object for companies
       responses:
         '401':
@@ -3450,6 +3629,11 @@ paths:
         The "mifare_site_id" field is used to match the Site to it's equivalent Mifare Site (refer to MiFare API).
 
       operationId: createSites
+      x-tag-permissions:
+        - companies
+        - resellers
+        - organisations
+        - sites
       requestBody:
         required: true
         content:
@@ -3559,6 +3743,11 @@ paths:
         - Data
         - Sites
       operationId: getSites
+      x-tag-permissions:
+        - companies
+        - resellers
+        - organisations
+        - sites
       summary: Get object for sites
       responses:
         '401':
@@ -3626,6 +3815,11 @@ paths:
         - Sites
       summary: Update object for sites
       operationId: updateSites
+      x-tag-permissions:
+        - companies
+        - resellers
+        - organisations
+        - sites
       requestBody:
         required: true
         content:
@@ -3733,6 +3927,8 @@ paths:
         - Sites
       summary: Delete object for sites
       operationId: deleteSites
+      x-tag-permissions:
+        - sites
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -3785,6 +3981,15 @@ paths:
         **A device may only be linked to ONE parent Site.**
 
       operationId: createDevices
+      x-tag-permissions:
+        - sites
+        - devices
+        - resellers
+        - organisations
+        - companies
+        - sites
+        - asset_states
+        - host_hardware
       requestBody:
         required: true
         content:
@@ -3988,6 +4193,15 @@ paths:
         - Data
         - Devices
       operationId: getDevices
+      x-tag-permissions:
+        - sites
+        - devices
+        - resellers
+        - organisations
+        - companies
+        - sites
+        - asset_states
+        - host_hardware
       summary: Get object for devices
       responses:
         '401':
@@ -4107,6 +4321,15 @@ paths:
         - Devices
       summary: Update object for devices
       operationId: updateDevices
+      x-tag-permissions:
+        - sites
+        - devices
+        - resellers
+        - organisations
+        - companies
+        - sites
+        - asset_states
+        - host_hardware
       requestBody:
         required: true
         content:
@@ -4308,6 +4531,8 @@ paths:
         - Devices
       summary: Delete object for devices
       operationId: deleteDevices
+      x-tag-permissions:
+        - devices
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -5013,6 +5238,9 @@ paths:
         All hardware specific values like cycle time, cycle signal source, hardware type, payment emulation and additional notes can be set here.
 
       operationId: createHostHardware
+      x-tag-permissions:
+        - host_hardware
+        - resellers
       requestBody:
         required: true
         content:
@@ -5101,6 +5329,9 @@ paths:
         - Data
         - Host Hardware
       operationId: getHostHardware
+      x-tag-permissions:
+        - host_hardware
+        - resellers
       summary: Get object for host hardware
       responses:
         '401':
@@ -5155,6 +5386,9 @@ paths:
         - Host Hardware
       summary: Update object for host hardware
       operationId: updateHostHardware
+      x-tag-permissions:
+        - host_hardware
+        - resellers
       requestBody:
         required: true
         content:
@@ -5643,6 +5877,8 @@ paths:
         - Data
         - Connectivity History
       operationId: getConnectivityHistory
+      x-tag-permissions:
+        - devices
       summary: Get object for connectivity history
       description: |-
         Obtain device polling / connectivity history.  
@@ -5748,6 +5984,11 @@ paths:
         A company may be linked to many providers, but may not be linked to many of the same provider.
 
       operationId: createCompaniesProviders
+      x-tag-permissions:
+        - companies
+        - organisations
+        - resellers
+        - companies_providers
       requestBody:
         required: true
         content:
@@ -5853,6 +6094,11 @@ paths:
         - Data
         - Companies Providers
       operationId: getCompaniesProviders
+      x-tag-permissions:
+        - companies_providers
+        - organisations
+        - resellers
+        - companies
       summary: Get object for company provider
       responses:
         '401':
@@ -5922,6 +6168,11 @@ paths:
         - Companies Providers
       summary: Update object for company provider
       operationId: updateCompaniesProviders
+      x-tag-permissions:
+        - companies
+        - organisations
+        - resellers
+        - companies_providers
       requestBody:
         required: true
         content:
@@ -6037,6 +6288,11 @@ paths:
         - Data
         - Transactions
       operationId: getTransactions
+      x-tag-permissions:
+        - companies
+        - organisations
+        - sites
+        - devices
       summary: Get object for transactions
       description: |-
         This endpoint is used to retrieve and view transactions. This is a history of transactions processed by the Payway Payment Engine.
@@ -6137,6 +6393,11 @@ paths:
         - Data
         - Refunds
       operationId: getRefunds
+      x-tag-permissions:
+        - devices
+        - companies
+        - organisations
+        - sites
       summary: Get object for refunds
       responses:
         '401':
@@ -6207,6 +6468,8 @@ paths:
         * Device in trade.
 
       operationId: createAssetStates
+      x-tag-permissions:
+        - resellers
       requestBody:
         required: true
         content:
@@ -6272,6 +6535,8 @@ paths:
         - Data
         - Asset States
       operationId: getAssetStates
+      x-tag-permissions:
+        - resellers
       summary: Get object for asset states
       responses:
         '401':
@@ -6319,6 +6584,8 @@ paths:
         - Asset States
       summary: Update object for asset states
       operationId: updateAssetStates
+      x-tag-permissions:
+        - resellers
       requestBody:
         required: true
         content:
@@ -6397,6 +6664,12 @@ paths:
       description: |-
         This endpoint is used to track and manage device movements and asset_state changes.
       operationId: createDeviceActivityAudit
+      x-tag-permissions:
+        - resellers
+        - asset_states
+        - sites
+        - devices
+        - users
       requestBody:
         required: true
         content:
@@ -6495,6 +6768,12 @@ paths:
         - Data
         - Device Activity Audit
       operationId: getDeviceActivityAudit
+      x-tag-permissions:
+        - resellers
+        - asset_states
+        - sites
+        - devices
+        - users
       summary: Get object for device activity audit
       responses:
         '401':
@@ -6561,6 +6840,12 @@ paths:
         - Device Activity Audit
       summary: Update object for device activity audits
       operationId: updateDeviceActivityAudit
+      x-tag-permissions:
+        - resellers
+        - asset_states
+        - sites
+        - devices
+        - users
       requestBody:
         required: true
         content:
@@ -6669,6 +6954,12 @@ paths:
         - Data
         - Bookings
       operationId: getBookings
+      x-tag-permissions:
+        - resellers
+        - organisations
+        - companies
+        - sites
+        - devices
       summary: Get object for bookings
       description: |-
         This endpoint is used to obtain all booking objects.
@@ -6892,6 +7183,13 @@ paths:
         - Data
         - Bookings
       operationId: getBookedBookings
+      x-tag-permissions:
+        - resellers
+        - organisations
+        - companies
+        - sites
+        - devices
+        - customers
       summary: Get object for booked bookings
       description: |-
         This endpoint is used to obtain all booking objects with a status in (1, 5, 10)
@@ -6994,6 +7292,8 @@ paths:
         - Data
         - Bookings
       operationId: getMissedBookings
+      x-tag-permissions:
+        - devices
       summary: Get object for missed bookings.
       description: |-
         This endpoint is used to obtain all missed booking objects.
@@ -7050,6 +7350,8 @@ paths:
         - Bookings
       summary: Delete object for missed bookings
       operationId: deleteMissedBookings
+      x-tag-permissions:
+        - devices
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -7153,6 +7455,9 @@ paths:
         communication.
 
       operationId: createNotifications
+      x-tag-permissions:
+        - resellers
+        - organisations
       requestBody:
         required: true
         content:
@@ -7273,6 +7578,9 @@ paths:
         - Data
         - Notifications
       operationId: getNotifications
+      x-tag-permissions:
+        - resellers
+        - organisations
       summary: Get object for notifications
       responses:
         '401':
@@ -7341,6 +7649,9 @@ paths:
         - Notifications
       summary: Update object for notifications
       operationId: updateNotifications
+      x-tag-permissions:
+        - resellers
+        - organisations
       requestBody:
         required: true
         content:
@@ -7459,6 +7770,9 @@ paths:
         - Notifications
       summary: Delete object for notifications
       operationId: deleteNotifications
+      x-tag-permissions:
+        - resellers
+        - organisations
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -7504,6 +7818,10 @@ paths:
         - Data
         - Notifications
       operationId: getNotificationsActive
+      x-tag-permissions:
+        - companies
+        - resellers
+        - organisations
       summary: Get object for active notifications
       description: |-
         This endpoint is used to view notifications that are currently being shown to users. This contains announcements, alerts or any other
@@ -7588,6 +7906,8 @@ paths:
         - Data
         - Logs
       operationId: getActivityLogs
+      x-tag-permissions:
+        - users
       summary: Get object for activity logs
       description: |-
         This endpoint holds all activity logs for PUT, POST and DELETE endpoints.
@@ -8045,6 +8365,55 @@ paths:
       - $ref: "#/components/parameters/smallerThanEqualParam"
       - $ref: "#/components/parameters/greaterThanEqualParam"
 
+  '/reports/transactionsTotalsCurrentPrevious':
+    get:
+      tags:
+        - Data
+        - Report
+        - TransactionsTotalsCurrentPrevious
+      operationId: getTransactionsTotalsCurrentPrevious
+      summary: Get TransactionsTotalsCurrentPrevious Report
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns a dashboard data object
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TransactionsTotalsCurrentPreviousResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [ {
+                      day_of_week: [ "Wed", "Sat", "Fri", "Mon" ],
+                      date: [ "2023-07-12", "2023-07-15", "2024-07-12", "2024-07-15" ],
+                      total_amount: [ 32.00, 142.00, 173.00, 1.00 ],
+                      total_count: [ 1, 12, 12, 1 ]
+                    } ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723628631562
+                  }
+      parameters:
+        - $ref: "#/components/parameters/countParam"
+        - $ref: "#/components/parameters/others"
+        - $ref: "#/components/parameters/smallerThanParam"
+        - $ref: "#/components/parameters/greaterThanParam"
+        - $ref: "#/components/parameters/smallerThanEqualParam"
+        - $ref: "#/components/parameters/greaterThanEqualParam"
 
 components:
   securitySchemes:
@@ -8236,10 +8605,20 @@ components:
       properties:
         id:
           type: integer
-        user_id:
-          type: integer
-        role_id:
-          type: integer
+        roles:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        users:
+          type: object
+          properties:
+            id:
+              type: integer
+            displayname:
+              type: string
     ResellersOrganisationsResponse:
       type: object
       properties:
@@ -9207,15 +9586,35 @@ components:
               type: string
             active:
               type: boolean
-        companies_providers:
+        resellers:
+          type: object
+          properties:
+            id:
+              type: array
+              items:
+                type: integer
+            name:
+              type: array
+              items:
+                type: string
+            id_name:
+              type: array
+              items:
+                type: string
+        organisations:
           type: object
           properties:
             id:
               type: integer
-            pos_token:
+            name:
               type: string
-            active:
-              type: boolean
+        companies:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
     BookingsStatusResponse:
       type: object
       properties:
@@ -9467,6 +9866,25 @@ components:
               type: boolean
             delete:
               type: boolean
+    TransactionsTotalsCurrentPreviousResponse:
+      type: object
+      properties:
+        day_of_week:
+          type: array
+          items:
+            type: string
+        date:
+          type: array
+          items:
+            type: string
+        total_amount:
+          type: array
+          items:
+            type: number
+        total_count:
+          type: array
+          items:
+            type: integer
     DeleteResponse:
       type: object
       properties:
@@ -9659,17 +10077,19 @@ components:
       schema:
         anyOf:
           - type: string
-            pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
-          - type: string
-            pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+            anyOf:
+              - pattern: ^[\w.]+:([+-]?([0-9]*[.])?[0-9]+)$
+              - pattern: ^[\w.]+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+              - pattern: ^[\w.]+:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-|%20]\d{2}:\d{2}
           - type: array
             items:
-              type: string
-              pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
-          - type: array
-            items:
-              type: string
-              pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+              anyOf:
+                - type: string
+                  pattern: ^[\w.]+:([+-]?([0-9]*[.])?[0-9]+)$
+                - type: string
+                  pattern: ^[\w.]+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+                - type: string
+                  pattern: ^[\w.]+:((?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}(?:\.\d+)?))(Z|[\+-]\d{2}:\d{2})?)$
       examples:
         smallerThan:
           value: "field_name:100"
@@ -9677,6 +10097,9 @@ components:
         smallerThanDate:
           value: "field_name:2024-04-10 00:00:00"
           summary: Filters the field smaller than the provided date.
+        greaterThanDate:
+          value: "field_name:2024-10-09T12:21:26+05:30"
+          summary: Filters the field smaller than the provided date with timestamp.
     greaterThanParam:
       in: query
       name: gt
@@ -9684,17 +10107,19 @@ components:
       schema:
         anyOf:
           - type: string
-            pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
-          - type: string
-            pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+            anyOf:
+              - pattern: ^[\w.]+:([+-]?([0-9]*[.])?[0-9]+)$
+              - pattern: ^[\w.]+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+              - pattern: ^[\w.]+:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-|%20]\d{2}:\d{2}
           - type: array
             items:
-              type: string
-              pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
-          - type: array
-            items:
-              type: string
-              pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+              anyOf:
+                - type: string
+                  pattern: ^[\w.]+:([+-]?([0-9]*[.])?[0-9]+)$
+                - type: string
+                  pattern: ^[\w.]+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+                - type: string
+                  pattern: ^[\w.]+:((?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}(?:\.\d+)?))(Z|[\+-]\d{2}:\d{2})?)$
       examples:
         greaterThanEqual:
           value: "field_name:100"
@@ -9702,6 +10127,9 @@ components:
         greaterThanEqualDate:
           value: "field_name:2024-04-10 00:00:00"
           summary: Filters the field greater than the provided date.
+        greaterThanDate:
+          value: "field_name:2024-10-09T12:21:26+05:30"
+          summary: Filters the field smaller than the provided date with timestamp.
     smallerThanEqualParam:
       in: query
       name: ste
@@ -9709,17 +10137,19 @@ components:
       schema:
         anyOf:
           - type: string
-            pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
-          - type: string
-            pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+            anyOf:
+              - pattern: ^[\w.]+:([+-]?([0-9]*[.])?[0-9]+)$
+              - pattern: ^[\w.]+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+              - pattern: ^[\w.]+:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-|%20]\d{2}:\d{2}
           - type: array
             items:
-              type: string
-              pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
-          - type: array
-            items:
-              type: string
-              pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+              anyOf:
+                - type: string
+                  pattern: ^[\w.]+:([+-]?([0-9]*[.])?[0-9]+)$
+                - type: string
+                  pattern: ^[\w.]+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+                - type: string
+                  pattern: ^[\w.]+:((?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}(?:\.\d+)?))(Z|[\+-]\d{2}:\d{2})?)$
       examples:
         smallerThanEqual:
           value: "field_name:100"
@@ -9727,6 +10157,9 @@ components:
         smallerThanEqualDate:
           value: "field_name:2024-04-10 00:00:00"
           summary: Filters the field smaller than and equal to the provided date.
+        greaterThanDate:
+          value: "field_name:2024-10-09T12:21:26+05:30"
+          summary: Filters the field smaller than the provided date with timestamp.
     greaterThanEqualParam:
       in: query
       name: gte
@@ -9734,17 +10167,19 @@ components:
       schema:
         anyOf:
           - type: string
-            pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
-          - type: string
-            pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+            anyOf:
+              - pattern: ^[\w.]+:([+-]?([0-9]*[.])?[0-9]+)$
+              - pattern: ^[\w.]+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+              - pattern: ^[\w.]+:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-|%20]\d{2}:\d{2}
           - type: array
             items:
-              type: string
-              pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
-          - type: array
-            items:
-              type: string
-              pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+              anyOf:
+                - type: string
+                  pattern: ^[\w.]+:([+-]?([0-9]*[.])?[0-9]+)$
+                - type: string
+                  pattern: ^[\w.]+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+                - type: string
+                  pattern: ^[\w.]+:((?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}(?:\.\d+)?))(Z|[\+-]\d{2}:\d{2})?)$
       examples:
         smallerThanEqual:
           value: "field_name:100"
@@ -9752,6 +10187,9 @@ components:
         smallerThanEqualDate:
           value: "field_name:2024-04-10 00:00:00"
           summary: Filters the field greater than and equal to the provided date.
+        greaterThanDate:
+          value: "field_name:2024-10-09T12:21:26+05:30"
+          summary: Filters the field smaller than the provided date with timestamp.
 
     countParam:
       in: query
