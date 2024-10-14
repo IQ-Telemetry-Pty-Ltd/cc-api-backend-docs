@@ -20,7 +20,7 @@ info:
     name: Ryan Pomario
     email: ryan@iqt.co.za
 
-  version: 1.0.0
+  version: 1.0.4
 
 externalDocs:
   description: Click here to learn more about Payway.
@@ -84,21 +84,25 @@ paths:
       tags:
         - Data
         - Users
-      summary: Update object for users
+      summary: Create object for users
       description: |-
         Mifare Users are used to control access to resources.  Mifare Users do not require any form of
-        authentication.  An access token is created when the user is created.  This token, `x-user-token`,  is present in the 
-        header of each call and is used to identify resources.  Tokens never expire.
+        authentication. An access token is created when the user is created. This token, `x-user-token`, is present in the 
+        header of each call and is used to identify resources. Tokens never expire.
         
-        Mifare users are NOT Payway users.  The MiFare user token is used in the PayWay Payment Provider
+        Mifare users are NOT Payway users. The MiFare user token is used in the PayWay Payment Provider
         configuration to identify and link the Mifare service to the PayWay Company entity via the `pos_token'
         field.
         (Refer to https://docs.iqt.co.za/pages/backend.html#tag/Companies-Providers for more detail)
         
         A mifare user only has the ability to access resources that they are directly associated too, 
         unless the "super_user" flag is set, in which case you have system wide access. 
+      
+      
 
       operationId: createUser
+      x-tag-permissions:
+        - users
       requestBody:
         required: true
         content:
@@ -157,6 +161,8 @@ paths:
         - Data
         - Users
       operationId: getUser
+      x-tag-permissions:
+        - users
       summary: Get object for user
       responses:
         '401':
@@ -198,6 +204,8 @@ paths:
     put:
       summary: Update object for users
       operationId: updateUser
+      x-tag-permissions:
+        - users
       requestBody:
         required: true
         content:
@@ -256,6 +264,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/transactions/{id}':
     get:
@@ -267,6 +279,8 @@ paths:
         This endpoint is used to retrieve all transactional history for the Mifare User. 
 
       operationId: getTransaction
+      x-tag-permissions:
+        - users
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -310,11 +324,22 @@ paths:
                         "agent_name": "",
                         "payment_reference_1": "testing",
                         "payment_reference_2": "JIM001",
-                        "user_id": 1,
-                        "cardholder_id": 1,
-                        "site_id": 1,
                         "seq_key": "0",
-                        "created_at": "2024-08-05T07:02:15.650Z"
+                        "created_at": "2024-08-05T07:02:15.650Z",
+                        "users": {
+                          "id": 1,
+                          "username": "Testing User"
+                        },
+                        "cardholders": {
+                          "id": 1,
+                          "first_name": "testing",
+                          "last_name": "testing",
+                          "card_no": "123"
+                        },
+                        "sites": {
+                          "id": 1,
+                          "name": "testing"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -327,6 +352,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/sites':
     post:
@@ -342,6 +371,9 @@ paths:
         (refer to https://docs.iqt.co.za/pages/backend.html#tag/Sites for more information)
 
       operationId: createSite
+      x-tag-permissions:
+        - sites
+        - users
       requestBody:
         required: true
         content:
@@ -395,11 +427,14 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "user_id": 1,
                         "name": "BigTech Corp",
                         "address": "123 Street Lane Cape Town 7700",
                         "location": "Games Room",
-                        "active": true
+                        "active": true,
+                        "users": {
+                          "id": 1,
+                          "username": "Testing User"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -412,6 +447,9 @@ paths:
         - Data
         - Sites
       operationId: getSite
+      x-tag-permissions:
+        - sites
+        - users
       summary: Get object for site
       responses:
         '401':
@@ -444,7 +482,11 @@ paths:
                         "name": "BigTech Corp",
                         "address": "123 Street Lane Cape Town 7700",
                         "location": "Games Room",
-                        "active": true
+                        "active": true,
+                        "users": {
+                          "id": 1,
+                          "username": "Testing User"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -456,6 +498,9 @@ paths:
         - Sites
       summary: Update object for site
       operationId: updateSite
+      x-tag-permissions:
+        - sites
+        - users
       requestBody:
         required: true
         content:
@@ -512,7 +557,11 @@ paths:
                         "name": "BigTech Corp",
                         "address": "123 Street Lane Cape Town 7700",
                         "location": "Games Room",
-                        "active": true
+                        "active": true,
+                        "users": {
+                          "id": 1,
+                          "username": "Testing User"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -525,6 +574,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/products':
     post:
@@ -536,6 +589,9 @@ paths:
         In certain applications, such as vending machines, Mifare is used not only to control consumption
         but can also be configured to control consumption of certain items or products specifically linked to Mifare cards.
       operationId: createProduct
+      x-tag-permissions:
+        - users
+        - products
       requestBody:
         required: true
         content:
@@ -596,12 +652,15 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "user_id": 1,
                         "description": "Testing new product.",
                         "product_code": "A78J-HJ3B",
                         "sap_code": "3153",
                         "location": "Games Room",
-                        "active": true
+                        "active": true,
+                        "users": {
+                          "id": 1,
+                          "username": "Tes"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -614,6 +673,9 @@ paths:
         - Data
         - Products
       operationId: getProduct
+      x-tag-permissions:
+        - users
+        - products
       summary: Get object for product
       responses:
         '401':
@@ -642,12 +704,15 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "user_id": 1,
                         "description": "Testing new product.",
                         "product_code": "A78J-HJ3B",
                         "sap_code": "3153",
                         "location": "Games Room",
-                        "active": true
+                        "active": true,
+                        "users": {
+                          "id": 1,
+                          "username": "Tes"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -659,6 +724,9 @@ paths:
         - Products
       summary: Update object for product
       operationId: updateProduct
+      x-tag-permissions:
+        - users
+        - products
       requestBody:
         required: true
         content:
@@ -718,12 +786,15 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "user_id": 1,
                         "description": "Testing new product.",
                         "product_code": "A78J-HJ3B",
                         "sap_code": "3153",
                         "location": "Games Room",
-                        "active": true
+                        "active": true,
+                        "users": {
+                          "id": 1,
+                          "username": "Tes"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -736,6 +807,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/cardholders_sites':
     post:
@@ -746,6 +821,11 @@ paths:
       description: |-
         Links Cards to one or many sites
       operationId: createCardholderSite
+      x-tag-permissions:
+        - users
+        - cardholders
+        - sites
+        - cardholders_sites
       requestBody:
         required: true
         content:
@@ -806,6 +886,11 @@ paths:
         - Data
         - Cardholder Sites
       operationId: getCardholderSite
+      x-tag-permissions:
+        - users
+        - cardholders
+        - sites
+        - cardholders_sites
       summary: Get object for cardholder site
       responses:
         '401':
@@ -850,6 +935,11 @@ paths:
         - Cardholder Sites
       summary: Update object for cardholder site
       operationId: updateCardholderSite
+      x-tag-permissions:
+        - users
+        - cardholders
+        - sites
+        - cardholders_sites
       requestBody:
         required: true
         content:
@@ -907,6 +997,11 @@ paths:
         - Data
         - Cardholder Sites
       operationId: deleteCardholderSite
+      x-tag-permissions:
+        - users
+        - cardholders
+        - sites
+        - cardholders_sites
       summary: Delete object for cardholders sites
       responses:
         '401':
@@ -942,6 +1037,10 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/cardholders_products':
     post:
@@ -952,6 +1051,11 @@ paths:
       description: |-
         Links Card to one or many Products
       operationId: createCardholderProduct
+      x-tag-permissions:
+        - cardholders_products
+        - products
+        - cardholders
+        - users
       requestBody:
         required: true
         content:
@@ -1009,14 +1113,29 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "cardholder_id": 4,
-                        "product_id": 5,
                         "balance": 10,
                         "restock_flag": true,
                         "unlimited": true,
                         "active": true,
-                        "user_id": 1,
-                        "take_limit": 2
+                        "take_limit": 2,
+                        "users": {
+                          "id": 1,
+                          "username": "Testing User"
+                        },
+                        "products": {
+                          "id": 1,
+                          "description": "testing",
+                          "product_code": "JIM001",
+                          "sap_code": "testing",
+                          "location": "testing",
+                          "active": true
+                        },
+                        "cardholders": {
+                          "id": 1,
+                          "first_name": "Testing",
+                          "last_name": "Testing",
+                          "card_no": "V60357926"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -1029,6 +1148,11 @@ paths:
         - Data
         - Cardholder Products
       operationId: getCardholderProduct
+      x-tag-permissions:
+        - cardholders_products
+        - products
+        - cardholders
+        - users
       summary: Get object for cardholder product
       responses:
         '401':
@@ -1057,14 +1181,29 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "cardholder_id": 4,
-                        "product_id": 5,
                         "balance": 10,
                         "restock_flag": true,
                         "unlimited": true,
                         "active": true,
-                        "user_id": 1,
-                        "take_limit": 2
+                        "take_limit": 2,
+                        "users": {
+                          "id": 1,
+                          "username": "Testing User"
+                        },
+                        "products": {
+                          "id": 1,
+                          "description": "testing",
+                          "product_code": "JIM001",
+                          "sap_code": "testing",
+                          "location": "testing",
+                          "active": true
+                        },
+                        "cardholders": {
+                          "id": 1,
+                          "first_name": "Testing",
+                          "last_name": "Testing",
+                          "card_no": "V60357926"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -1076,6 +1215,11 @@ paths:
         - Cardholder Products
       summary: Update object for cardholder product
       operationId: updateCardholderProduct
+      x-tag-permissions:
+        - cardholders_products
+        - products
+        - cardholders
+        - users
       requestBody:
         required: true
         content:
@@ -1132,14 +1276,29 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "cardholder_id": 4,
-                        "product_id": 5,
                         "balance": 10,
                         "restock_flag": true,
                         "unlimited": true,
                         "active": true,
-                        "user_id": 1,
-                        "take_limit": 2
+                        "take_limit": 2,
+                        "users": {
+                          "id": 1,
+                          "username": "Testing User"
+                        },
+                        "products": {
+                          "id": 1,
+                          "description": "testing",
+                          "product_code": "JIM001",
+                          "sap_code": "testing",
+                          "location": "testing",
+                          "active": true
+                        },
+                        "cardholders": {
+                          "id": 1,
+                          "first_name": "Testing",
+                          "last_name": "Testing",
+                          "card_no": "V60357926"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -1150,6 +1309,11 @@ paths:
         - Data
         - Cardholder Products
       operationId: deleteCardholderProduct
+      x-tag-permissions:
+        - cardholders_products
+        - products
+        - cardholders
+        - users
       summary: Delete object for cardholders products
       responses:
         '401':
@@ -1185,14 +1349,24 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
 
   '/cardholders':
     post:
+      tags:
+        - Data
+        - Cardholders
       summary: Create object for cardholders
       description: |-
         Card Holders are identified as Mifare cards.  Each card is identified by a unique `card_no` that
         can be read out of the card using the correct Mifare card reader/NFC reader.
       operationId: createCardholder
+      x-tag-permissions:
+        - cardholders
+        - users
       requestBody:
         required: true
         content:
@@ -1250,6 +1424,15 @@ paths:
                   type: boolean
                   description: If set, the card wallet will automatically be reset on month end in accordance with the rules set
                     above.
+                image_guid:
+                  type: string
+                  description: Identification of image on disk.
+                wallet:
+                  type: number
+                  description: MiFare wallet credit amount.
+                link_sites:
+                  type: boolean
+                  description: When we create this cardholder, should we automatically link them in the cardholder_sites table?
                 active:
                   type: boolean
               required: [ "user_id", "card_no", "active" ]
@@ -1279,8 +1462,7 @@ paths:
                     "success": true,
                     "data": [
                       {
-                        "id": 3,
-                        "user_id": 2,
+                        "id": 1,
                         "card_no": "123555",
                         "first_name": "Testing",
                         "last_name": "Name",
@@ -1292,17 +1474,22 @@ paths:
                         "cost_centre": "testing",
                         "wallet": "0.00",
                         "topup_value": "10.00",
-                        "topup_reoccurance": false,
+                        "topup_reoccurrence": false,
                         "topup_date": null,
                         "topup_amount": null,
                         "last_transaction_device_uid": null,
                         "last_transaction_timestamp": null,
                         "import_site_id": null,
                         "import_guid": null,
-                        "active": true,
                         "created_at": "2024-08-27T10:44:03.542Z",
                         "updated_at": "2024-08-27T10:44:03.542Z",
-                        "last_transaction_result": null
+                        "last_transaction_result": null,
+                        "image_guid": "67784-ehbe7-ea583-sne83",
+                        "active": true,
+                        "users": {
+                          "id": 2,
+                          "username": "Testing"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -1315,6 +1502,9 @@ paths:
         - Data
         - Cardholders
       operationId: getCardholder
+      x-tag-permissions:
+        - cardholders
+        - users
       summary: Get object for cardholder
       responses:
         '401':
@@ -1342,8 +1532,7 @@ paths:
                     "success": true,
                     "data": [
                       {
-                        "id": 3,
-                        "user_id": 2,
+                        "id": 1,
                         "card_no": "123555",
                         "first_name": "Testing",
                         "last_name": "Name",
@@ -1355,17 +1544,22 @@ paths:
                         "cost_centre": "testing",
                         "wallet": "0.00",
                         "topup_value": "10.00",
-                        "topup_reoccurance": false,
+                        "topup_reoccurrence": false,
                         "topup_date": null,
                         "topup_amount": null,
                         "last_transaction_device_uid": null,
                         "last_transaction_timestamp": null,
                         "import_site_id": null,
                         "import_guid": null,
-                        "active": true,
                         "created_at": "2024-08-27T10:44:03.542Z",
                         "updated_at": "2024-08-27T10:44:03.542Z",
-                        "last_transaction_result": null
+                        "last_transaction_result": null,
+                        "image_guid": "67784-ehbe7-ea583-sne83",
+                        "active": true,
+                        "users": {
+                          "id": 2,
+                          "username": "Testing"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -1377,6 +1571,9 @@ paths:
         - Cardholders
       summary: Update object for cardholder
       operationId: updateCardholder
+      x-tag-permissions:
+        - cardholders
+        - users
       requestBody:
         required: true
         content:
@@ -1434,6 +1631,9 @@ paths:
                   type: boolean
                   description: If set, the card wallet will automatically be reset on month end in accordance with the rules set
                     above.
+                image_guid:
+                  type: string
+                  description: Identification of image on disk.
                 active:
                   type: boolean
       responses:
@@ -1462,8 +1662,7 @@ paths:
                     "success": true,
                     "data": [
                       {
-                        "id": 3,
-                        "user_id": 2,
+                        "id": 1,
                         "card_no": "123555",
                         "first_name": "Testing",
                         "last_name": "Name",
@@ -1475,22 +1674,131 @@ paths:
                         "cost_centre": "testing",
                         "wallet": "0.00",
                         "topup_value": "10.00",
-                        "topup_reoccurance": false,
+                        "topup_reoccurrence": false,
                         "topup_date": null,
                         "topup_amount": null,
                         "last_transaction_device_uid": null,
                         "last_transaction_timestamp": null,
                         "import_site_id": null,
                         "import_guid": null,
-                        "active": true,
                         "created_at": "2024-08-27T10:44:03.542Z",
                         "updated_at": "2024-08-27T10:44:03.542Z",
-                        "last_transaction_result": null
+                        "last_transaction_result": null,
+                        "image_guid": "67784-ehbe7-ea583-sne83",
+                        "active": true,
+                        "users": {
+                          "id": 2,
+                          "username": "Testing"
+                        }
                       }
                     ],
                     "entries": 1,
                     "timestamp": 1724759082131
                   }
+    delete:
+      tags:
+        - Data
+        - Cardholders
+      operationId: deleteCardholder
+      x-tag-permissions:
+        - cardholders
+        - users
+      summary: Delete object for cardholder
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DeleteResponse"
+              example:
+                {
+                  "success": true,
+                  "data": "Successfully deleted record(s). [1]",
+                  "timestamp": 1723108298846
+                }
+          description: Returns result of delete
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
+
+  '/activity_logs/{id}':
+    get:
+      tags:
+        - Data
+        - Logs
+      operationId: getActivityLogs
+      x-tag-permissions:
+        - users
+      summary: Get object for activity logs
+      description: |-
+        This endpoint holds all activity logs for PUT, POST and DELETE endpoints.
+        This acts as a audit trail to understand what actions have been performed by users.
+
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of "activity logs" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityLogsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "timestamp": "2024-09-06T05:06:37.709Z",
+                        "action": "POST",
+                        "operation_id": "createUserAccess",
+                        "body": "{\"user_id\":125,\"access_id\":104}",
+                        "parameters": "{}",
+                        "users": {
+                          "id": 1,
+                          "username": "Test Account",
+                          "super_user": true
+                        }
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1723628631562
+                  }
+
     parameters:
       - $ref: "#/components/parameters/idParam"
       - $ref: "#/components/parameters/limitParam"
@@ -1576,12 +1884,6 @@ components:
         payment_reference_2:
           type: integer
           description: Custom payment reference or used to cross-reference if a refund transaction
-        user_id:
-          type: integer
-        cardholder_id:
-          type: integer
-        site_id:
-          type: integer
         seq_key:
           type: string
           description: Unique sequence identifier to prevent duplication at POS
@@ -1592,8 +1894,6 @@ components:
       properties:
         id:
           type: integer
-        user_id:
-          type: integer
         name:
           type: string
         address:
@@ -1603,12 +1903,17 @@ components:
           description: Extra level of physical location identification can be used here.
         active:
           type: boolean
+        users:
+          type: object
+          properties:
+            id:
+              type: integer
+            username:
+              type: string
     ProductsResponse:
       type: object
       properties:
         id:
-          type: integer
-        user_id:
           type: integer
         description:
           type: string
@@ -1624,6 +1929,13 @@ components:
           description: Physical location of product
         active:
           type: boolean
+        users:
+          type: object
+          properties:
+            id:
+              type: integer
+            username:
+              type: string
     CardholdersSitesResponse:
       type: object
       properties:
@@ -1642,10 +1954,6 @@ components:
       properties:
         id:
           type: integer
-        cardholder_id:
-          type: integer
-        product_id:
-          type: integer
         balance:
           type: integer
         restock_flag:
@@ -1654,16 +1962,45 @@ components:
           type: boolean
         take_limit:
           type: integer
-        user_id:
-          type: integer
         active:
           type: boolean
+        users:
+          type: object
+          properties:
+            id:
+              type: integer
+            username:
+              type: string
+        products:
+          type: object
+          properties:
+            id:
+              type: integer
+            description:
+              type: string
+            product_code:
+              type: string
+            sap_code:
+              type: string
+            location:
+              type: string
+            active:
+              type: boolean
+        cardholders:
+          type: object
+          properties:
+            id:
+              type: integer
+            first_name:
+              type: string
+            last_name:
+              type: string
+            card_no:
+              type: string
     CardholdersResponse:
       type: object
       properties:
         id:
-          type: integer
-        user_id:
           type: integer
         card_no:
           type: string
@@ -1707,8 +2044,45 @@ components:
           type: string
         updated_at:
           type: string
+        image_guid:
+          type: string
         active:
           type: boolean
+        users:
+          type: object
+          properties:
+            id:
+              type: integer
+            username:
+              type: string
+    ActivityLogsResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        timestamp:
+          type: string
+        action:
+          type: string
+          description: HTTP request type.
+        operation_id:
+          type: string
+          description: OpenAPI operation / path identifier.
+        body:
+          type: string
+          description: All contents of the requests body.
+        parameters:
+          type: string
+          description: All query parameters of the request.
+        users:
+          type: object
+          properties:
+            id:
+              type: integer
+            username:
+              type: string
+            super_user:
+              type: boolean
     DeleteResponse:
       type: object
       properties:
@@ -1762,24 +2136,50 @@ components:
     UnauthorizedResponse:
       type: object
       properties:
-        err:
+        success:
+          type: boolean
+        error:
           type: string
-          description: User does not have permissions to access endpoint operation.
+          description: Error returned by backend.
+        details:
+          type: string
+          description: Any extra information around the error.
+        type:
+          type: string
+          description: Type of error encountered.
+        timestamp:
+          type: string
       example:
         {
-          "err": "Unauthorized. [getUserAccess]"
+          "success": false,
+          "error": "Account not found or setup correctly.",
+          "details": "x-user-token: undefined",
+          "type": "internal",
+          "timestamp": 1723108298846
         }
     ErrorResponse:
       type: object
       properties:
-        err:
+        success:
+          type: boolean
+        error:
           type: string
-          description: Any internal error is returned here.
+          description: Error returned by backend.
+        details:
+          type: string
+          description: Any extra information around the error.
+        type:
+          type: string
+          description: Type of error encountered.
+        timestamp:
+          type: string
       example:
         {
           "success": false,
-          "error": "[INTERNAL] error: insert or update on table \"devices\" violates foreign key constraint \"devices_host_hardware_id_fk\"",
-          "timestamp": 1723639902458
+          "error": "insert or update on table \"asset_states\" violates foreign key constraint \"asset_states_resellers_id_fk\"",
+          "details": null,
+          "type": "internal",
+          "timestamp": 1723108298846
         }
 
     numberIndex:
@@ -1806,6 +2206,29 @@ components:
         all:
           value: '_all'
           summary: Search by all accessible objects.
+    idSingleParam:
+      in: path
+      name: id
+      required: true
+      schema:
+        allOf:
+          - $ref: "#/components/schemas/numberIndex"
+      examples:
+        id:
+          value: 12
+          summary: Search by specific primary key aka "id".
+    tokenParam:
+      in: path
+      name: id
+      required: true
+      schema:
+        allOf:
+          - type: string
+            pattern: ^[a-z A-Z-0-9]+
+      examples:
+        token:
+          value: "7ecc242c-c40d-4fd1-ba02-62220b4t8c6b"
+          summary: Search by user token.
 
     offsetParam:
       in: query
@@ -1832,11 +2255,11 @@ components:
       schema:
         anyOf:
           - type: string
-            pattern: ^\w+:(asc|desc)$
+            pattern: ^[A-Za-z\._]+:(asc|desc)$
           - type: array
             items:
               type: string
-            pattern: ^\w+:(asc|desc)$
+              pattern: ^[A-Za-z\._]+:(asc|desc)$
       examples:
         asc:
           value: "field:asc"
@@ -1844,6 +2267,106 @@ components:
         desc:
           value: "field:desc"
           summary: Filters the field specific by descending order.
+    smallerThanParam:
+      in: query
+      name: st
+      required: false
+      schema:
+        anyOf:
+          - type: string
+            pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
+          - type: string
+            pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+          - type: array
+            items:
+              type: string
+              pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
+          - type: array
+            items:
+              type: string
+              pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+      examples:
+        smallerThan:
+          value: "field_name:100"
+          summary: Filters the field smaller than provided number.
+        smallerThanDate:
+          value: "field_name:2024-04-10 00:00:00"
+          summary: Filters the field smaller than the provided date.
+    greaterThanParam:
+      in: query
+      name: gt
+      required: false
+      schema:
+        anyOf:
+          - type: string
+            pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
+          - type: string
+            pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+          - type: array
+            items:
+              type: string
+              pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
+          - type: array
+            items:
+              type: string
+              pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+      examples:
+        greaterThanEqual:
+          value: "field_name:100"
+          summary: Filters the field greater than provided number.
+        greaterThanEqualDate:
+          value: "field_name:2024-04-10 00:00:00"
+          summary: Filters the field greater than the provided date.
+    smallerThanEqualParam:
+      in: query
+      name: ste
+      required: false
+      schema:
+        anyOf:
+          - type: string
+            pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
+          - type: string
+            pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+          - type: array
+            items:
+              type: string
+              pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
+          - type: array
+            items:
+              type: string
+              pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+      examples:
+        smallerThanEqual:
+          value: "field_name:100"
+          summary: Filters the field smaller than and equal to provided number.
+        smallerThanEqualDate:
+          value: "field_name:2024-04-10 00:00:00"
+          summary: Filters the field smaller than and equal to the provided date.
+    greaterThanEqualParam:
+      in: query
+      name: gte
+      required: false
+      schema:
+        anyOf:
+          - type: string
+            pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
+          - type: string
+            pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+          - type: array
+            items:
+              type: string
+              pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
+          - type: array
+            items:
+              type: string
+              pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+      examples:
+        smallerThanEqual:
+          value: "field_name:100"
+          summary: Filters the field greater than and equal to provided number.
+        smallerThanEqualDate:
+          value: "field_name:2024-04-10 00:00:00"
+          summary: Filters the field greater than and equal to the provided date.
 
     countParam:
       in: query
@@ -1877,6 +2400,9 @@ components:
         dateFind:
           value: "2024-08-01 00:00:00"
           summary: Searches in specific field for date equaling to "2024-08-01 00:00:00".
+        multipleParam:
+          value: "1,2,10"
+          summary: Searches in specific field for 1 OR 2 OR 10.
 
 security:
   - XUserToken: [ ]
