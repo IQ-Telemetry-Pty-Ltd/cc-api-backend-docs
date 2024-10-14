@@ -20,7 +20,7 @@ info:
     name: Ryan Pomario
     email: ryan@iqt.co.za
 
-  version: 1.0.0
+  version: 1.0.3
 
 externalDocs:
   description: Click here to learn more about Payway.
@@ -90,6 +90,10 @@ paths:
       
 
       operationId: getBookingsAllByDevice
+      x-tag-permissions:
+        - devices
+        - customers
+        - sites
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -226,6 +230,10 @@ paths:
         - Data
         - Booking Status
       operationId: getBookingsAllBySite
+      x-tag-permissions:
+        - devices
+        - customers
+        - sites
       summary: Get all bookings by site id
       description: |-
         This endpoint is used to obtain all booking objects for a site. This will return all devices that have bookings enabled under the site.
@@ -378,6 +386,10 @@ paths:
         - Data
         - Booking Status
       operationId: getBookingsAllByCustomer
+      x-tag-permissions:
+        - devices
+        - customers
+        - sites
       summary: Get all bookings by customer id
       description: |-
         This endpoint is used to obtain all booking objects for a customer. This will return all devices that have bookings enabled under the site.
@@ -537,6 +549,8 @@ paths:
         If GUID or version is incorrect, the customer will not be able to book the slot. 
 
       operationId: createBookingsReserve
+      x-tag-permissions:
+        - devices
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -588,6 +602,8 @@ paths:
         This endpoint allows customers to release / cancel their booking using the GUID, randomly generated, unique identifier.
 
       operationId: releaseBooking
+      x-tag-permissions:
+        - devices
       responses:
         '401':
           description: Authorization information is missing or invalid.
