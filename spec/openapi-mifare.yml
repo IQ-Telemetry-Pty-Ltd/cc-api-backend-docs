@@ -1367,6 +1367,7 @@ paths:
       x-tag-permissions:
         - cardholders
         - users
+        - sites
       requestBody:
         required: true
         content:
@@ -1487,8 +1488,18 @@ paths:
                         "image_guid": "67784-ehbe7-ea583-sne83",
                         "active": true,
                         "users": {
-                          "id": 2,
-                          "username": "Testing"
+                          "id": 1,
+                          "username": "Test User"
+                        },
+                        "sites": {
+                          "id": [
+                            1,
+                            12
+                          ],
+                          "name": [
+                            "Site A",
+                            "Site B"
+                          ]
                         }
                       }
                     ],
@@ -1505,6 +1516,7 @@ paths:
       x-tag-permissions:
         - cardholders
         - users
+        - sites
       summary: Get object for cardholder
       responses:
         '401':
@@ -1557,8 +1569,18 @@ paths:
                         "image_guid": "67784-ehbe7-ea583-sne83",
                         "active": true,
                         "users": {
-                          "id": 2,
-                          "username": "Testing"
+                          "id": 1,
+                          "username": "Test User"
+                        },
+                        "sites": {
+                          "id": [
+                            1,
+                            12
+                          ],
+                          "name": [
+                            "Site A",
+                            "Site B"
+                          ]
                         }
                       }
                     ],
@@ -1574,6 +1596,8 @@ paths:
       x-tag-permissions:
         - cardholders
         - users
+        - sites
+        - products
       requestBody:
         required: true
         content:
@@ -1687,8 +1711,18 @@ paths:
                         "image_guid": "67784-ehbe7-ea583-sne83",
                         "active": true,
                         "users": {
-                          "id": 2,
-                          "username": "Testing"
+                          "id": 1,
+                          "username": "Test User"
+                        },
+                        "sites": {
+                          "id": [
+                            1,
+                            12
+                          ],
+                          "name": [
+                            "Site A",
+                            "Site B"
+                          ]
                         }
                       }
                     ],
@@ -1703,6 +1737,7 @@ paths:
       x-tag-permissions:
         - cardholders
         - users
+        - sites
       summary: Delete object for cardholder
       responses:
         '401':
@@ -1731,6 +1766,119 @@ paths:
                   "timestamp": 1723108298846
                 }
           description: Returns result of delete
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
+
+  '/cardholders/products/{id}':
+    get:
+      tags:
+        - Data
+        - Cardholders
+      operationId: getCardholderProductByCardholder
+      x-tag-permissions:
+        - cardholders
+        - products
+      summary: Get product object for cardholder
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of "cardholder" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CardholdersProductsDetailsResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "card_no": "123555",
+                        "first_name": "Testing",
+                        "last_name": "Name",
+                        "user_number": "12343",
+                        "contact_number": "+27854561288",
+                        "negative_credit_allowed": true,
+                        "throttle_multiple_requests": true,
+                        "balance_accumulate": true,
+                        "cost_centre": "testing",
+                        "wallet": "0.00",
+                        "topup_value": "10.00",
+                        "topup_reoccurrence": false,
+                        "topup_date": null,
+                        "topup_amount": null,
+                        "last_transaction_device_uid": null,
+                        "last_transaction_timestamp": null,
+                        "import_site_id": null,
+                        "import_guid": null,
+                        "created_at": "2024-08-27T10:44:03.542Z",
+                        "updated_at": "2024-08-27T10:44:03.542Z",
+                        "last_transaction_result": null,
+                        "image_guid": "67784-ehbe7-ea583-sne83",
+                        "active": true,
+                        "products": {
+                          "id": [
+                            1,
+                            2
+                          ],
+                          "description": [
+                            "Product A",
+                            "Product B"
+                          ],
+                          "product_code": [
+                            "P1001",
+                            "P2002"
+                          ]
+                        },
+                        "cardholders_products": {
+                          "balance": [
+                            10,
+                            5
+                          ],
+                          "take_limit": [
+                            2,
+                            10
+                          ],
+                          "unlimited": [
+                            true,
+                            true
+                          ],
+                          "restock_flag": [
+                            true,
+                            true
+                          ],
+                          "active": [
+                            true,
+                            true
+                          ]
+                        }
+                      }
+                    ],
+                    "entries": 1,
+                    "timestamp": 1724759082131
+                  }
     parameters:
       - $ref: "#/components/parameters/idParam"
       - $ref: "#/components/parameters/limitParam"
@@ -2055,6 +2203,106 @@ components:
               type: integer
             username:
               type: string
+        sites:
+          type: object
+          properties:
+            id:
+              type: array
+              items:
+                type: integer
+            name:
+              type: array
+              items:
+                type: string
+    CardholdersProductsDetailsResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        card_no:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        user_number:
+          type: string
+        contact_number:
+          type: string
+        negative_credit_allowed:
+          type: boolean
+        throttle_multiple_requests:
+          type: boolean
+        balance_accumulate:
+          type: boolean
+        cost_centre:
+          type: string
+        wallet:
+          type: number
+        topup_value:
+          type: number
+        topup_reoccurrence:
+          type: boolean
+        topup_date:
+          type: string
+        topup_amount:
+          type: number
+        last_transaction_device_uid:
+          type: string
+        last_transaction_timestamp:
+          type: string
+        last_transaction_result:
+          type: string
+        import_site_id:
+          type: integer
+        import_guid:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        image_guid:
+          type: string
+        active:
+          type: boolean
+        products:
+          type: object
+          properties:
+            id:
+              type: array
+              items:
+                type: integer
+            description:
+              type: array
+              items:
+                type: string
+            product_code:
+              type: array
+              items:
+                type: string
+        cardholders_products:
+          type: object
+          properties:
+            balance:
+              type: array
+              items:
+                type: integer
+            take_limit:
+              type: array
+              items:
+                type: integer
+            unlimited:
+              type: array
+              items:
+                type: boolean
+            restock_flag:
+              type: array
+              items:
+                type: boolean
+            active:
+              type: array
+              items:
+                type: boolean
     ActivityLogsResponse:
       type: object
       properties:
@@ -2274,17 +2522,19 @@ components:
       schema:
         anyOf:
           - type: string
-            pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
-          - type: string
-            pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+            anyOf:
+              - pattern: ^[\w.]+:([+-]?([0-9]*[.])?[0-9]+)$
+              - pattern: ^[\w.]+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+              - pattern: ^[\w.]+:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-|%20]\d{2}:\d{2}
           - type: array
             items:
-              type: string
-              pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
-          - type: array
-            items:
-              type: string
-              pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+              anyOf:
+                - type: string
+                  pattern: ^[\w.]+:([+-]?([0-9]*[.])?[0-9]+)$
+                - type: string
+                  pattern: ^[\w.]+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+                - type: string
+                  pattern: ^[\w.]+:((?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}(?:\.\d+)?))(Z|[\+-]\d{2}:\d{2})?)$
       examples:
         smallerThan:
           value: "field_name:100"
@@ -2292,6 +2542,9 @@ components:
         smallerThanDate:
           value: "field_name:2024-04-10 00:00:00"
           summary: Filters the field smaller than the provided date.
+        greaterThanDate:
+          value: "field_name:2024-10-09T12:21:26+05:30"
+          summary: Filters the field smaller than the provided date with timestamp.
     greaterThanParam:
       in: query
       name: gt
@@ -2299,17 +2552,19 @@ components:
       schema:
         anyOf:
           - type: string
-            pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
-          - type: string
-            pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+            anyOf:
+              - pattern: ^[\w.]+:([+-]?([0-9]*[.])?[0-9]+)$
+              - pattern: ^[\w.]+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+              - pattern: ^[\w.]+:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-|%20]\d{2}:\d{2}
           - type: array
             items:
-              type: string
-              pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
-          - type: array
-            items:
-              type: string
-              pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+              anyOf:
+                - type: string
+                  pattern: ^[\w.]+:([+-]?([0-9]*[.])?[0-9]+)$
+                - type: string
+                  pattern: ^[\w.]+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+                - type: string
+                  pattern: ^[\w.]+:((?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}(?:\.\d+)?))(Z|[\+-]\d{2}:\d{2})?)$
       examples:
         greaterThanEqual:
           value: "field_name:100"
@@ -2317,6 +2572,9 @@ components:
         greaterThanEqualDate:
           value: "field_name:2024-04-10 00:00:00"
           summary: Filters the field greater than the provided date.
+        greaterThanDate:
+          value: "field_name:2024-10-09T12:21:26+05:30"
+          summary: Filters the field smaller than the provided date with timestamp.
     smallerThanEqualParam:
       in: query
       name: ste
@@ -2324,17 +2582,19 @@ components:
       schema:
         anyOf:
           - type: string
-            pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
-          - type: string
-            pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+            anyOf:
+              - pattern: ^[\w.]+:([+-]?([0-9]*[.])?[0-9]+)$
+              - pattern: ^[\w.]+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+              - pattern: ^[\w.]+:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-|%20]\d{2}:\d{2}
           - type: array
             items:
-              type: string
-              pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
-          - type: array
-            items:
-              type: string
-              pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+              anyOf:
+                - type: string
+                  pattern: ^[\w.]+:([+-]?([0-9]*[.])?[0-9]+)$
+                - type: string
+                  pattern: ^[\w.]+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+                - type: string
+                  pattern: ^[\w.]+:((?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}(?:\.\d+)?))(Z|[\+-]\d{2}:\d{2})?)$
       examples:
         smallerThanEqual:
           value: "field_name:100"
@@ -2342,6 +2602,9 @@ components:
         smallerThanEqualDate:
           value: "field_name:2024-04-10 00:00:00"
           summary: Filters the field smaller than and equal to the provided date.
+        greaterThanDate:
+          value: "field_name:2024-10-09T12:21:26+05:30"
+          summary: Filters the field smaller than the provided date with timestamp.
     greaterThanEqualParam:
       in: query
       name: gte
@@ -2349,17 +2612,19 @@ components:
       schema:
         anyOf:
           - type: string
-            pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
-          - type: string
-            pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+            anyOf:
+              - pattern: ^[\w.]+:([+-]?([0-9]*[.])?[0-9]+)$
+              - pattern: ^[\w.]+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+              - pattern: ^[\w.]+:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-|%20]\d{2}:\d{2}
           - type: array
             items:
-              type: string
-              pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
-          - type: array
-            items:
-              type: string
-              pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+              anyOf:
+                - type: string
+                  pattern: ^[\w.]+:([+-]?([0-9]*[.])?[0-9]+)$
+                - type: string
+                  pattern: ^[\w.]+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+                - type: string
+                  pattern: ^[\w.]+:((?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}(?:\.\d+)?))(Z|[\+-]\d{2}:\d{2})?)$
       examples:
         smallerThanEqual:
           value: "field_name:100"
@@ -2367,6 +2632,9 @@ components:
         smallerThanEqualDate:
           value: "field_name:2024-04-10 00:00:00"
           summary: Filters the field greater than and equal to the provided date.
+        greaterThanDate:
+          value: "field_name:2024-10-09T12:21:26+05:30"
+          summary: Filters the field smaller than the provided date with timestamp.
 
     countParam:
       in: query
