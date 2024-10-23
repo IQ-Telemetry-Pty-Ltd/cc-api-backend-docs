@@ -96,7 +96,8 @@ tags:
     description: Endpoints that relate to modules.
   - name: Access Levels
     description: Endpoints that relate to access levels.
-
+  - name: Biometrics
+    description: Endpoints that relate human biometrics.
 
 
 x-tagGroups:
@@ -109,7 +110,7 @@ x-tagGroups:
       - Users
       - Customers
       - Password Reset
-  - name: Authentication
+  - name: AuthenticationResponse
     tags:
       - Token
   - name: Platform Configurations and Administration
@@ -145,6 +146,15 @@ x-tagGroups:
       - Refunds
       - Bookings
       - Notifications
+  - name: Dashboards
+    tags:
+      - Transactions Totals By Provider In Period
+      - Transactions Totals By Status Code In Period
+      - Total Devices By Current Status
+      - Transactions Totals Current Previous
+  - name: Biometrics
+    tags:
+      - Facial Biometrics
 
 servers:
   - url: '{scheme}://payway.iqt.co.za/{version}/api'
@@ -638,7 +648,7 @@ paths:
         Organisation will be created using either a Super Admin or Reseller User account. This primary User account should be allocated a Role,
         such that each Organisation will have at least one Primary Role that permits full visibility of all resources that are direct descendants.    
         This will allow for the organisation's Primary User to create subsequent User accounts and Roles only in relation to the resources that 
-        are direct descendants.  
+        are direct descendants.    
 
       operationId: createRoles
       x-tag-permissions:
@@ -1069,7 +1079,7 @@ paths:
                   type: string
                   example: "$"
                   maxLength: 5
-                  pattern: ^[A-Z$€]*$
+                  pattern: ^[R$€]*$
                   description: Defines the type of current a user is using.
                 delimiter:
                   type: string
@@ -2208,6 +2218,8 @@ paths:
                         "verify_token": "3305",
                         "companies_providers_id": 3,
                         "mifare_card_number": '38362837a8aam332',
+                        "missed_bookings": 0,
+                        "image_guid": "323d8592-8464-44b2-8683-51925057cda5",
                         "users": {
                           "id": 1,
                           "displayname": "Chris Groenewald",
@@ -2295,6 +2307,8 @@ paths:
                         "verify_token": "3305",
                         "companies_providers_id": 3,
                         "mifare_card_number": '38362837a8aam332',
+                        "missed_bookings": 0,
+                        "image_guid": "323d8592-8464-44b2-8683-51925057cda5",
                         "users": {
                           "id": 1,
                           "displayname": "Chris Groenewald",
@@ -2435,6 +2449,8 @@ paths:
                         "verify_token": "3305",
                         "companies_providers_id": 3,
                         "mifare_card_number": '38362837a8aam332',
+                        "missed_bookings": 0,
+                        "image_guid": "323d8592-8464-44b2-8683-51925057cda5",
                         "users": {
                           "id": 1,
                           "displayname": "Chris Groenewald",
@@ -2518,6 +2534,107 @@ paths:
       - $ref: "#/components/parameters/smallerThanEqualParam"
       - $ref: "#/components/parameters/greaterThanEqualParam"
 
+  '/customers/biometrics/face/{id}':
+    put:
+      tags:
+        - Data
+        - Customers
+      summary: Update image_guid for customer
+      description: Update image_guid for customer
+      operationId: updateCustomersBiometricsFacial
+      x-tag-permissions:
+        - customers
+        - companies
+        - organisations
+        - resellers
+        - roles
+        - users
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of "access" items updated by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CustomersResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "email": "john.doe@gmail.com",
+                        "first_name": "John",
+                        "last_name": "Doe",
+                        "contact_number": "+27876545611",
+                        "customer_identification": "0456744907613",
+                        "user_id": 125,
+                        "consent_number": true,
+                        "consent_email": true,
+                        "daily_booking_limit": 5,
+                        "blocked": false,
+                        "verified": true,
+                        "email_sent_amount": 4,
+                        "verify_token": "3305",
+                        "companies_providers_id": 3,
+                        "mifare_card_number": '38362837a8aam332',
+                        "missed_bookings": 0,
+                        "image_guid": "323d8592-8464-44b2-8683-51925057cda5",
+                        "users": {
+                          "id": 1,
+                          "displayname": "Chris Groenewald",
+                          "active": true
+                        },
+                        "resellers": {
+                          "id": [
+                            1
+                          ],
+                          "name": [
+                            "IQT Holdings"
+                          ],
+                          "id_name": [
+                            "1,IQT Holdings"
+                          ]
+                        },
+                        "organisations": {
+                          "id": 7,
+                          "name": "IQ Telemetry Test Account"
+                        },
+                        "companies": {
+                          "id": 7,
+                          "name": "IQ Telemetry Test Account"
+                        }
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723108298846
+                  }
+    parameters:
+      - $ref: "#/components/parameters/idParam"
 
   '/resellers':
     post:
@@ -4135,6 +4252,7 @@ paths:
                         "coupon_price": "0.00",
                         "short_name": null,
                         "machine_serial_number": null,
+                        "online": false,
                         "active": true,
                         "resellers": {
                           "id": [
@@ -4264,6 +4382,7 @@ paths:
                         "coupon_price": "0.00",
                         "short_name": null,
                         "machine_serial_number": null,
+                        "online": false,
                         "active": true,
                         "resellers": {
                           "id": [
@@ -4474,6 +4593,7 @@ paths:
                         "coupon_price": "0.00",
                         "short_name": null,
                         "machine_serial_number": null,
+                        "online": false,
                         "active": true,
                         "resellers": {
                           "id": [
@@ -7294,6 +7414,10 @@ paths:
       operationId: getMissedBookings
       x-tag-permissions:
         - devices
+        - sites
+        - companies
+        - organisations
+        - customers
       summary: Get object for missed bookings.
       description: |-
         This endpoint is used to obtain all missed booking objects.
@@ -7330,14 +7454,31 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "booking_guid": "333",
-                        "customer_uid": "3",
-                        "date": "2024-08-22T10:47:58.000Z",
+                        "booking_guid": "c4f7afc0-82ac-11ef-af9f-b7fea465b9b2",
+                        "date": "2024-10-15T22:00:00.000Z",
                         "slot": 3,
-                        "company_id": 10,
-                        "organisation_id": 10,
-                        "site_id": 10,
-                        "device_id": 10
+                        "customers": {
+                          "id": 55,
+                          "customer_identification": "aabbcc",
+                          "missed_bookings": 0
+                        },
+                        "organisations": {
+                          "id": 14,
+                          "name": "Nano Living"
+                        },
+                        "companies": {
+                          "id": 14,
+                          "name": "Nano Living"
+                        },
+                        "sites": {
+                          "id": 30,
+                          "name": "Herb Street, Johannesburg"
+                        },
+                        "devices": {
+                          "id": 2566,
+                          "name": "Washer03",
+                          "uid": "349454bfde38"
+                        }
                       }
                     ],
                     "entries": 1,
@@ -7352,6 +7493,10 @@ paths:
       operationId: deleteMissedBookings
       x-tag-permissions:
         - devices
+        - sites
+        - companies
+        - organisations
+        - customers
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -8365,14 +8510,23 @@ paths:
       - $ref: "#/components/parameters/smallerThanEqualParam"
       - $ref: "#/components/parameters/greaterThanEqualParam"
 
-  '/reports/transactionsTotalsCurrentPrevious':
+  '/reports/transactions/totals_current_previous':
     get:
       tags:
         - Data
         - Report
-        - TransactionsTotalsCurrentPrevious
+        - Transactions Totals Current Previous
       operationId: getTransactionsTotalsCurrentPrevious
-      summary: Get TransactionsTotalsCurrentPrevious Report
+      x-tag-permissions:
+        - companies
+        - organisations
+        - sites
+        - devices
+      summary: Get transactions totals current previous report.
+      description: |-
+        This endpoint returns the total number of transactions and total value of transactions for the current specified period and previous specified period.
+        This can be used to compare performance between all customers transactions in the form of dashboards or reports.
+
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -8395,14 +8549,77 @@ paths:
                 items:
                   $ref: "#/components/schemas/TransactionsTotalsCurrentPreviousResponse"
                 example:
+                  # TODO
                   {
                     "success": true,
-                    "data": [ {
-                      day_of_week: [ "Wed", "Sat", "Fri", "Mon" ],
-                      date: [ "2023-07-12", "2023-07-15", "2024-07-12", "2024-07-15" ],
-                      total_amount: [ 32.00, 142.00, 173.00, 1.00 ],
-                      total_count: [ 1, 12, 12, 1 ]
-                    } ],
+                    "data": {
+                      "current_period": {
+                        "day_of_week": null,
+                        "date": null,
+                        "total_amount": null,
+                        "total_count": null
+                      },
+                      "previous_period": null,
+                      "current_grand_total_amount": 0,
+                      "previous_grand_total_amount": 0,
+                      "delta_grand_total_amount": 0,
+                      "delta_grand_total_amount_perc": null,
+                      "current_grand_total_count": 0,
+                      "previous_grand_total_count": 0,
+                      "delta_grand_total_count": 0,
+                      "delta_grand_total_count_perc": null,
+                      "currency": "R"
+                    },
+                    "total_count": null,
+                    "timestamp": 1723108298846
+                  }
+      parameters:
+        - $ref: "#/components/parameters/countParam"
+        - $ref: "#/components/parameters/others"
+        - $ref: "#/components/parameters/smallerThanParam"
+        - $ref: "#/components/parameters/greaterThanParam"
+        - $ref: "#/components/parameters/smallerThanEqualParam"
+        - $ref: "#/components/parameters/greaterThanEqualParam"
+
+  '/reports/transactions/totals_by_provider_in_period':
+    get:
+      tags:
+        - Data
+        - Report
+        - Transactions Totals By Provider In Period
+      operationId: getTransactionsTotalsByProviderInPeriod
+      x-tag-permissions:
+        - companies
+        - organisations
+        - sites
+        - devices
+      summary: Get transactions totals by provider in period report
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns a dashboard data object
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TransactionsTotalsByProviderInPeriodResponse"
+                example:
+                  ## TODO
+                  {
+                    "success": true,
+                    "data": [ ],
                     "entries": 1,
                     "total_count": null,
                     "timestamp": 1723628631562
@@ -8414,6 +8631,200 @@ paths:
         - $ref: "#/components/parameters/greaterThanParam"
         - $ref: "#/components/parameters/smallerThanEqualParam"
         - $ref: "#/components/parameters/greaterThanEqualParam"
+
+  '/reports/transactions/totals_by_status_code_in_period':
+    get:
+      tags:
+        - Data
+        - Report
+        - Transactions Totals By Status Code In Period
+      operationId: getTransactionsTotalsByStatusCodeInPeriod
+      x-tag-permissions:
+        - companies
+        - organisations
+        - sites
+        - devices
+      summary: Get transactions totals by status code in period report
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns a dashboard data object
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TransactionsTotalsByProviderInPeriodResponse"
+                example:
+                  ## TODO
+                  {
+                    "success": true,
+                    "data": [ ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723628631562
+                  }
+      parameters:
+        - $ref: "#/components/parameters/countParam"
+        - $ref: "#/components/parameters/others"
+        - $ref: "#/components/parameters/smallerThanParam"
+        - $ref: "#/components/parameters/greaterThanParam"
+        - $ref: "#/components/parameters/smallerThanEqualParam"
+        - $ref: "#/components/parameters/greaterThanEqualParam"
+
+  '/reports/devices/total_devices_by_current_status':
+    get:
+      tags:
+        - Data
+        - Report
+        - Total Devices By Current Status
+      operationId: getTotalDevicesByCurrentStatus
+      x-tag-permissions:
+        - devices
+      summary: Get total devices by current status report
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns a dashboard data object
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  - $ref: "#/components/schemas/TotalDevicesByCurrentStatusResponseOne"
+                  - $ref: "#/components/schemas/TotalDevicesByCurrentStatusResponseTwo"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      [
+                        {
+                          "online": false,
+                          "total": 2056,
+                          "grand_total": 2056,
+                          "perc_total": 100
+                        }
+                      ],
+                      [
+                        {
+                          "code": 99,
+                          "name": "AVAILABLE",
+                          "color": "#00aa00",
+                          "total": 2056,
+                          "grand_total": 2056,
+                          "perc_total": 100
+                        }
+                      ]
+                    ],
+                    "entries": 2,
+                    "total_count": null,
+                    "timestamp": 1723108298846
+                  }
+      parameters:
+        - $ref: "#/components/parameters/others"
+
+  '/biometrics/face_compare':
+    post:
+      tags:
+        - Data
+        - Facial Biometrics
+      summary: Compare two faces and return probability of them being the same.
+      description: |-
+        This endpoint utilizes Amazon Rekognition, specifically [compare faces](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_CompareFaces.html),
+        to compare a source and target image containing one or many faces. Details of the matched and non-matched faces are turned for further logic decisions.
+        
+        Compares a face in the source input image with each of the 100 largest faces detected in the target input image. 
+        If the source image contains multiple faces, the service detects the largest face and compares it with each face detected in the target image.
+
+      operationId: postFaceCompare
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                source:
+                  type: string
+                  format: binary
+                target:
+                  type: string
+                  format: binary
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Obtain an array of "compare face" items.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  - $ref: "#/components/schemas/FaceCompareMatchedResponse"
+                  - $ref: "#/components/schemas/FaceCompareNotMatchedResponse"
+
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "faces_matched": [
+                          {
+                            "sharpness": 67.22731018066406,
+                            "brightness": 78.88008880615234,
+                            "contains_face": 99.99811553955078,
+                            "emotions": null,
+                            "smile": null,
+                            "match_similarity": 99.99887084960938
+                          }
+                        ],
+                        "faces_unmatched": [
+                          {
+                            "sharpness": 32.20803451538086,
+                            "brightness": 69.8022689819336,
+                            "contains_face": 99.99658966064453,
+                            "emotions": null,
+                            "smile": null
+                          }
+                        ]
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723628631562
+                  }
 
 components:
   securitySchemes:
@@ -8920,6 +9331,9 @@ components:
         machine_serial_number:
           type: string
           description: Serial number of the physical machine.
+        online:
+          type: boolean
+          description: Boolean representing the connection of the device.
         active:
           type: boolean
         resellers:
@@ -9577,6 +9991,11 @@ components:
           type: integer
         mifare_card_number:
           type: string
+        missed_bookings:
+          type: number
+        image_guid:
+          type: string
+          description: Identification of biometric face image on disk.
         users:
           type: object
           properties:
@@ -9705,16 +10124,45 @@ components:
           type: integer
         bookings_guid:
           type: string
-        company_id:
-          type: integer
-        organisation_id:
-          type: integer
-        site_id:
-          type: integer
-        device_id:
-          type: integer
-        customer_uid:
-          type: string
+        customers:
+          type: object
+          properties:
+            id:
+              type: integer
+            customer_identification:
+              type: string
+            missed_bookings:
+              type: integer
+        organisations:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        companies:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        sites:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        devices:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            uid:
+              type: string
     BookingsBookedResponse:
       type: object
       properties:
@@ -9869,6 +10317,66 @@ components:
     TransactionsTotalsCurrentPreviousResponse:
       type: object
       properties:
+        current_period:
+          type: object
+          properties:
+            day_of_week:
+              type: array
+              description: TODO
+              items:
+                type: string
+            date:
+              type: array
+              description: TODO
+              items:
+                type: string
+            total_amount:
+              type: array
+              description: TODO
+              items:
+                type: number
+            total_count:
+              type: array
+              description: TODO
+              items:
+                type: integer
+        previous_period:
+          type: string
+          example: TODO
+          description: TODO
+        current_grand_total_amount:
+          type: number
+          description: TODO
+        previous_grand_total_amount:
+          type: number
+          description: TODO
+        delta_grand_total_amount:
+          type: number
+          description: TODO
+        delta_grand_total_amount_perc:
+          type: string
+          example: TODO
+          description: TODO
+        current_grand_total_count:
+          type: number
+          description: TODO
+        previous_grand_total_count:
+          type: number
+          description: TODO
+        delta_grand_total_count:
+          type: number
+          description: TODO
+        delta_grand_total_count_perc:
+          type: string
+          example: TODO
+          description: TODO
+        currency:
+          type: string
+          example: TODO
+          description: TODO
+    TransactionsTotalsByProviderInPeriodResponse:
+      type: object
+      properties:
         day_of_week:
           type: array
           items:
@@ -9885,6 +10393,135 @@ components:
           type: array
           items:
             type: integer
+    TotalDevicesByCurrentStatusResponseOne:
+      type: object
+      properties:
+        online:
+          type: boolean
+        total:
+          type: number
+        grand_total:
+          type: number
+        perc_total:
+          type: number
+    TotalDevicesByCurrentStatusResponseTwo:
+      type: object
+      properties:
+        code:
+          type: number
+        name:
+          type: string
+        color:
+          type: string
+        total:
+          type: number
+        grand_total:
+          type: number
+        perc_total:
+          type: number
+    FaceCompareMatchedResponse:
+      type: object
+      properties:
+        faces_matched:
+          type: array
+          items:
+            type: object
+            properties:
+              sharpness:
+                type: number
+                format: float
+              brightness:
+                type: number
+                format: float
+              contains_face:
+                type: number
+                format: float
+                minimum: 0
+                maximum: 100
+                description: Level of confidence that what the bounding box contains is a face.
+              emotions:
+                type: object
+                properties:
+                  confident:
+                    type: number
+                    description: Level of confidence in the determination.
+                  emotion:
+                    type: string
+                    enum:
+                      - HAPPY
+                      - SAD
+                      - ANGRY
+                      - CONFUSED
+                      - DISGUSTED
+                      - SURPRISED
+                      - CALM
+                      - UNKNOWN
+                      - FEAR
+                    description: Type of emotion detected.
+              smile:
+                type: object
+                properties:
+                  confident:
+                    type: number
+                    description: Level of confidence in the determination.
+                  value:
+                    type: boolean
+                    description: Boolean value that indicates whether the face is smiling or not.
+              match_similarity:
+                type: number
+                description: Level of confidence that the faces match.
+                format: float
+                minimum: 0
+                maximum: 100
+    FaceCompareNotMatchedResponse:
+      type: object
+      properties:
+        faces_matched:
+          type: array
+          items:
+            type: object
+            properties:
+              sharpness:
+                type: number
+                format: float
+              brightness:
+                type: number
+                format: float
+              contains_face:
+                type: number
+                format: float
+                minimum: 0
+                maximum: 100
+                description: Level of confidence that what the bounding box contains is a face.
+              emotions:
+                type: object
+                properties:
+                  confident:
+                    type: number
+                    description: Level of confidence in the determination.
+                  emotion:
+                    type: string
+                    enum:
+                      - HAPPY
+                      - SAD
+                      - ANGRY
+                      - CONFUSED
+                      - DISGUSTED
+                      - SURPRISED
+                      - CALM
+                      - UNKNOWN
+                      - FEAR
+                    description: Type of emotion detected.
+              smile:
+                type: object
+                properties:
+                  confident:
+                    type: number
+                    description: Level of confidence in the determination.
+                  value:
+                    type: boolean
+                    description: Boolean value that indicates whether the face is smiling or not.
+
     DeleteResponse:
       type: object
       properties:
