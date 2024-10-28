@@ -20,7 +20,7 @@ info:
     name: Ryan Pomario
     email: ryan@iqt.co.za
 
-  version: 1.0.4
+  version: 1.0.5
 
 externalDocs:
   description: Click here to learn more about Payway.
@@ -1425,15 +1425,18 @@ paths:
                   type: boolean
                   description: If set, the card wallet will automatically be reset on month end in accordance with the rules set
                     above.
-                image_guid:
-                  type: string
-                  description: Identification of image on disk.
                 wallet:
                   type: number
                   description: MiFare wallet credit amount.
                 link_sites:
                   type: boolean
                   description: When we create this cardholder, should we automatically link them in the cardholder_sites table?
+                sites:
+                  type: array
+                  description: Array of sites that the cardholder should be linked to. Linking table "cardholders_sites".
+                  properties:
+                    items:
+                      type: integer
                 active:
                   type: boolean
               required: [ "user_id", "card_no", "active" ]
@@ -1485,7 +1488,6 @@ paths:
                         "created_at": "2024-08-27T10:44:03.542Z",
                         "updated_at": "2024-08-27T10:44:03.542Z",
                         "last_transaction_result": null,
-                        "image_guid": "67784-ehbe7-ea583-sne83",
                         "active": true,
                         "users": {
                           "id": 1,
@@ -1566,7 +1568,6 @@ paths:
                         "created_at": "2024-08-27T10:44:03.542Z",
                         "updated_at": "2024-08-27T10:44:03.542Z",
                         "last_transaction_result": null,
-                        "image_guid": "67784-ehbe7-ea583-sne83",
                         "active": true,
                         "users": {
                           "id": 1,
@@ -1655,9 +1656,12 @@ paths:
                   type: boolean
                   description: If set, the card wallet will automatically be reset on month end in accordance with the rules set
                     above.
-                image_guid:
-                  type: string
-                  description: Identification of image on disk.
+                sites:
+                  type: array
+                  description: Array of sites that the cardholder should be linked to. Linking table "cardholders_sites".
+                  properties:
+                    items:
+                      type: integer
                 active:
                   type: boolean
       responses:
@@ -1708,7 +1712,6 @@ paths:
                         "created_at": "2024-08-27T10:44:03.542Z",
                         "updated_at": "2024-08-27T10:44:03.542Z",
                         "last_transaction_result": null,
-                        "image_guid": "67784-ehbe7-ea583-sne83",
                         "active": true,
                         "users": {
                           "id": 1,
@@ -1836,7 +1839,6 @@ paths:
                         "created_at": "2024-08-27T10:44:03.542Z",
                         "updated_at": "2024-08-27T10:44:03.542Z",
                         "last_transaction_result": null,
-                        "image_guid": "67784-ehbe7-ea583-sne83",
                         "active": true,
                         "products": {
                           "id": [
@@ -1853,6 +1855,10 @@ paths:
                           ]
                         },
                         "cardholders_products": {
+                          "id": [
+                            1,
+                            2
+                          ],
                           "balance": [
                             10,
                             5
@@ -1954,7 +1960,6 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
-
 
 components:
   securitySchemes:
@@ -2192,8 +2197,6 @@ components:
           type: string
         updated_at:
           type: string
-        image_guid:
-          type: string
         active:
           type: boolean
         users:
@@ -2260,8 +2263,6 @@ components:
         created_at:
           type: string
         updated_at:
-          type: string
-        image_guid:
           type: string
         active:
           type: boolean
@@ -2331,6 +2332,7 @@ components:
               type: string
             super_user:
               type: boolean
+
     DeleteResponse:
       type: object
       properties:

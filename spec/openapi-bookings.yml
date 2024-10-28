@@ -20,7 +20,7 @@ info:
     name: Ryan Pomario
     email: ryan@iqt.co.za
 
-  version: 1.0.3
+  version: 1.0.6
 
 externalDocs:
   description: Click here to learn more about Payway.
@@ -1062,17 +1062,19 @@ components:
       schema:
         anyOf:
           - type: string
-            pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
-          - type: string
-            pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+            anyOf:
+              - pattern: ^[\w.]+:([+-]?([0-9]*[.])?[0-9]+)$
+              - pattern: ^[\w.]+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+              - pattern: ^[\w.]+:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-|%20]\d{2}:\d{2}
           - type: array
             items:
-              type: string
-              pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
-          - type: array
-            items:
-              type: string
-              pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+              anyOf:
+                - type: string
+                  pattern: ^[\w.]+:([+-]?([0-9]*[.])?[0-9]+)$
+                - type: string
+                  pattern: ^[\w.]+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+                - type: string
+                  pattern: ^[\w.]+:((?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}(?:\.\d+)?))(Z|[\+-]\d{2}:\d{2})?)$
       examples:
         smallerThan:
           value: "field_name:100"
@@ -1080,6 +1082,9 @@ components:
         smallerThanDate:
           value: "field_name:2024-04-10 00:00:00"
           summary: Filters the field smaller than the provided date.
+        greaterThanDate:
+          value: "field_name:2024-10-09T12:21:26+05:30"
+          summary: Filters the field smaller than the provided date with timestamp.
     greaterThanParam:
       in: query
       name: gt
@@ -1087,17 +1092,19 @@ components:
       schema:
         anyOf:
           - type: string
-            pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
-          - type: string
-            pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+            anyOf:
+              - pattern: ^[\w.]+:([+-]?([0-9]*[.])?[0-9]+)$
+              - pattern: ^[\w.]+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+              - pattern: ^[\w.]+:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-|%20]\d{2}:\d{2}
           - type: array
             items:
-              type: string
-              pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
-          - type: array
-            items:
-              type: string
-              pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+              anyOf:
+                - type: string
+                  pattern: ^[\w.]+:([+-]?([0-9]*[.])?[0-9]+)$
+                - type: string
+                  pattern: ^[\w.]+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+                - type: string
+                  pattern: ^[\w.]+:((?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}(?:\.\d+)?))(Z|[\+-]\d{2}:\d{2})?)$
       examples:
         greaterThanEqual:
           value: "field_name:100"
@@ -1105,6 +1112,9 @@ components:
         greaterThanEqualDate:
           value: "field_name:2024-04-10 00:00:00"
           summary: Filters the field greater than the provided date.
+        greaterThanDate:
+          value: "field_name:2024-10-09T12:21:26+05:30"
+          summary: Filters the field smaller than the provided date with timestamp.
     smallerThanEqualParam:
       in: query
       name: ste
@@ -1112,17 +1122,19 @@ components:
       schema:
         anyOf:
           - type: string
-            pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
-          - type: string
-            pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+            anyOf:
+              - pattern: ^[\w.]+:([+-]?([0-9]*[.])?[0-9]+)$
+              - pattern: ^[\w.]+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+              - pattern: ^[\w.]+:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-|%20]\d{2}:\d{2}
           - type: array
             items:
-              type: string
-              pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
-          - type: array
-            items:
-              type: string
-              pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+              anyOf:
+                - type: string
+                  pattern: ^[\w.]+:([+-]?([0-9]*[.])?[0-9]+)$
+                - type: string
+                  pattern: ^[\w.]+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+                - type: string
+                  pattern: ^[\w.]+:((?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}(?:\.\d+)?))(Z|[\+-]\d{2}:\d{2})?)$
       examples:
         smallerThanEqual:
           value: "field_name:100"
@@ -1130,6 +1142,9 @@ components:
         smallerThanEqualDate:
           value: "field_name:2024-04-10 00:00:00"
           summary: Filters the field smaller than and equal to the provided date.
+        greaterThanDate:
+          value: "field_name:2024-10-09T12:21:26+05:30"
+          summary: Filters the field smaller than the provided date with timestamp.
     greaterThanEqualParam:
       in: query
       name: gte
@@ -1137,17 +1152,19 @@ components:
       schema:
         anyOf:
           - type: string
-            pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
-          - type: string
-            pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+            anyOf:
+              - pattern: ^[\w.]+:([+-]?([0-9]*[.])?[0-9]+)$
+              - pattern: ^[\w.]+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+              - pattern: ^[\w.]+:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-|%20]\d{2}:\d{2}
           - type: array
             items:
-              type: string
-              pattern: ^\w+:([+-]?([0-9]*[.])?[0-9]+)$
-          - type: array
-            items:
-              type: string
-              pattern: ^\w+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+              anyOf:
+                - type: string
+                  pattern: ^[\w.]+:([+-]?([0-9]*[.])?[0-9]+)$
+                - type: string
+                  pattern: ^[\w.]+:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
+                - type: string
+                  pattern: ^[\w.]+:((?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}(?:\.\d+)?))(Z|[\+-]\d{2}:\d{2})?)$
       examples:
         smallerThanEqual:
           value: "field_name:100"
@@ -1155,6 +1172,9 @@ components:
         smallerThanEqualDate:
           value: "field_name:2024-04-10 00:00:00"
           summary: Filters the field greater than and equal to the provided date.
+        greaterThanDate:
+          value: "field_name:2024-10-09T12:21:26+05:30"
+          summary: Filters the field smaller than the provided date with timestamp.
 
     countParam:
       in: query
