@@ -20,7 +20,7 @@ info:
     name: Ryan Pomario
     email: ryan@iqt.co.za
 
-  version: 1.0.8
+  version: 1.1.0
 
 externalDocs:
   description: Click here to learn more about Payway.
@@ -8547,7 +8547,7 @@ paths:
         - organisations
         - sites
         - devices
-      summary: Get transactions totals current previous report.
+      summary: Get transactions totals current previous report
       description: |-
         This endpoint returns the total number of transactions and total value of transactions for the current specified period and previous specified period.
         This can be used to compare performance between all customers transactions in the form of dashboards or reports.
@@ -8574,25 +8574,93 @@ paths:
                 items:
                   $ref: "#/components/schemas/TransactionsTotalsCurrentPreviousResponse"
                 example:
-                  # TODO
                   {
                     "success": true,
                     "data": {
                       "current_period": {
-                        "day_of_week": null,
-                        "date": null,
-                        "total_amount": null,
-                        "total_count": null
+                        "day_of_week": [
+                          "Wed",
+                          "Thu",
+                          "Fri",
+                          "Sat",
+                          "Sun",
+                          "Mon",
+                          "Tue"
+                        ],
+                        "date": [
+                          "2024-10-23",
+                          "2024-10-24",
+                          "2024-10-25",
+                          "2024-10-26",
+                          "2024-10-27",
+                          "2024-10-28",
+                          "2024-10-29"
+                        ],
+                        "total_amount": [
+                          33945.62,
+                          38739.5,
+                          47753,
+                          62940.88,
+                          167230.21,
+                          48408.05,
+                          31966.51
+                        ],
+                        "total_count": [
+                          1378,
+                          1536,
+                          2205,
+                          3148,
+                          2906,
+                          2075,
+                          1361
+                        ]
                       },
-                      "previous_period": null,
-                      "current_grand_total_amount": 0,
-                      "previous_grand_total_amount": 0,
-                      "delta_grand_total_amount": 0,
-                      "delta_grand_total_amount_perc": null,
-                      "current_grand_total_count": 0,
-                      "previous_grand_total_count": 0,
-                      "delta_grand_total_count": 0,
-                      "delta_grand_total_count_perc": null,
+                      "previous_period": {
+                        "day_of_week": [
+                          "Mon",
+                          "Tue",
+                          "Wed",
+                          "Thu",
+                          "Fri",
+                          "Sat",
+                          "Sun"
+                        ],
+                        "date": [
+                          "2023-10-23",
+                          "2023-10-24",
+                          "2023-10-25",
+                          "2023-10-26",
+                          "2023-10-27",
+                          "2023-10-28",
+                          "2023-10-29"
+                        ],
+                        "total_amount": [
+                          44375.2,
+                          38287,
+                          43052,
+                          16052210.21,
+                          51855.26,
+                          54125.52,
+                          55729.6
+                        ],
+                        "total_count": [
+                          1662,
+                          1467,
+                          1825,
+                          2022,
+                          2232,
+                          2646,
+                          2381
+                        ]
+                      },
+                      "current_grand_total_amount": 430983.76999999996,
+                      "previous_grand_total_amount": 16339634.79,
+                      "delta_grand_total_amount": -15908651.02,
+                      "delta_grand_total_amount_perc": -189.72,
+                      "current_grand_total_count": 430983.76999999996,
+                      "previous_grand_total_count": 16339634.79,
+                      "delta_grand_total_count": -15908651.02,
+                      "delta_grand_total_count_perc": -189.72,
                       "currency": "R"
                     },
                     "total_count": null,
@@ -8619,6 +8687,9 @@ paths:
         - sites
         - devices
       summary: Get transactions totals by provider in period report
+      description: |-
+        This endpoint is used for report dashboards. It provides insight into transactions for each Payway payment provider.
+
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -8641,10 +8712,20 @@ paths:
                 items:
                   $ref: "#/components/schemas/TransactionsTotalsByProviderInPeriodResponse"
                 example:
-                  ## TODO
                   {
                     "success": true,
-                    "data": [ ],
+                    "data": [
+                      {
+                        "total_amount": 3095386.36,
+                        "total_count": 102738,
+                        "provider_name": "SnapScan",
+                        "provider_logo_url": "snapscan.png",
+                        "provider_color": "#309dbe",
+                        "perc_total": 59.11,
+                        "currency": "R",
+                        "grand_total_count": 173816
+                      }
+                    ],
                     "entries": 1,
                     "total_count": null,
                     "timestamp": 1723628631562
@@ -8670,6 +8751,10 @@ paths:
         - sites
         - devices
       summary: Get transactions totals by status code in period report
+      description: |-
+        This endpoint is used for report dashboards. It provides transaction totals in a specified period grouped by all status codes
+        found on the Payway System.
+
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -8690,12 +8775,22 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/TransactionsTotalsByProviderInPeriodResponse"
+                  $ref: "#/components/schemas/TransactionsTotalsByStatusCodeInPeriodResponse"
                 example:
-                  ## TODO
                   {
                     "success": true,
-                    "data": [ ],
+                    "data": [
+                      {
+                        "total_amount": 3960586.94,
+                        "total_count": 155653,
+                        "status_code": 2,
+                        "status_name": "SUCCESS",
+                        "status_color": "#FFC300",
+                        "perc_total": 89.55,
+                        "currency": "R",
+                        "grand_total_count": 173816
+                      }
+                    ],
                     "entries": 1,
                     "total_count": null,
                     "timestamp": 1723628631562
@@ -8718,6 +8813,9 @@ paths:
       x-tag-permissions:
         - devices
       summary: Get total devices by current status report
+      description: |-
+        This endpoint is used for report dashboards. It will give detail into the operations of all your devices in the Payway System.
+
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -8767,8 +8865,6 @@ paths:
                     "total_count": null,
                     "timestamp": 1723108298846
                   }
-      parameters:
-        - $ref: "#/components/parameters/others"
 
   '/biometrics/face_compare':
     post:
@@ -10463,77 +10559,128 @@ components:
           properties:
             day_of_week:
               type: array
-              description: TODO
+              description: Time period, in weeks, provided for relative data requested.
               items:
                 type: string
             date:
               type: array
-              description: TODO
+              description: Time period, in dates, provided for relative data requested.
               items:
                 type: string
             total_amount:
               type: array
-              description: TODO
+              description: Total sales value for given time period.
               items:
                 type: number
             total_count:
               type: array
-              description: TODO
+              description: Total number of sales in given time period.
               items:
                 type: integer
         previous_period:
-          type: string
-          example: TODO
-          description: TODO
+          type: object
+          properties:
+            day_of_week:
+              type: array
+              description: Time period, in weeks, provided for relative data requested.
+              items:
+                type: string
+            date:
+              type: array
+              description: Time period, in dates, provided for relative data requested.
+              items:
+                type: string
+            total_amount:
+              type: array
+              description: Total sales value for given time period.
+              items:
+                type: number
+            total_count:
+              type: array
+              description: Total number of sales in given time period.
+              items:
+                type: integer
         current_grand_total_amount:
           type: number
-          description: TODO
+          description: Total sales value in specified period for current period.
         previous_grand_total_amount:
           type: number
-          description: TODO
+          description: Total sales value in specified period for previous period.
         delta_grand_total_amount:
           type: number
-          description: TODO
+          description: Difference between current total sales value and previous total sales value.
         delta_grand_total_amount_perc:
           type: string
-          example: TODO
-          description: TODO
+          description: Percentage difference between current total sales value and previous total sales value.
         current_grand_total_count:
           type: number
-          description: TODO
+          description: Total sales amount in specified period for current period.
         previous_grand_total_count:
           type: number
-          description: TODO
+          description: Total sales amount in specified period for current period.
         delta_grand_total_count:
           type: number
-          description: TODO
+          description: Difference between total sales amount in specified period.
         delta_grand_total_count_perc:
           type: string
-          example: TODO
-          description: TODO
+          description: Percentage difference between total sales amount in specified period.
         currency:
           type: string
-          example: TODO
-          description: TODO
+          description: Type of currency all values are calculated in.
     TransactionsTotalsByProviderInPeriodResponse:
       type: object
       properties:
-        day_of_week:
-          type: array
-          items:
-            type: string
-        date:
-          type: array
-          items:
-            type: string
         total_amount:
-          type: array
-          items:
-            type: number
+          type: number
+          description: Total sales value of specific provider.
         total_count:
-          type: array
-          items:
-            type: integer
+          type: integer
+          description: Total sales amount of specific provider.
+        provider_name:
+          type: string
+          description: The name of the provider.
+        provider_logo_url:
+          type: string
+          description: Logo URL path for provider.
+        provider_color:
+          type: string
+          description: Providers colour used in frontend.
+        perc_total:
+          type: number
+          description: Percentage of certain providers total transactions amount.
+        currency:
+          type: string
+          description: Type of currency report is calculated in.
+        grand_total_count:
+          type: integer
+          description: Total amount of transactions amount.
+    TransactionsTotalsByStatusCodeInPeriodResponse:
+      type: object
+      properties:
+        total_amount:
+          type: number
+          description: Total sales value of specific provider.
+        total_count:
+          type: integer
+          description: Total sales amount of specific provider.
+        status_code:
+          type: string
+          description: Payment status code.
+        status_name:
+          type: string
+          description: Description of transaction status.
+        status_color:
+          type: string
+          description: Colour used for frontend.
+        perc_total:
+          type: number
+          description: Percentage total across all status codes.
+        currency:
+          type: string
+          description: Type of currency reports are calculated in.
+        grand_total_count:
+          type: integer
+          description: Total amount of status code.
     TotalDevicesByCurrentStatusResponseOne:
       type: object
       properties:
