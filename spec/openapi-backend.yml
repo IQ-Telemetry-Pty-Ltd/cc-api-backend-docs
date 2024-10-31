@@ -11180,6 +11180,7 @@ components:
         multipleParam:
           value: "1,2,10"
           summary: Searches in specific field for 1 OR 2 OR 10.
+
     reports_start_time:
       in: query
       name: start_time
@@ -11224,7 +11225,7 @@ components:
                   pattern: \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$
                 - type: string
                   pattern: ((?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}(?:\.\d+)?))(Z|[\+-]\d{2}:\d{2})?)$
-      example:
+      examples:
         start_time:
           value: "2024-10-30"
           summary: Returns data with end time specified.
@@ -11233,10 +11234,8 @@ components:
       name: organisations
       schema:
         additionalProperties: true
-        anyOf:
-          - type: string
-          - type: integer
-      example:
+        type: string
+      examples:
         organisations:
           value: "1,2,10,24"
           summary: Search by specified organisations.
@@ -11245,10 +11244,8 @@ components:
       name: companies
       schema:
         additionalProperties: true
-        anyOf:
-          - type: string
-          - type: integer
-      example:
+        type: string
+      examples:
         companies:
           value: "6"
           summary: Search by specified companies.
@@ -11257,10 +11254,8 @@ components:
       name: sites
       schema:
         additionalProperties: true
-        anyOf:
-          - type: string
-          - type: integer
-      example:
+        type: string
+      examples:
         sites:
           value: "37,67"
           summary: Search by specified sites.
@@ -11269,10 +11264,8 @@ components:
       name: devices
       schema:
         additionalProperties: true
-        anyOf:
-          - type: string
-          - type: integer
-      example:
+        type: string
+      examples:
         devices:
           value: "104"
           summary: Search by specified device.
@@ -11281,10 +11274,8 @@ components:
       name: providers
       schema:
         additionalProperties: true
-        anyOf:
-          - type: string
-          - type: integer
-      example:
+        type: string
+      examples:
         providers:
           value: "5,1,8,9"
           summary: Search by specified providers.
@@ -11293,10 +11284,8 @@ components:
       name: status_codes
       schema:
         additionalProperties: true
-        anyOf:
-          - type: string
-          - type: integer
-      example:
+        type: string
+      examples:
         status_codes:
           value: "1,2"
           summary: Search by specified status codes.
@@ -11305,10 +11294,8 @@ components:
       name: emulations
       schema:
         additionalProperties: true
-        anyOf:
-          - type: string
-          - type: integer
-      example:
+        type: string
+      examples:
         emulations:
           value: "4"
           summary: Search by specified emulations.
@@ -11318,7 +11305,7 @@ components:
       schema:
         additionalProperties: true
         type: boolean
-      example:
+      examples:
         success:
           value: true
           summary: Search by specified success.
