@@ -42,6 +42,8 @@ tags:
     description: Endpoints that allow you to request a verification email for customer.
   - name: Verify Customer
     description: Endpoints that allow you to verify a customer using their verification code.
+  - name: Customers
+    description: Endpoints that allow you to interact with customers data.
 
 
 x-tagGroups:
@@ -54,6 +56,9 @@ x-tagGroups:
     tags:
       - Request Verification
       - Verify Customer
+  - name: Platform Configurations and Administration
+    tags:
+      - Customers
 
 servers:
   - url: '{scheme}://payway.iqt.co.za/{version}/booking'
@@ -577,7 +582,8 @@ paths:
                     "success": true,
                     "data": {
                       "booked_result": false,
-                      "reason": "Reserved. [13]"
+                      "reason": "Reserved. [13]",
+                      "message_code": "BRSS-001"
                     },
                     "timestamp": 1723639902458
                   }
@@ -630,7 +636,8 @@ paths:
                     "success": true,
                     "data": {
                       "booked_result": false,
-                      "reason": "Released booking. [13]"
+                      "reason": "Released booking. [13]",
+                      "message_code": "BRS-001"
                     },
                     "timestamp": 1723639902458
                   }
@@ -698,7 +705,8 @@ paths:
                     "success": true,
                     "data": {
                       "email": "test@iqt.co.za",
-                      "reason": "Sent verification code to email."
+                      "reason": "Sent verification code to email.",
+                      "message_code": "CRS-001"
                     },
                     "timestamp": 1723639902458
                   }
@@ -759,8 +767,11 @@ paths:
                   {
                     "success": true,
                     "data": {
-                      "token": "JNX1D6PEHGIQ6LA",
-                      "verified": true
+                      "customer": {
+                        "id": 4,
+                        "image_guid": null
+                      },
+                      "token": "1ef975f0-9fed-6e40-8ff7-66b0aee460f1",
                     },
                     "timestamp": 1723639902458
                   }
@@ -770,6 +781,106 @@ paths:
         schema:
           type: string
 
+  '/customers/{id}':
+    get:
+      tags:
+        - Data
+        - Customers
+      operationId: getCustomers
+      x-tag-permissions:
+        - customers
+      summary: Get object for customers
+      description: |-
+        This endpoint manages a second type of user in Payway called customers.
+        Customers are not direct users of the Payway system, but rather consumers of features and services. e.g Walk in store customer, a student, etc.
+        
+        Customers are primarily used for the booking system.
+        Customers are linked to a Payway proxy user, service account. This ensures access is restricted to the correct organisation and resources
+        in terms of the Access and Roles Based rules of the service account.
+
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Obtain an array of "customer" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CustomersResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": {
+                      "customer": [
+                        {
+                          "id": 1,
+                          "daily_booking_limit": 2,
+                          "reserved_booking_limit": 4,
+                          "blocked": false,
+                          "email": "customer@customer.com",
+                          "verified": true
+                        }
+                      ],
+                      "cardholder": [
+                        {
+                          "id": 1,
+                          "card_no": "aaa34333",
+                          "first_name": "aaa34333",
+                          "last_name": "aaa34333",
+                          "user_number": "1111",
+                          "contact_number": "+2711111111",
+                          "negative_credit_allowed": true,
+                          "throttle_multiple_requests": true,
+                          "balance_accumulate": true,
+                          "cost_centre": "1",
+                          "wallet": "0.00",
+                          "topup_value": "1.00",
+                          "topup_reoccurrence": true,
+                          "topup_date": null,
+                          "topup_amount": null,
+                          "last_transaction_device_uid": null,
+                          "last_transaction_timestamp": null,
+                          "last_transaction_result": null,
+                          "import_site_id": null,
+                          "import_guid": null,
+                          "created_at": "2024-10-23T07:39:51.991Z",
+                          "updated_at": "2024-10-23T07:39:51.991Z",
+                          "active": true,
+                          "users": {
+                            "id": 1,
+                            "username": "Adowa"
+                          },
+                          "sites": {
+                            "id": [
+                              null
+                            ],
+                            "name": [
+                              null
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    "total_count": null,
+                    "timestamp": 1723639902458
+                  }
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
 
 components:
   securitySchemes:
@@ -905,6 +1016,8 @@ components:
           type: boolean
         reason:
           type: string
+        message_code:
+          type: string
     BookingsReleaseResponse:
       type: object
       properties:
@@ -912,14 +1025,23 @@ components:
           type: boolean
         reason:
           type: string
+        message_code:
+          type: string
     CustomerVerifyTokenResponse:
       type: object
       properties:
+        customers:
+          type: object
+          properties:
+            id:
+              type: number
+              description: Customers primary key identification.
+            image_guid:
+              type: string
+              description: Face identification guid.
         token:
           type: string
           description: x-customer-token
-        verified:
-          type: boolean
     CustomerVerifyResponse:
       type: object
       properties:
@@ -927,6 +1049,99 @@ components:
           type: string
         reason:
           type: string
+        message_code:
+          type: string
+    CustomersResponse:
+      type: object
+      properties:
+        customers:
+          type: object
+          properties:
+            id:
+              type: integer
+            daily_booking_limit:
+              type: integer
+              description: The total number of bookings a user can make in one day.
+            reserved_booking_limit:
+              type: integer
+              description: The total number of reserved bookings a user can have at once.
+            blocked:
+              type: boolean
+              description: Prevents user from accessing the API.
+            email:
+              type: string
+            verified:
+              type: boolean
+              description: Has the user verified their email?
+        cardholder:
+          type: object
+          properties:
+            id:
+              type: integer
+            card_no:
+              type: string
+            first_name:
+              type: string
+            last_name:
+              type: string
+            user_number:
+              type: string
+            contact_number:
+              type: string
+            negative_credit_allowed:
+              type: boolean
+            throttle_multiple_requests:
+              type: boolean
+            balance_accumulate:
+              type: boolean
+            cost_centre:
+              type: string
+            wallet:
+              type: number
+            topup_value:
+              type: number
+            topup_reoccurrence:
+              type: boolean
+            topup_date:
+              type: string
+            topup_amount:
+              type: number
+            last_transaction_device_uid:
+              type: string
+            last_transaction_timestamp:
+              type: string
+            last_transaction_result:
+              type: string
+            import_site_id:
+              type: integer
+            import_guid:
+              type: string
+            created_at:
+              type: string
+            updated_at:
+              type: string
+            active:
+              type: boolean
+            users:
+              type: object
+              properties:
+                id:
+                  type: integer
+                username:
+                  type: string
+            sites:
+              type: object
+              properties:
+                id:
+                  type: array
+                  items:
+                    type: integer
+                name:
+                  type: array
+                  items:
+                    type: string
+
+
 
     # Status codes
     ValidationFailResponse:
