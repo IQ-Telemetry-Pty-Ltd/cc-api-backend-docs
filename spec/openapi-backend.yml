@@ -110,7 +110,7 @@ x-tagGroups:
       - Users
       - Customers
       - Password Reset
-  - name: AuthenticationResponse
+  - name: Authentication
     tags:
       - Token
   - name: Platform Configurations and Administration
@@ -669,7 +669,7 @@ paths:
                 name:
                   type: string
                   example: 'Reseller role'
-                  maxLength: 50
+                  maxLength: 100
                 reseller_id:
                   type: integer
                 organisation_id:
@@ -871,7 +871,7 @@ paths:
                 name:
                   type: string
                   example: 'Updated Reseller role'
-                  maxLength: 50
+                  maxLength: 100
                 reseller_id:
                   type: integer
                 organisation_id:
@@ -1062,7 +1062,7 @@ paths:
                   type: string
                   example: John Doe
                   maxLength: 50
-                  pattern: ^[a-z A-Z]+
+                  pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
                 email:
                   type: string
                   example: 'john.doe@gmail.com'
@@ -1079,7 +1079,7 @@ paths:
                   type: string
                   example: "$"
                   maxLength: 5
-                  pattern: ^[R$€]*$
+                  pattern: '(?:ZAR|USD|EUR)'
                   description: Defines the type of current a user is using.
                 delimiter:
                   type: string
@@ -1132,16 +1132,17 @@ paths:
                         "last_login_at": null,
                         "active": true,
                         "google_id": null,
-                        "token": null,
+                        "token": "HIDDEN",
                         "last_login_error": null,
                         "sidebar_toggled": false,
-                        "firebase_id": "B9lQQzlzED5JOcdP8Jc399Jk1CA2",
+                        "firebase_id": "B9lQQzAED5JOcdP8Jc399Jk1CA2",
                         "currency": "R",
                         "delimiter": ";",
                         "super_admin": false,
                         "proxy_user": false,
                         "password_reset": true,
-                        "password": "ns98Ui7T2Sc"
+                        "password": "ns98Ui7T2Sc",
+                        "qr_code": "PAYWAY|3|TOKEN|AA67SNERIA9"
                       }
                     ],
                     "entries": 1,
@@ -1195,10 +1196,12 @@ paths:
                         "delimiter": ";",
                         "displayname": "Test IQT",
                         "sidebar_toggled": false,
-                        "firebase_id": "B8vGoIQWfaN74K78HEdPpT9hpX93",
+                        "firebase_id": "B8vGoIA23aN74K78HEdPpT9hpX93",
                         "proxy_user": false,
                         "super_admin": true,
                         "password_reset": true,
+                        "token": "HIDDEN",
+                        "qr_code": "PAYWAY|3|TOKEN|AA67SNERIA9",
                         "active": true
                       }
                     ],
@@ -1227,7 +1230,7 @@ paths:
                   type: string
                   example: John Doe
                   maxLength: 50
-                  pattern: ^[a-z A-Z]+
+                  pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
                 email:
                   type: string
                   maxLength: 320
@@ -1244,7 +1247,7 @@ paths:
                   type: string
                   example: "$"
                   maxLength: 5
-                  pattern: ^[A-Z$€]*$
+                  pattern: '(?:ZAR|USD|EUR)'
                   description: Defines the type of current a user is using.
                 delimiter:
                   type: string
@@ -1301,15 +1304,16 @@ paths:
                       "last_login_at": "2024-06-06T08:06:21.000Z",
                       "active": true,
                       "google_id": null,
-                      "token": "null",
+                      "token": "HIDDEN",
                       "last_login_error": "Error: Email verification is required before this user can fully authenticate. An email has been sent to ryantest@iqt.co.za",
                       "sidebar_toggled": false,
-                      "firebase_id": "Z7AyWWTA9iSUd8KIOV2YfrjlFT4O2",
+                      "firebase_id": "Z7AyWWTA9888Ud8KIOV2YfrjlFT4O2",
                       "currency": "R",
                       "delimiter": ";",
                       "super_admin": false,
                       "password_reset": true,
-                      "proxy_user": false
+                      "qr_code": "PAYWAY|3|TOKEN|AA67SNERIA9",
+                      "proxy_user": false,
                     }
                   ],
                   "entries": 1,
@@ -2672,7 +2676,7 @@ paths:
                   type: string
                   example: "BigTech Reseller"
                   maxLength: 60
-                  pattern: ^[a-z A-Z]+
+                  pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
                 address:
                   type: string
                   example: "109 BigTech Street, Cape Town 8800"
@@ -2686,7 +2690,7 @@ paths:
                   type: string
                   example: "John Doe"
                   maxLength: 50
-                  pattern: ^[a-z A-Z]+
+                  pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
                 lat_lng:
                   type: string
                   maxLength: 50
@@ -2808,7 +2812,7 @@ paths:
                   type: string
                   example: "BigTech Reseller"
                   maxLength: 60
-                  pattern: ^[a-z A-Z]+
+                  pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
                 address:
                   type: string
                   example: "109 BigTech Street, Cape Town 8800"
@@ -2822,7 +2826,7 @@ paths:
                   type: string
                   example: "John Doe"
                   maxLength: 50
-                  pattern: ^[a-z A-Z]+
+                  pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
                 lat_lng:
                   type: string
                   maxLength: 50
@@ -2947,7 +2951,7 @@ paths:
                   type: string
                   example: "BigTech Org"
                   maxLength: 60
-                  pattern: ^[a-z A-Z]+
+                  pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
                 address:
                   type: string
                   example: "109 BigTech Street, Cape Town 8800"
@@ -2961,7 +2965,7 @@ paths:
                   type: string
                   example: "John Doe"
                   maxLength: 50
-                  pattern: ^[a-z A-Z]+
+                  pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
                 lat_lng:
                   type: string
                   maxLength: 50
@@ -3112,7 +3116,7 @@ paths:
                   type: string
                   example: "BigTech Org"
                   maxLength: 60
-                  pattern: ^[a-z A-Z]+
+                  pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
                 address:
                   type: string
                   example: "109 BigTech Street, Cape Town 8800"
@@ -3126,7 +3130,7 @@ paths:
                   type: string
                   example: "John Doe"
                   maxLength: 50
-                  pattern: ^[a-z A-Z]+
+                  pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
                 lat_lng:
                   type: string
                   maxLength: 50
@@ -3432,7 +3436,7 @@ paths:
                   type: string
                   example: "BigTech Company"
                   maxLength: 60
-                  pattern: ^[a-z A-Z]+
+                  pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
                 address:
                   type: string
                   example: "109 BigTech Street, Cape Town 8800"
@@ -3446,7 +3450,7 @@ paths:
                   type: string
                   example: "John Doe"
                   maxLength: 50
-                  pattern: ^[a-z A-Z]+
+                  pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
                 lat_lng:
                   type: string
                   maxLength: 50
@@ -3611,7 +3615,7 @@ paths:
                   type: string
                   example: "BigTech Company"
                   maxLength: 60
-                  pattern: ^[a-z A-Z]+
+                  pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
                 address:
                   type: string
                   example: "109 BigTech Street, Cape Town 8800"
@@ -3625,7 +3629,7 @@ paths:
                   type: string
                   example: "John Doe"
                   maxLength: 50
-                  pattern: ^[a-z A-Z]+
+                  pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
                 lat_lng:
                   type: string
                   maxLength: 50
@@ -3774,7 +3778,7 @@ paths:
                   type: string
                   example: "HighTech Site"
                   maxLength: 60
-                  pattern: ^[a-z A-Z]+
+                  pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
                 address:
                   type: string
                   example: "109 BigTech Street, Cape Town 8800"
@@ -3788,7 +3792,7 @@ paths:
                   type: string
                   example: "John Doe"
                   maxLength: 50
-                  pattern: ^[a-z A-Z]+
+                  pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
                 lat_lng:
                   type: string
                   example: "{\"latLng\":{\"lat\":-33.848106900673486,\"lng\":18.5385}}"
@@ -3960,7 +3964,7 @@ paths:
                   type: string
                   example: "HighTech Site"
                   maxLength: 60
-                  pattern: ^[a-z A-Z]+
+                  pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
                 address:
                   type: string
                   example: "109 BigTech Street, Cape Town 8800"
@@ -3974,7 +3978,7 @@ paths:
                   type: string
                   example: "John Doe"
                   maxLength: 50
-                  pattern: ^[a-z A-Z]+
+                  pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
                 lat_lng:
                   type: string
                   example: "{\"latLng\":{\"lat\":-33.848106900673486,\"lng\":18.5385}}"
@@ -4134,7 +4138,7 @@ paths:
                   type: string
                   maxLength: 50
                   pattern: ^[a-zA-Z1-9]+
-                  description: Unique Identification for the device.
+                  description: Unique identification for the device.
                   example: 'ae23db32'
                 imsi:
                   type: string
@@ -4174,7 +4178,7 @@ paths:
                 ssid:
                   oneOf:
                     - type: string
-                      maxLength: 50
+                      maxLength: 32
                       pattern: '^[^!#;+\]\/"\t][^+\]\/"\t]{0,30}[^ !#;+\]\/"\t]$|^[^ !#;+\]\/"\t]$'
                       description: Service Set Identifier for WiFi devices.
                     - type: string
@@ -4182,7 +4186,7 @@ paths:
                       maxLength: 0
                 password:
                   type: string
-                  maxLength: 50
+                  maxLength: 64
                   description: Service Set Identifier password for WiFi Devices.
                 coupon_price:
                   type: integer
@@ -4201,7 +4205,7 @@ paths:
                   example: 'SWMN20045XY2323223'
                 active:
                   type: boolean
-              required: [ "name", "uid", "imsi", "site_id", "pos_type_id", "asset_state_id", "host_hardware_id", "polling_frequency", "scale_factor", "time_zone", "screen_fitted", "multiplier", "divider", "unit_price", "active" ]
+              required: [ "name", "uid", "imsi", "site_id", "pos_type_id", "asset_state_id", "host_hardware_id", "polling_frequency", "scale_factor", "screen_fitted", "multiplier", "divider", "unit_price", "active" ]
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -4476,7 +4480,7 @@ paths:
                   type: string
                   maxLength: 50
                   pattern: ^[a-zA-Z1-9]+
-                  description: Unique Identification for the device.
+                  description: Unique identification for the device.
                   example: 'ae23db32'
                 imsi:
                   type: string
@@ -4516,7 +4520,7 @@ paths:
                 ssid:
                   oneOf:
                     - type: string
-                      maxLength: 50
+                      maxLength: 32
                       pattern: '^[^!#;+\]\/"\t][^+\]\/"\t]{0,30}[^ !#;+\]\/"\t]$|^[^ !#;+\]\/"\t]$'
                       description: Service Set Identifier for WiFi devices.
                     - type: string
@@ -4524,7 +4528,7 @@ paths:
                       maxLength: 0
                 password:
                   type: string
-                  maxLength: 50
+                  maxLength: 64
                   description: Service Set Identifier password for WiFi Devices.
                 coupon_price:
                   type: integer
@@ -4702,6 +4706,85 @@ paths:
       - $ref: "#/components/parameters/greaterThanParam"
       - $ref: "#/components/parameters/smallerThanEqualParam"
       - $ref: "#/components/parameters/greaterThanEqualParam"
+
+  '/devices/activate':
+    post:
+      tags:
+        - Functions
+        - Devices
+      summary: Activate device remotely
+      description: |-
+        Devices are physical WiFi or SIM based modems used to connect physical hardware to the Payway system. Using this endpoint,
+        you can test if you have setup your device correctly or integrate using Mifare.
+        This endpoint will trigger the device based the the payment_service_provider field provided in the body.
+
+      operationId: activateDevices
+      x-tag-permissions:
+        - devices
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              oneOf:
+                - type: array
+                  items:
+                    type: object
+                - type: object
+              additionalProperties: false
+              properties:
+                device_id:
+                  type: integer
+                payment_service_provider:
+                  type: string
+                  enum: [ "mifare", "test" ]
+                  description: The type of activation method.
+                card_no:
+                  type: string
+                  description: The unique UUID for the card found in the MiFare system. Only used if "payment_service_provider" = mifare.
+                  example: ab34ef16aa
+                  maxLength: 45
+                amount:
+                  type: number
+                  minimum: 0
+                  description: The amount of currency the activation is going to use in whole numbers, not cents. If "payment_service_provider" = mifare, the devices coupon price is used and the amount is ignored.
+              required: [ "device_id", "payment_service_provider" ]
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns device object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DevicesActivateResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "device_id": 1,
+                        "reason": "Webhook call successful. [Notification Successfully published]",
+                        "success": true
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723108298846
+                  }
+
 
   '/logs_fatal/{id}':
     get:
@@ -5655,7 +5738,7 @@ paths:
                 name:
                   type: string
                   maxLength: 50
-                  pattern: ^[a-z A-Z]+
+                  pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
                   example: "COMPLETED"
                   description: Name of event
                 code:
@@ -5780,7 +5863,7 @@ paths:
                 name:
                   type: string
                   maxLength: 50
-                  pattern: ^[a-z A-Z]+
+                  pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
                   example: "COMPLETED"
                   description: Name of event
                 code:
@@ -5873,7 +5956,7 @@ paths:
                 name:
                   type: string
                   maxLength: 50
-                  pattern: ^[a-z A-Z]+
+                  pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
                   example: "Coin Pulse"
                 active:
                   type: boolean
@@ -5973,7 +6056,7 @@ paths:
                 name:
                   type: string
                   maxLength: 50
-                  pattern: ^[a-z A-Z]+
+                  pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
                   example: "Coin Pulse"
                 active:
                   type: boolean
@@ -6065,7 +6148,7 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "timestamp": 1720396800000,
+                        "date": "2024-10-28T00:00:00.000Z",
                         "device_id": 1,
                         "pf0": 0,
                         "pf1": 0,
@@ -6089,6 +6172,8 @@ paths:
                         "pf19": 0,
                         "pf20": 0,
                         "pf21": 0,
+                        "pf22": 0,
+                        "pf23": 0,
                         "sf0": 0,
                         "sf1": 0,
                         "sf2": 0,
@@ -6110,7 +6195,9 @@ paths:
                         "sf18": 0,
                         "sf19": 0,
                         "sf20": 0,
-                        "sf21": 0
+                        "sf21": 0,
+                        "sf22": 0,
+                        "sf23": 0
                       }
                     ],
                     "entries": 1,
@@ -6591,7 +6678,8 @@ paths:
                         "provider_id": 1,
                         "site_id": 10,
                         "status": null,
-                        "transaction_id": 1
+                        "transaction_id": 1,
+                        "timestamp": "2024-08-13T10:33:38.323Z"
                       }
                     ],
                     "entries": 1,
@@ -7725,6 +7813,7 @@ paths:
                         "end_time": "2024-07-15T10:37:06.203Z",
                         "created_at": "2024-07-12T10:37:06.203Z",
                         "banner": false,
+                        "super_admin": true,
                         "active": true,
                         "resellers": {
                           "id": [
@@ -7797,6 +7886,7 @@ paths:
                         "end_time": "2024-07-15T10:37:06.203Z",
                         "created_at": "2024-07-12T10:37:06.203Z",
                         "banner": false,
+                        "super_admin": true,
                         "active": true,
                         "resellers": {
                           "id": [
@@ -7918,6 +8008,7 @@ paths:
                         "end_time": "2024-07-15T10:37:06.203Z",
                         "created_at": "2024-07-12T10:37:06.203Z",
                         "banner": false,
+                        "super_admin": true,
                         "active": true,
                         "resellers": {
                           "id": [
@@ -8127,6 +8218,7 @@ paths:
                         "operation_id": "createUserAccess",
                         "body": "{\"user_id\":125,\"access_id\":104}",
                         "parameters": "{}",
+                        "user_displayname": "Ryan Pomario",
                         "users": {
                           "id": 1,
                           "displayname": "Ryan Pomario",
@@ -8837,6 +8929,9 @@ paths:
         - Total Devices By Current Status
       operationId: getTotalDevicesByCurrentStatus
       x-tag-permissions:
+        - companies
+        - organisations
+        - sites
         - devices
       summary: Get total devices by current status report
       description: |-
@@ -8891,6 +8986,11 @@ paths:
                     "total_count": null,
                     "timestamp": 1723108298846
                   }
+      parameters:
+        - $ref: "#/components/parameters/reports_organisations"
+        - $ref: "#/components/parameters/reports_companies"
+        - $ref: "#/components/parameters/reports_sites"
+
 
   '/biometrics/face_compare':
     post:
@@ -9213,6 +9313,9 @@ components:
         super_user:
           type: boolean
           description: Highest level of access in Payway system.
+        qr_code:
+          type: string
+          description: Generated QR code used for first party payway applications.
         active:
           type: boolean
     AuthenticationResponse:
@@ -9496,7 +9599,7 @@ components:
           type: string
         uid:
           type: string
-          description: Unique Identification for the device.
+          description: Unique identification for the device.
         imsi:
           type: string
           description: International Mobile Subscriber Identity or Service Set Identifier (SSID).
@@ -9658,6 +9761,15 @@ components:
               type: integer
             name:
               type: string
+    DevicesActivateResponse:
+      type: object
+      properties:
+        device_id:
+          type: integer
+        reason:
+          type: string
+        success:
+          type: boolean
     LogsFatalResponse:
       type: object
       properties:
@@ -9868,7 +9980,7 @@ components:
       properties:
         id:
           type: integer
-        timestamp:
+        date:
           type: string
         device_id:
           type: integer
@@ -10163,6 +10275,8 @@ components:
         amount:
           type: number
         status:
+          type: string
+        timestamp:
           type: string
     DeviceActivityAuditResponse:
       type: object
@@ -10513,6 +10627,9 @@ components:
             type: integer
         banner:
           type: boolean
+        super_admin:
+          type: boolean
+          description: Was this notification made by a super_admin user?
         active:
           type: boolean
     ActivityLogsResponse:
@@ -10536,6 +10653,9 @@ components:
         parameters:
           type: string
           description: All query parameters of the request.
+        user_displayname:
+          type: string
+          description: This is used for historical reasons when user is deleted.
         users:
           type: object
           properties:

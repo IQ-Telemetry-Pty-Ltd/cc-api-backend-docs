@@ -98,7 +98,6 @@ paths:
         A mifare user only has the ability to access resources that they are directly associated too, 
         unless the "super_user" flag is set, in which case you have system wide access. 
       
-      
 
       operationId: createUser
       x-tag-permissions:
@@ -257,6 +256,41 @@ paths:
                     "entries": 1,
                     "timestamp": 1723639902458
                   }
+    delete:
+      tags:
+        - Data
+        - Users
+      operationId: deleteUser
+      x-tag-permissions:
+        - users
+      summary: Delete object for user
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DeleteResponse"
+              example:
+                {
+                  "success": true,
+                  "data": "Successfully deleted record(s). [1]",
+                  "timestamp": 1723108298846
+                }
+          description: Returns result of delete
     parameters:
       - $ref: "#/components/parameters/idParam"
       - $ref: "#/components/parameters/limitParam"
@@ -567,6 +601,41 @@ paths:
                     "entries": 1,
                     "timestamp": 1724759082131
                   }
+    delete:
+      tags:
+        - Data
+        - Sites
+      operationId: deleteSite
+      x-tag-permissions:
+        - sites
+      summary: Delete object for site
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DeleteResponse"
+              example:
+                {
+                  "success": true,
+                  "data": "Successfully deleted record(s). [1]",
+                  "timestamp": 1723108298846
+                }
+          description: Returns result of delete
     parameters:
       - $ref: "#/components/parameters/idParam"
       - $ref: "#/components/parameters/limitParam"
@@ -800,6 +869,41 @@ paths:
                     "entries": 1,
                     "timestamp": 1724759082131
                   }
+    delete:
+      tags:
+        - Data
+        - Products
+      operationId: deleteProduct
+      x-tag-permissions:
+        - products
+      summary: Delete object for product
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DeleteResponse"
+              example:
+                {
+                  "success": true,
+                  "data": "Successfully deleted record(s). [1]",
+                  "timestamp": 1723108298846
+                }
+          description: Returns result of delete
     parameters:
       - $ref: "#/components/parameters/idParam"
       - $ref: "#/components/parameters/limitParam"
@@ -1118,6 +1222,7 @@ paths:
                         "unlimited": true,
                         "active": true,
                         "take_limit": 2,
+                        "qr_code": "PAYWAY|3|5|Desription|AA43|Store 1|true",
                         "users": {
                           "id": 1,
                           "username": "Testing User"
@@ -1186,6 +1291,7 @@ paths:
                         "unlimited": true,
                         "active": true,
                         "take_limit": 2,
+                        "qr_code": "PAYWAY|3|5|Desription|AA43|Store 1|true",
                         "users": {
                           "id": 1,
                           "username": "Testing User"
@@ -1281,6 +1387,7 @@ paths:
                         "unlimited": true,
                         "active": true,
                         "take_limit": 2,
+                        "qr_code": "PAYWAY|3|5|Desription|AA43|Store 1|true",
                         "users": {
                           "id": 1,
                           "username": "Testing User"
@@ -1739,8 +1846,6 @@ paths:
       operationId: deleteCardholder
       x-tag-permissions:
         - cardholders
-        - users
-        - sites
       summary: Delete object for cardholder
       responses:
         '401':
@@ -1942,6 +2047,7 @@ paths:
                         "operation_id": "createUserAccess",
                         "body": "{\"user_id\":125,\"access_id\":104}",
                         "parameters": "{}",
+                        "username": "Test Account",
                         "users": {
                           "id": 1,
                           "username": "Test Account",
@@ -2137,6 +2243,8 @@ components:
               type: string
             location:
               type: string
+            qr_code:
+              type: string
             active:
               type: boolean
         cardholders:
@@ -2323,6 +2431,9 @@ components:
         parameters:
           type: string
           description: All query parameters of the request.
+        username:
+          type: string
+          description: Name of user account that performed action. Useful for historical data.
         users:
           type: object
           properties:
