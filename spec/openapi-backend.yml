@@ -152,6 +152,7 @@ x-tagGroups:
       - Transactions Totals By Status Code In Period
       - Total Devices By Current Status
       - Transactions Totals Current Previous
+      - Detailed Transaction Drill Down Report
   - name: Biometrics
     tags:
       - Facial Biometrics
@@ -2252,6 +2253,9 @@ paths:
                         "companies": {
                           "id": 7,
                           "name": "IQ Telemetry Test Account"
+                        },
+                        "image": {
+                          "full_url": "https://payway3.iqt.co.za/images/"
                         }
                       }
                     ],
@@ -2925,6 +2929,156 @@ paths:
       - $ref: "#/components/parameters/smallerThanEqualParam"
       - $ref: "#/components/parameters/greaterThanEqualParam"
 
+  '/resellers/image/{id}':
+    put:
+      tags:
+        - Data
+        - Resellers
+      summary: Upload custom reseller image
+      description: Upload custom reseller image
+      operationId: createUploadResellersImages
+      x-tag-permissions:
+        - resellers
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of images uploaded
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LogoImageUploadResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "file_name": "res-1-34861.png",
+                        "success": true
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723628631562
+                  }
+    get:
+      tags:
+        - Data
+        - Organisations
+      summary: Get all images for resellers
+      description: Get all images for resellers
+      operationId: getResellersImages
+      x-tag-permissions:
+        - resellers
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of images linked to reseller
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      "res-1-34861.png"
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723628631562
+                  }
+    delete:
+      tags:
+        - Data
+        - Resellers
+      summary: Delete custom reseller image
+      description: Delete custom reseller image
+      operationId: deleteResellersImages
+      x-tag-permissions:
+        - resellers
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                file_name:
+                  type: string
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of images deleted
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LogoImageDeleteResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "file_name": "res-4-3044.png",
+                        "success": true
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723628631562
+                  }
+    parameters:
+      - $ref: "#/components/parameters/idSingleParam"
+
   '/organisations':
     post:
       tags:
@@ -3245,6 +3399,156 @@ paths:
       - $ref: "#/components/parameters/greaterThanParam"
       - $ref: "#/components/parameters/smallerThanEqualParam"
       - $ref: "#/components/parameters/greaterThanEqualParam"
+
+  '/organisations/image/{id}':
+    put:
+      tags:
+        - Data
+        - Organisations
+      summary: Upload custom organisation image
+      description: Upload custom organisation image
+      operationId: createUploadOrganisationsImages
+      x-tag-permissions:
+        - organisations
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of images uploaded
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LogoImageUploadResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "file_name": "res-1-34861.png",
+                        "success": true
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723628631562
+                  }
+    get:
+      tags:
+        - Data
+        - Organisations
+      summary: Get all images for organisation
+      description: Get all images for organisation
+      operationId: getOrganisationsImages
+      x-tag-permissions:
+        - organisations
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of images linked to organisation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      "org-1-7831.png"
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723628631562
+                  }
+    delete:
+      tags:
+        - Data
+        - Organisations
+      summary: Delete custom organisation image
+      description: Delete custom organisation image
+      operationId: deleteOrganisationsImages
+      x-tag-permissions:
+        - organisations
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                file_name:
+                  type: string
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of images deleted
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LogoImageDeleteResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "file_name": "org-5-8891.png",
+                        "success": true
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723108298846
+                  }
+    parameters:
+      - $ref: "#/components/parameters/idSingleParam"
 
   '/resellers_organisations':
     post:
@@ -5089,6 +5393,10 @@ paths:
                   pattern: '^#(?:[0-9a-fA-F]{3}){1,2}$'
                   example: '#7795f3'
                   description: Hex code colour
+                qr_payments:
+                  type: boolean
+                qr_string:
+                  type: string
                 active:
                   type: boolean
               required: [ "name", "active" ]
@@ -5119,9 +5427,11 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "name": "Snapscan",
+                        "name": "Zapper",
                         "color": "#7795f3",
                         "logo_url": "https://google.com/image.png",
+                        "qr_payments": true,
+                        "qr_string": "https://zap.io/{{merchant_id}}/{{site_id}}/?ref=IMEI{{uid}}",
                         "active": true
                       }
                     ],
@@ -5165,9 +5475,11 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "name": "Snapscan",
+                        "name": "Zapper",
                         "color": "#7795f3",
                         "logo_url": "https://google.com/image.png",
+                        "qr_payments": true,
+                        "qr_string": "https://zap.io/{{merchant_id}}/{{site_id}}/?ref=IMEI{{uid}}",
                         "active": true
                       }
                     ],
@@ -5201,6 +5513,12 @@ paths:
                   maxLength: 10
                   pattern: '^#(?:[0-9a-fA-F]{3}){1,2}$'
                   example: '#7795f3'
+                qr_payments:
+                  type: boolean
+                qr_string:
+                  type: string
+                  maxLength: 255
+                  example: 'https://zap.io/{{merchant_id}}/{{site_id}}/?ref=IMEI{{uid}}'
                 active:
                   type: boolean
       responses:
@@ -6250,7 +6568,7 @@ paths:
                 pos_token:
                   type: string
                   example: '373-034534-ad354-a335'
-                  maxLength: 50
+                  maxLength: 200
                   description: API Key or other forms of authentication.
                 provider_site_id:
                   type: string
@@ -6319,7 +6637,13 @@ paths:
                         },
                         "providers": {
                           "id": 1,
-                          "name": "Zapper"
+                          "name": "SnapScan",
+                          "color": "#309dbe",
+                          "logo_url": "snapscan.png",
+                          "logo_full_url": "https://payway3.iqt.co.za/images/snapscan.png",
+                          "qr_payments": false,
+                          "qr_string": "",
+                          "active": true
                         }
                       }
                     ],
@@ -6394,7 +6718,13 @@ paths:
                         },
                         "providers": {
                           "id": 1,
-                          "name": "Zapper"
+                          "name": "SnapScan",
+                          "color": "#309dbe",
+                          "logo_url": "snapscan.png",
+                          "logo_full_url": "https://payway3.iqt.co.za/images/snapscan.png",
+                          "qr_payments": false,
+                          "qr_string": "",
+                          "active": true
                         }
                       }
                     ],
@@ -6434,7 +6764,7 @@ paths:
                 pos_token:
                   type: string
                   example: '373-034534-ad354-a335'
-                  maxLength: 50
+                  maxLength: 200
                   description: API Key or other forms of authentication.
                 provider_site_id:
                   type: string
@@ -6502,7 +6832,13 @@ paths:
                         },
                         "providers": {
                           "id": 1,
-                          "name": "Zapper"
+                          "name": "SnapScan",
+                          "color": "#309dbe",
+                          "logo_url": "snapscan.png",
+                          "logo_full_url": "https://payway3.iqt.co.za/images/snapscan.png",
+                          "qr_payments": false,
+                          "qr_string": "",
+                          "active": true
                         }
                       }
                     ],
@@ -8756,15 +9092,15 @@ paths:
                           2381
                         ]
                       },
-                      "current_grand_total_amount": 430983.76999999996,
-                      "previous_grand_total_amount": 16339634.79,
-                      "delta_grand_total_amount": -15908651.02,
-                      "delta_grand_total_amount_perc": -189.72,
-                      "current_grand_total_count": 430983.76999999996,
-                      "previous_grand_total_count": 16339634.79,
-                      "delta_grand_total_count": -15908651.02,
-                      "delta_grand_total_count_perc": -189.72,
-                      "currency": "R"
+                      "current_grand_total_amount": "ZAR 3,716,187.97",
+                      "previous_grand_total_amount": "ZAR 4,616,637.28",
+                      "delta_grand_total_amount": "-ZAR 900,449.31",
+                      "delta_grand_total_amount_perc": -21.61,
+                      "current_grand_total_count": "172,325",
+                      "previous_grand_total_count": "205,097",
+                      "delta_grand_total_count": "-32,772",
+                      "delta_grand_total_count_perc": -17.37,
+                      "currency": "ZAR"
                     },
                     "total_count": null,
                     "timestamp": 1723108298846
@@ -8830,7 +9166,7 @@ paths:
                         "provider_logo_url": "snapscan.png",
                         "provider_color": "#309dbe",
                         "perc_total": 59.11,
-                        "currency": "R",
+                        "currency": "ZAR",
                         "grand_total_count": 173816
                       }
                     ],
@@ -8900,7 +9236,7 @@ paths:
                         "status_name": "SUCCESS",
                         "status_color": "#FFC300",
                         "perc_total": 89.55,
-                        "currency": "R",
+                        "currency": "ZAR",
                         "grand_total_count": 173816
                       }
                     ],
@@ -8966,9 +9302,15 @@ paths:
                       [
                         {
                           "online": false,
-                          "total": 2056,
-                          "grand_total": 2056,
-                          "perc_total": 100
+                          "total": "3,740",
+                          "perc_total": 99.95,
+                          "grand_total": "3,742"
+                        },
+                        {
+                          "online": true,
+                          "total": "2",
+                          "perc_total": 0.05,
+                          "grand_total": "3,742"
                         }
                       ],
                       [
@@ -8990,6 +9332,55 @@ paths:
         - $ref: "#/components/parameters/reports_organisations"
         - $ref: "#/components/parameters/reports_companies"
         - $ref: "#/components/parameters/reports_sites"
+
+  '/reports/transactions/detailed_transaction_report':
+    get:
+      tags:
+        - Data
+        - Report
+        - Detailed Transaction Drill Down Report
+      operationId: getDetailedTransactionsReport
+      x-tag-permissions:
+        - resellers
+        - organisations
+        - companies
+        - sites
+        - devices
+        - companies_providers
+      summary: Get detailed transaction drill down report
+      description: |-
+        This endpoint is used for report dashboards. It will return a tree like response for all transactions and their details.
+
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns a dashboard data object
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  - $ref: "#/components/schemas/TotalDevicesByCurrentStatusResponseOne"
+                  - $ref: "#/components/schemas/TotalDevicesByCurrentStatusResponseTwo"
+                example: TODO
+      parameters:
+        - $ref: "#/components/parameters/reports_resellers"
+        - $ref: "#/components/parameters/reports_organisations"
+        - $ref: "#/components/parameters/reports_companies"
+        - $ref: "#/components/parameters/reports_sites"
+        - $ref: "#/components/parameters/reports_status_codes"
+        - $ref: "#/components/parameters/reports_providers"
 
 
   '/biometrics/face_compare':
@@ -10127,6 +10518,18 @@ components:
               type: integer
             name:
               type: string
+            color:
+              type: string
+            logo_url:
+              type: string
+            logo_full_url:
+              type: string
+            qr_payments:
+              type: boolean
+            qr_string:
+              type: string
+            active:
+              type: boolean
     TransactionsResponse:
       type: object
       properties:
@@ -10413,6 +10816,11 @@ components:
             id:
               type: integer
             name:
+              type: string
+        image:
+          type: object
+          properties:
+            full_url:
               type: string
     BookingsStatusResponse:
       type: object
@@ -10958,6 +11366,23 @@ components:
                   value:
                     type: boolean
                     description: Boolean value that indicates whether the face is smiling or not.
+    LogoImageUploadResponse:
+      type: object
+      properties:
+        file_name:
+          type: string
+          description: Name of file uploaded/created.
+        success:
+          type: boolean
+    LogoImageDeleteResponse:
+      type: object
+      properties:
+        file_name:
+          type: string
+          description: Name of file deleted.
+        success:
+          type: boolean
+
 
     DeleteResponse:
       type: object
@@ -11349,6 +11774,16 @@ components:
         start_time:
           value: "2024-10-30"
           summary: Returns data with end time specified.
+    reports_resellers:
+      in: query
+      name: resellers
+      schema:
+        additionalProperties: true
+        type: string
+      examples:
+        resellers:
+          value: "1,2,10,24"
+          summary: Search by specified resellers.
     reports_organisations:
       in: query
       name: organisations

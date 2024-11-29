@@ -46,8 +46,13 @@ tags:
     description: Endpoints that relate to cardholder sites, one to many, linking tables.
   - name: Cardholder Products
     description: Endpoints that relate to cardholder products, one to many, linking tables.
+  - name: Authentication
+    description: Endpoints that relate to authentication.
 
 x-tagGroups:
+  - name: API Authentication
+    tags:
+      - Authentication
   - name: User Management
     tags:
       - Users
@@ -1785,7 +1790,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
         '200':
-          description: List of user objects
+          description: List of cardholder objects
           content:
             application/json:
               schema:
@@ -1885,6 +1890,81 @@ paths:
       - $ref: "#/components/parameters/greaterThanParam"
       - $ref: "#/components/parameters/smallerThanEqualParam"
       - $ref: "#/components/parameters/greaterThanEqualParam"
+
+  '/cardholders/topup':
+    put:
+      tags:
+        - Functions
+        - Cardholders
+      summary: Topup cardholder balance
+      description: |-
+        This endpoint is used to add balance to cardholders. This will create a log/audit trail inside the mifare transactions table.
+
+      operationId: updateTopupCardholder
+      x-tag-permissions:
+        - cardholders
+        - sites
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              oneOf:
+                - type: array
+                  items:
+                    type: object
+                - type: object
+              additionalProperties: false
+              properties:
+                cardholder_id:
+                  type: integer
+                  example: 4
+                amount:
+                  oneOf:
+                    - type: string
+                    - type: number
+                  description: Amount to be added to balance in full currency, not cents.
+                  example: 5.50
+                type:
+                  type: string
+                  enum: [ "debit", "credit" ]
+              required: [ "cardholder_id", "amount", "type" ]
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: List of cardholder topup objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CardholdersTopupResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "cardholder_id": 1,
+                        "amount": 5.5,
+                        "type": "credit",
+                        "success": true
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1724759082131
+                  }
 
   '/cardholders/products/{id}':
     get:
@@ -2066,6 +2146,58 @@ paths:
       - $ref: "#/components/parameters/orderParam"
       - $ref: "#/components/parameters/countParam"
       - $ref: "#/components/parameters/others"
+
+  '/authentication':
+    post:
+      tags:
+        - Data
+        - Authentication
+      summary: Authenticate as a cardholder
+      description: |-
+        This endpoint is used to get an x-user-token for cardholders for integrations and API access.
+      operationId: createAuthentication
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                card_no:
+                  type: string
+                  example: "67ab8a"
+              required: [ "card_no" ]
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns cardholder product created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AuthenticationResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": {
+                      "token": "bba1b051a1na051bc7d0b205012164269f"
+                    },
+                    "total_count": null,
+                    "timestamp": 1723628631562
+                  }
 
 components:
   securitySchemes:
@@ -2325,6 +2457,17 @@ components:
               type: array
               items:
                 type: string
+    CardholdersTopupResponse:
+      type: object
+      properties:
+        cardholder_id:
+          type: integer
+        amount:
+          type: number
+        type:
+          type: string
+        success:
+          type: boolean
     CardholdersProductsDetailsResponse:
       type: object
       properties:
@@ -2443,6 +2586,12 @@ components:
               type: string
             super_user:
               type: boolean
+    AuthenticationResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: 67aa89b
 
     DeleteResponse:
       type: object
