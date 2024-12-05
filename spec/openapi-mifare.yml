@@ -426,6 +426,7 @@ paths:
                 name:
                   type: string
                   maxLength: 45
+                  pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
                   example: BigTech Corp
                 address:
                   type: string
@@ -436,6 +437,7 @@ paths:
                   maxLength: 45
                   description: Extra level of physical location identification can be used here.
                   example: Games Room
+                  pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
                 active:
                   type: boolean
               required: [ "user_id", "name", "active" ]
@@ -553,6 +555,7 @@ paths:
                 name:
                   type: string
                   maxLength: 45
+                  pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
                   example: BigTech Corp
                 address:
                   type: string
@@ -563,6 +566,7 @@ paths:
                   maxLength: 45
                   description: Extra level of physical location identification can be used here.
                   example: Games Room
+                  pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
                 active:
                   type: boolean
       responses:
@@ -696,6 +700,7 @@ paths:
                   maxLength: 80
                   description: Stock location (can be store room location or channel location in a vending machine)
                   example: ROW 6 COL 10
+                  pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
                 active:
                   type: boolean
               required: [ "user_id", "description", "active" ]
@@ -831,6 +836,7 @@ paths:
                   maxLength: 80
                   description: Stock location (can be store room location or channel location in a vending machine)
                   example: ROW 6 COL 10
+                  pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
                 active:
                   type: boolean
       responses:
@@ -1919,6 +1925,10 @@ paths:
                 cardholder_id:
                   type: integer
                   example: 4
+                card_no:
+                  type: string
+                  example: 'aab637a'
+                  maxLength: 45
                 amount:
                   oneOf:
                     - type: string
@@ -1928,7 +1938,7 @@ paths:
                 type:
                   type: string
                   enum: [ "debit", "credit" ]
-              required: [ "cardholder_id", "amount", "type" ]
+              required: [ "amount", "type" ]
       responses:
         '401':
           description: Authorization information is missing or invalid.
