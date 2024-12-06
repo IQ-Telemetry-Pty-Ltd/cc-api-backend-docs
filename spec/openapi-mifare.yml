@@ -1916,10 +1916,10 @@ paths:
           'application/json':
             schema:
               oneOf:
+                - type: object
                 - type: array
                   items:
                     type: object
-                - type: object
               additionalProperties: false
               properties:
                 cardholder_id:
