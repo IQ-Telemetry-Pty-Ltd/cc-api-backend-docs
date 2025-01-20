@@ -20,7 +20,7 @@ info:
     name: Ryan Pomario
     email: ryan@iqt.co.za
 
-  version: 1.0.5
+  version: 1.0.6
 
 externalDocs:
   description: Click here to learn more about Payway.
@@ -2238,10 +2238,10 @@ paths:
           'application/json':
             schema:
               oneOf:
+                - type: object
                 - type: array
                   items:
                     type: object
-                - type: object
               additionalProperties: false
               properties:
                 device_uid:
@@ -2282,7 +2282,7 @@ paths:
                     "success": true,
                     "data": [
                       {
-                        "device_id": 1,
+                        "device_uid": "ab34ef16aa",
                         "reason": "Webhook call successful. [Notification Successfully published]",
                         "success": true
                       }
