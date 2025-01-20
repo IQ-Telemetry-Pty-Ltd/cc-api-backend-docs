@@ -48,6 +48,8 @@ tags:
     description: Endpoints that relate to cardholder products, one to many, linking tables.
   - name: Authentication
     description: Endpoints that relate to authentication.
+  - name: Devices
+    description: Endpoints that relate to payway devices.
 
 x-tagGroups:
   - name: API Authentication
@@ -61,6 +63,7 @@ x-tagGroups:
       - Sites
       - Products
       - Cardholders
+      - Devices
   - name: Reporting and Logging
     tags:
       - Transactions
