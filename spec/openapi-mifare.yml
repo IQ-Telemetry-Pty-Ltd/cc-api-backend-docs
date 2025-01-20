@@ -427,6 +427,7 @@ paths:
                   type: string
                   maxLength: 45
                   pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
+                  minLength: 1
                   example: BigTech Corp
                 address:
                   type: string
@@ -438,6 +439,7 @@ paths:
                   description: Extra level of physical location identification can be used here.
                   example: Games Room
                   pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
+                  minLength: 1
                 active:
                   type: boolean
               required: [ "user_id", "name", "active" ]
@@ -556,6 +558,7 @@ paths:
                   type: string
                   maxLength: 45
                   pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
+                  minLength: 1
                   example: BigTech Corp
                 address:
                   type: string
@@ -567,6 +570,7 @@ paths:
                   description: Extra level of physical location identification can be used here.
                   example: Games Room
                   pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
+                  minLength: 1
                 active:
                   type: boolean
       responses:
@@ -701,6 +705,7 @@ paths:
                   description: Stock location (can be store room location or channel location in a vending machine)
                   example: ROW 6 COL 10
                   pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
+                  minLength: 1
                 active:
                   type: boolean
               required: [ "user_id", "description", "active" ]
@@ -837,6 +842,7 @@ paths:
                   description: Stock location (can be store room location or channel location in a vending machine)
                   example: ROW 6 COL 10
                   pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
+                  minLength: 1
                 active:
                   type: boolean
       responses:
@@ -1516,7 +1522,8 @@ paths:
                   type: string
                   maxLength: 20
                   example: '+27876545611'
-                  pattern: ^(\+|\d)[0-9]{7,16}$
+                  pattern: ^((\+|\d)[0-9]{1,16})?$
+                  minLength: 0
                 negative_credit_allowed:
                   type: boolean
                   description: If set, the card wallet balance will be allowed to go into negative credits
@@ -1747,7 +1754,8 @@ paths:
                   type: string
                   maxLength: 20
                   example: '+27876545611'
-                  pattern: ^(\+|\d)[0-9]{7,16}$
+                  pattern: ^((\+|\d)[0-9]{1,16})?$
+                  minLength: 0
                 negative_credit_allowed:
                   type: boolean
                   description: If set, the card wallet balance will be allowed to go into negative credits
@@ -1967,6 +1975,7 @@ paths:
                       {
                         "cardholder_id": 1,
                         "amount": 5.5,
+                        "wallet": 10.00,
                         "type": "credit",
                         "success": true
                       }
@@ -2207,6 +2216,77 @@ paths:
                     },
                     "total_count": null,
                     "timestamp": 1723628631562
+                  }
+
+  '/devices/activate':
+    post:
+      tags:
+        - Functions
+        - Devices
+      summary: Activate device remotely
+      description: |-
+        Devices are physical WiFi or SIM based modems used to connect physical hardware to the Payway system. Using this endpoint,
+        you can activate any device your card has access to.
+
+      operationId: activateDevices
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              oneOf:
+                - type: array
+                  items:
+                    type: object
+                - type: object
+              additionalProperties: false
+              properties:
+                device_uid:
+                  type: string
+                card_no:
+                  type: string
+                  description: The unique UUID for the card found in the MiFare system. Only used if "payment_service_provider" = mifare.
+                  example: ab34ef16aa
+                  maxLength: 45
+                amount:
+                  type: number
+                  minimum: 0
+                  description: The amount of currency the activation is going to use in whole numbers, not cents. The devices coupon price is used and the amount is ignored.
+              required: [ "device_uid", "card_no" ]
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns device object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DevicesActivateResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "device_id": 1,
+                        "reason": "Webhook call successful. [Notification Successfully published]",
+                        "success": true
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723108298846
                   }
 
 components:
@@ -2474,6 +2554,9 @@ components:
           type: integer
         amount:
           type: number
+        wallet:
+          type: number
+          description: Wallet amount after applied action.
         type:
           type: string
         success:
@@ -2602,6 +2685,15 @@ components:
         token:
           type: string
           example: 67aa89b
+    DevicesActivateResponse:
+      type: object
+      properties:
+        device_uid:
+          type: integer
+        reason:
+          type: string
+        success:
+          type: boolean
 
     DeleteResponse:
       type: object
