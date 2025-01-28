@@ -2182,9 +2182,13 @@ paths:
         This endpoint manages a second type of user in Payway called customers.
         Customers are not direct users of the Payway system, but rather consumers of features and services. e.g Walk in store customer, a student, etc.
         
-        Customers are primarily used for the booking system.
+        Customers are primarily used for the booking system and student app.
         Customers are linked to a Payway proxy user, service account. This ensures access is restricted to the correct organisation and resources
         in terms of the Access and Roles Based rules of the service account.
+        
+        Every customer has "virtual" mifare card already created for them. Please see [cardholders](https://docs.iqt.co.za/pages/mifare.html#tag/Cardholders), in the Mifare documentation. 
+        This allows the customer to activate machines using Mifare, have automatic monthly topups and more. The create customer endpoint allows for initial
+        configuration of the "virtual" mifare card. See all card_* fields that relate to the configuration of the card.
 
       operationId: createCustomers
       x-tag-permissions:
