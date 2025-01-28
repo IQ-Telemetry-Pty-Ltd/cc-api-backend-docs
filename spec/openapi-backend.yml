@@ -20,11 +20,11 @@ info:
     name: Ryan Pomario
     email: ryan@iqt.co.za
 
-  version: 1.1.0
+  version: 1.1.3
 
 externalDocs:
   description: Click here to learn more about Payway.
-  url: https://payway.iqt.co.za
+  url: https://payway3.iqt.co.za
 
 tags:
   - name: Data
@@ -98,6 +98,10 @@ tags:
     description: Endpoints that relate to access levels.
   - name: Biometrics
     description: Endpoints that relate human biometrics.
+  - name: QR Codes
+    description: Endpoints that relate payment QR codes.
+  - name: Ota
+    description: Endpoints that relate OTA updates for devices.
 
 
 x-tagGroups:
@@ -123,6 +127,8 @@ x-tagGroups:
       - Status Codes
       - Modules
       - Access Levels
+      - QR Codes
+      - Ota
 
   - name: Hierarchical Platform Structure
     tags:
@@ -158,7 +164,7 @@ x-tagGroups:
       - Facial Biometrics
 
 servers:
-  - url: '{scheme}://payway.iqt.co.za/{version}/api'
+  - url: '{scheme}://payway3.iqt.co.za/{version}/api'
     variables:
       scheme:
         description: 'The API is accessible via https.'
@@ -206,6 +212,7 @@ paths:
                   type: string
                   pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
                   example: 'test@iqt.co.za'
+                  minLength: 1
                   maxLength: 320
                   description: Email needs to be working otherwise Firebase verification will not work.
                 client_secret:
@@ -327,6 +334,7 @@ paths:
                   pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
                   example: 'test@iqt.co.za'
                   description: Email needs to be working otherwise Firebase reset email will not work.
+                  minLength: 1
                   maxLength: 320
                 authority:
                   type: string
@@ -1062,12 +1070,14 @@ paths:
                 displayname:
                   type: string
                   example: John Doe
+                  minLength: 1
                   maxLength: 50
                   pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
                 email:
                   type: string
                   example: 'john.doe@gmail.com'
                   maxLength: 320
+                  minLength: 1
                   pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
                 email_verified:
                   type: boolean
@@ -1075,11 +1085,13 @@ paths:
                   type: string
                   example: '+27876545611'
                   maxLength: 20
-                  pattern: ^(\+|\d)[0-9]{7,16}$
+                  minLength: 0
+                  pattern: ^((\+|\d)[0-9]{1,16})?$
                 currency:
                   type: string
                   example: "$"
                   maxLength: 5
+                  minLength: 1
                   pattern: '(?:ZAR|USD|EUR)'
                   description: Defines the type of current a user is using.
                 delimiter:
@@ -1143,7 +1155,23 @@ paths:
                         "proxy_user": false,
                         "password_reset": true,
                         "password": "ns98Ui7T2Sc",
-                        "qr_code": "PAYWAY|3|TOKEN|AA67SNERIA9"
+                        "qr_code": "PAYWAY|3|TOKEN|AA67SNERIA9",
+                        "resellers": {
+                          "id": [
+                            1
+                          ],
+                          "name": [
+                            "IQ Telemetry (Pty) Ltd"
+                          ]
+                        },
+                        "organisations": {
+                          "id": [
+                            7
+                          ],
+                          "name": [
+                            "IQ Telemetry Test Account"
+                          ]
+                        }
                       }
                     ],
                     "entries": 1,
@@ -1203,7 +1231,23 @@ paths:
                         "password_reset": true,
                         "token": "HIDDEN",
                         "qr_code": "PAYWAY|3|TOKEN|AA67SNERIA9",
-                        "active": true
+                        "active": true,
+                        "resellers": {
+                          "id": [
+                            1
+                          ],
+                          "name": [
+                            "IQ Telemetry (Pty) Ltd"
+                          ]
+                        },
+                        "organisations": {
+                          "id": [
+                            7
+                          ],
+                          "name": [
+                            "IQ Telemetry Test Account"
+                          ]
+                        }
                       }
                     ],
                     "entries": 1,
@@ -1231,6 +1275,7 @@ paths:
                   type: string
                   example: John Doe
                   maxLength: 50
+                  minLength: 1
                   pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
                 email:
                   type: string
@@ -1243,18 +1288,21 @@ paths:
                   type: string
                   example: '+27876545611'
                   maxLength: 20
-                  pattern: ^(\+|\d)[0-9]{7,16}$
+                  minLength: 0
+                  pattern: ^((\+|\d)[0-9]{1,16})?$
                 currency:
                   type: string
                   example: "$"
                   maxLength: 5
                   pattern: '(?:ZAR|USD|EUR)'
+                  minLength: 1
                   description: Defines the type of current a user is using.
                 delimiter:
                   type: string
                   example: ';'
                   maxLength: 1
                   pattern: ^[,;|]
+                  minLength: 1
                   description: Delimiter used in CSV/Table exports for frontend.
                 proxy_user:
                   type: boolean
@@ -1315,6 +1363,22 @@ paths:
                       "password_reset": true,
                       "qr_code": "PAYWAY|3|TOKEN|AA67SNERIA9",
                       "proxy_user": false,
+                      "resellers": {
+                        "id": [
+                          1
+                        ],
+                        "name": [
+                          "IQ Telemetry (Pty) Ltd"
+                        ]
+                      },
+                      "organisations": {
+                        "id": [
+                          7
+                        ],
+                        "name": [
+                          "IQ Telemetry Test Account"
+                        ]
+                      }
                     }
                   ],
                   "entries": 1,
@@ -2153,12 +2217,14 @@ paths:
                 email:
                   type: string
                   maxLength: 100
+                  minLength: 1
                   pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
                 contact_number:
                   type: string
                   example: '+27876545611'
                   maxLength: 20
-                  pattern: ^(\+|\d)[0-9]{7,16}$
+                  pattern: ^((\+|\d)[0-9]{1,16})?$
+                  minLength: 0
                 consent_number:
                   type: boolean
                 consent_email:
@@ -2185,6 +2251,30 @@ paths:
                   type: integer
                   example: 5
                   description: Amount of times a login request has been sent.
+                card_negative_credit_allowed:
+                  type: boolean
+                  description: If set, the card wallet balance will be allowed to go into negative credits.
+                card_throttle_multiple_requests:
+                  type: boolean
+                  description: |-
+                    If set (default), multiple requests for the card at the same POS terminal will be throttled to prevent
+                    "double-tapping".
+                card_balance_accumulate:
+                  type: boolean
+                  description: At the end of each month, card wallet balances are re-calculated.  If this is set, then
+                    any un-used credits are included in the calculation.
+                card_topup_reoccurrence:
+                  type: boolean
+                  description: If set, the card wallet will automatically be reset on month end in accordance with the rules set
+                    above.
+                card_topup_value:
+                  type: number
+                  description: This is the amount the will be either added to the wallet balance, if balance_accumulate is set,
+                    or the value that will be used to set the wallet balance at month end.
+                  minimum: 0
+                card_initial_balance:
+                  type: number
+                  description: An initial wallet/balance amount for the automatically created virtual card. Must be in full currency, not cents.
               required: [ "first_name", "last_name", "email", "user_id" ]
       responses:
         '401':
@@ -2390,11 +2480,13 @@ paths:
                   type: string
                   maxLength: 100
                   pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+                  minLength: 1
                 contact_number:
                   type: string
                   example: '+27876545611'
                   maxLength: 20
-                  pattern: ^(\+|\d)[0-9]{7,16}$
+                  pattern: ^((\+|\d)[0-9]{1,16})?$
+                  minLength: 0
                 consent_number:
                   type: boolean
                 consent_email:
@@ -2681,6 +2773,7 @@ paths:
                   example: "BigTech Reseller"
                   maxLength: 60
                   pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
+                  minLength: 1
                 address:
                   type: string
                   example: "109 BigTech Street, Cape Town 8800"
@@ -2689,17 +2782,20 @@ paths:
                   type: string
                   example: '+27876545611'
                   maxLength: 20
-                  pattern: ^(\+|\d)[0-9]{7,16}$
+                  pattern: ^((\+|\d)[0-9]{1,16})?$
+                  minLength: 0
                 contact_person:
                   type: string
                   example: "John Doe"
                   maxLength: 50
                   pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
+                  minLength: 1
                 lat_lng:
                   type: string
-                  maxLength: 50
+                  maxLength: 200
                   example: "-18.08011,-34.73830"
                   pattern: '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$'
+                  minLength: 1
                 logo_url:
                   type: string
                   example: 'https://google.com/image.png'
@@ -2817,6 +2913,7 @@ paths:
                   example: "BigTech Reseller"
                   maxLength: 60
                   pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
+                  minLength: 1
                 address:
                   type: string
                   example: "109 BigTech Street, Cape Town 8800"
@@ -2825,17 +2922,20 @@ paths:
                   type: string
                   example: '+27876545611'
                   maxLength: 20
-                  pattern: ^(\+|\d)[0-9]{7,16}$
+                  pattern: ^((\+|\d)[0-9]{1,16})?$
+                  minLength: 0
                 contact_person:
                   type: string
                   example: "John Doe"
                   maxLength: 50
                   pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
+                  minLength: 1
                 lat_lng:
                   type: string
-                  maxLength: 50
+                  maxLength: 200
                   example: "-18.08011,-34.73830"
                   pattern: '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$'
+                  minLength: 1
                 logo_url:
                   type: string
                   example: 'https://google.com/image.png'
@@ -3106,25 +3206,29 @@ paths:
                   example: "BigTech Org"
                   maxLength: 60
                   pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
+                  minLength: 1
                 address:
                   type: string
                   example: "109 BigTech Street, Cape Town 8800"
-                  maxLength: 100
+                  maxLength: 400
                 contact_number:
                   type: string
                   example: '+27876545611'
                   maxLength: 20
-                  pattern: ^(\+|\d)[0-9]{7,16}$
+                  pattern: ^((\+|\d)[0-9]{1,16})?$
+                  minLength: 0
                 contact_person:
                   type: string
                   example: "John Doe"
                   maxLength: 50
                   pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
+                  minLength: 1
                 lat_lng:
                   type: string
-                  maxLength: 50
+                  maxLength: 200
                   example: "-18.08011,-34.73830"
                   pattern: '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$'
+                  minLength: 1
                 reseller_id:
                   type: array
                   items:
@@ -3271,25 +3375,29 @@ paths:
                   example: "BigTech Org"
                   maxLength: 60
                   pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
+                  minLength: 1
                 address:
                   type: string
                   example: "109 BigTech Street, Cape Town 8800"
-                  maxLength: 100
+                  maxLength: 400
                 contact_number:
                   type: string
                   example: '+27876545611'
                   maxLength: 20
-                  pattern: ^(\+|\d)[0-9]{7,16}$
+                  pattern: ^((\+|\d)[0-9]{1,16})?$
+                  minLength: 0
                 contact_person:
                   type: string
                   example: "John Doe"
                   maxLength: 50
                   pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
+                  minLength: 1
                 lat_lng:
                   type: string
-                  maxLength: 50
+                  maxLength: 200
                   example: "-18.08011,-34.73830"
                   pattern: '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$'
+                  minLength: 1
                 reseller_id:
                   type: array
                   items:
@@ -3741,25 +3849,29 @@ paths:
                   example: "BigTech Company"
                   maxLength: 60
                   pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
+                  minLength: 1
                 address:
                   type: string
                   example: "109 BigTech Street, Cape Town 8800"
-                  maxLength: 100
+                  maxLength: 400
                 contact_number:
                   type: string
                   example: '+27876545611'
                   maxLength: 20
-                  pattern: ^(\+|\d)[0-9]{7,16}$
+                  pattern: ^((\+|\d)[0-9]{1,16})?$
+                  minLength: 0
                 contact_person:
                   type: string
                   example: "John Doe"
                   maxLength: 50
                   pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
+                  minLength: 1
                 lat_lng:
                   type: string
-                  maxLength: 50
+                  maxLength: 200
                   example: "-18.08011,-34.73830"
                   pattern: '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$'
+                  minLength: 1
                 organisation_id:
                   type: integer
                   example: 2
@@ -3770,6 +3882,15 @@ paths:
                   type: string
                   example: 'https://google.com/image.png'
                   description: Link to png used for logo
+                sap:
+                  type: string
+                  example: BE566492
+                  pattern: ^((\+|\d)[0-9]{1,16})?$
+                  maxLength: 150
+                  description: Tracking code for billing.
+                support_text:
+                  type: string
+                  description: Support text to be displayed for apps.
                 active:
                   type: boolean
               required: [ "name", "address", "contact_number", "contact_person", "organisation_id", "active" ]
@@ -3807,6 +3928,8 @@ paths:
                         "lat_lng": "-18.08011,-34.73830",
                         "email_template": "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",
                         "logo_url": "https://google.com",
+                        "sap": "BE566492",
+                        "support_text": null,
                         "active": true,
                         "resellers": {
                           "id": [
@@ -3875,6 +3998,8 @@ paths:
                         "lat_lng": "-18.08011,-34.73830",
                         "email_template": "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",
                         "logo_url": "https://google.com",
+                        "sap": "BE566492",
+                        "support_text": null,
                         "active": true,
                         "resellers": {
                           "id": [
@@ -3920,25 +4045,29 @@ paths:
                   example: "BigTech Company"
                   maxLength: 60
                   pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
+                  minLength: 1
                 address:
                   type: string
                   example: "109 BigTech Street, Cape Town 8800"
-                  maxLength: 100
+                  maxLength: 400
                 contact_number:
                   type: string
                   example: '+27876545611'
                   maxLength: 20
-                  pattern: ^(\+|\d)[0-9]{7,16}$
+                  pattern: ^((\+|\d)[0-9]{1,16})?$
+                  minLength: 0
                 contact_person:
                   type: string
                   example: "John Doe"
                   maxLength: 50
                   pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
+                  minLength: 1
                 lat_lng:
                   type: string
-                  maxLength: 50
+                  maxLength: 200
                   example: "-18.08011,-34.73830"
                   pattern: '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$'
+                  minLength: 1
                 organisation_id:
                   type: integer
                   example: 2
@@ -3949,6 +4078,15 @@ paths:
                   type: string
                   example: 'https://google.com/image.png'
                   description: Link to png used for logo
+                sap:
+                  type: string
+                  example: BE566492
+                  pattern: ^((\+|\d)[0-9]{1,16})?$
+                  maxLength: 150
+                  description: Tracking code for billing.
+                support_text:
+                  type: string
+                  description: Support text to be displayed for apps.
                 active:
                   type: boolean
       responses:
@@ -3984,6 +4122,8 @@ paths:
                         "contact_person": "John Doe",
                         "lat_lng": "-18.08011,-34.73830",
                         "logo_url": "https://google.com",
+                        "sap": "BE566492",
+                        "support_text": null,
                         "active": true,
                         "resellers": {
                           "id": [
@@ -4083,24 +4223,28 @@ paths:
                   example: "HighTech Site"
                   maxLength: 60
                   pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
+                  minLength: 1
                 address:
                   type: string
                   example: "109 BigTech Street, Cape Town 8800"
-                  maxLength: 100
+                  maxLength: 400
                 contact_number:
                   type: string
                   example: '+27876545611'
                   maxLength: 20
-                  pattern: ^(\+|\d)[0-9]{7,16}$
+                  pattern: ^((\+|\d)[0-9]{1,16})?$
+                  minLength: 0
                 contact_person:
                   type: string
                   example: "John Doe"
                   maxLength: 50
                   pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
+                  minLength: 1
                 lat_lng:
                   type: string
                   example: "{\"latLng\":{\"lat\":-33.848106900673486,\"lng\":18.5385}}"
                   pattern: '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$'
+                  minLength: 1
                 company_id:
                   type: integer
                   example: 5
@@ -4269,24 +4413,28 @@ paths:
                   example: "HighTech Site"
                   maxLength: 60
                   pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
+                  minLength: 1
                 address:
                   type: string
                   example: "109 BigTech Street, Cape Town 8800"
-                  maxLength: 100
+                  maxLength: 400
                 contact_number:
                   type: string
                   example: '+27876545611'
                   maxLength: 20
-                  pattern: ^(\+|\d)[0-9]{7,16}$
+                  pattern: ^((\+|\d)[0-9]{1,16})?$
+                  minLength: 0
                 contact_person:
                   type: string
                   example: "John Doe"
                   maxLength: 50
                   pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
+                  minLength: 1
                 lat_lng:
                   type: string
                   example: "{\"latLng\":{\"lat\":-33.848106900673486,\"lng\":18.5385}}"
                   pattern: '^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$'
+                  minLength: 1
                 company_id:
                   type: integer
                   example: 5
@@ -4441,13 +4589,15 @@ paths:
                 uid:
                   type: string
                   maxLength: 50
-                  pattern: ^[a-zA-Z1-9]+
+                  pattern: ^[a-zA-Z0-9]+$
+                  minLength: 1
                   description: Unique identification for the device.
                   example: 'ae23db32'
                 imsi:
                   type: string
                   maxLength: 50
-                  pattern: ^[a-zA-Z1-9]+
+                  pattern: ^[a-zA-Z0-9#!@$%^&*-_\s]+$
+                  minLength: 1
                   description: International Mobile Subscriber Identity or Service Set Identifier (SSID).
                   example: '17654337383999700'
                 pos_type_id:
@@ -4476,14 +4626,17 @@ paths:
                   example:
                   description: Integer Value to divide the incoming paid value by.
                 unit_price:
-                  type: number
+                  anyOf:
+                    - type: number
+                    - type: integer
+                    - type: string
                   example:
                   description: The price per unit.
                 ssid:
                   oneOf:
                     - type: string
                       maxLength: 32
-                      pattern: '^[^!#;+\]\/"\t][^+\]\/"\t]{0,30}[^ !#;+\]\/"\t]$|^[^ !#;+\]\/"\t]$'
+                      pattern: '^[\x20-\x7E]{1,32}$'
                       description: Service Set Identifier for WiFi devices.
                     - type: string
                       minLength: 0
@@ -4493,7 +4646,10 @@ paths:
                   maxLength: 64
                   description: Service Set Identifier password for WiFi Devices.
                 coupon_price:
-                  type: integer
+                  anyOf:
+                    - type: number
+                    - type: integer
+                    - type: string
                   description: The price per unit used for MiFare Payments.
                   example:
                 asset_state_id:
@@ -4572,6 +4728,8 @@ paths:
                         "short_name": null,
                         "machine_serial_number": null,
                         "online": false,
+                        "last_online": "2024-12-10 13:15:00.231160",
+                        "last_transaction_date": null,
                         "active": true,
                         "resellers": {
                           "id": [
@@ -4702,6 +4860,8 @@ paths:
                         "short_name": null,
                         "machine_serial_number": null,
                         "online": false,
+                        "last_online": "2024-12-10 13:15:00.231160",
+                        "last_transaction_date": null,
                         "active": true,
                         "resellers": {
                           "id": [
@@ -4783,13 +4943,15 @@ paths:
                 uid:
                   type: string
                   maxLength: 50
-                  pattern: ^[a-zA-Z1-9]+
+                  pattern: ^[a-zA-Z0-9]+$
+                  minLength: 1
                   description: Unique identification for the device.
                   example: 'ae23db32'
                 imsi:
                   type: string
                   maxLength: 50
-                  pattern: ^[a-zA-Z1-9]+
+                  pattern: ^[a-zA-Z0-9#!@$%^&*-_\s]+$
+                  minLength: 1
                   description: International Mobile Subscriber Identity or Service Set Identifier (SSID).
                   example: '17654337383999700'
                 pos_type_id:
@@ -4818,14 +4980,17 @@ paths:
                   example:
                   description: Integer Value to divide the incoming paid value by.
                 unit_price:
-                  type: number
-                  example:
+                  anyOf:
+                    - type: number
+                    - type: integer
+                    - type: string
+                  example: 4
                   description: The price per unit.
                 ssid:
                   oneOf:
                     - type: string
                       maxLength: 32
-                      pattern: '^[^!#;+\]\/"\t][^+\]\/"\t]{0,30}[^ !#;+\]\/"\t]$|^[^ !#;+\]\/"\t]$'
+                      pattern: '^[\x20-\x7E]{1,32}$'
                       description: Service Set Identifier for WiFi devices.
                     - type: string
                       minLength: 0
@@ -4835,9 +5000,12 @@ paths:
                   maxLength: 64
                   description: Service Set Identifier password for WiFi Devices.
                 coupon_price:
-                  type: integer
+                  anyOf:
+                    - type: number
+                    - type: integer
+                    - type: string
                   description: The price per unit used for MiFare Payments.
-                  example:
+                  example: 5
                 asset_state_id:
                   type: integer
                 short_name:
@@ -4913,6 +5081,8 @@ paths:
                         "short_name": null,
                         "machine_serial_number": null,
                         "online": false,
+                        "last_online": "2024-12-10 13:15:00.231160",
+                        "last_transaction_date": null,
                         "active": true,
                         "resellers": {
                           "id": [
@@ -5088,7 +5258,6 @@ paths:
                     "total_count": null,
                     "timestamp": 1723108298846
                   }
-
 
   '/logs_fatal/{id}':
     get:
@@ -5391,12 +5560,18 @@ paths:
                   type: string
                   maxLength: 10
                   pattern: '^#(?:[0-9a-fA-F]{3}){1,2}$'
+                  minLength: 1
                   example: '#7795f3'
                   description: Hex code colour
                 qr_payments:
                   type: boolean
+                  description: Does this provider support qr code based payments?
                 qr_string:
                   type: string
+                  example: "https://pos.snapscan.io/qr/{merchant_id}?ID=IMEI{uid}&Amount={amount}"
+                qr_cents:
+                  type: boolean
+                  description: Does this QR code require the amount to be in cents?
                 active:
                   type: boolean
               required: [ "name", "active" ]
@@ -5427,11 +5602,12 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "name": "Zapper",
+                        "name": "Snapscan",
                         "color": "#7795f3",
                         "logo_url": "https://google.com/image.png",
                         "qr_payments": true,
-                        "qr_string": "https://zap.io/{{merchant_id}}/{{site_id}}/?ref=IMEI{{uid}}",
+                        "qr_string": "https://pos.snapscan.io/qr/{merchant_id}?ID=IMEI{uid}&Amount={amount}",
+                        "qr_cents": false,
                         "active": true
                       }
                     ],
@@ -5475,11 +5651,12 @@ paths:
                     "data": [
                       {
                         "id": 1,
-                        "name": "Zapper",
+                        "name": "Snapscan",
                         "color": "#7795f3",
                         "logo_url": "https://google.com/image.png",
                         "qr_payments": true,
-                        "qr_string": "https://zap.io/{{merchant_id}}/{{site_id}}/?ref=IMEI{{uid}}",
+                        "qr_string": "https://pos.snapscan.io/qr/{merchant_id}?ID=IMEI{uid}&Amount={amount}",
+                        "qr_cents": false,
                         "active": true
                       }
                     ],
@@ -5512,13 +5689,17 @@ paths:
                   type: string
                   maxLength: 10
                   pattern: '^#(?:[0-9a-fA-F]{3}){1,2}$'
+                  minLength: 1
                   example: '#7795f3'
                 qr_payments:
                   type: boolean
+                  description: Does this provider support qr code based payments?
                 qr_string:
                   type: string
-                  maxLength: 255
-                  example: 'https://zap.io/{{merchant_id}}/{{site_id}}/?ref=IMEI{{uid}}'
+                  example: "https://pos.snapscan.io/qr/{merchant_id}?ID=IMEI{uid}&Amount={amount}"
+                qr_cents:
+                  type: boolean
+                  description: Does this QR code require the amount to be in cents?
                 active:
                   type: boolean
       responses:
@@ -5551,6 +5732,9 @@ paths:
                         "name": "Snapscan",
                         "color": "#7795f3",
                         "logo_url": "https://google.com/image.png",
+                        "qr_payments": true,
+                        "qr_string": "https://pos.snapscan.io/qr/{merchant_id}?ID=IMEI{uid}&Amount={amount}",
+                        "qr_cents": false,
                         "active": true
                       }
                     ],
@@ -5598,6 +5782,7 @@ paths:
                   example: '1.0.0'
                   maxLength: 10
                   pattern: '^\d+\.\d+\.\d+$'
+                  minLength: 1
                   description: Version of firmware used.
                 active:
                   type: boolean
@@ -5705,6 +5890,7 @@ paths:
                   example: '1.0.0'
                   maxLength: 10
                   pattern: '^\d+\.\d+\.\d+$'
+                  minLength: 1
                   description: Version of firmware used.
                 active:
                   type: boolean
@@ -6057,6 +6243,7 @@ paths:
                   type: string
                   maxLength: 50
                   pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
+                  minLength: 1
                   example: "COMPLETED"
                   description: Name of event
                 code:
@@ -6066,6 +6253,7 @@ paths:
                   type: string
                   maxLength: 10
                   pattern: '^#(?:[0-9a-fA-F]{3}){1,2}$'
+                  minLength: 1
                   example: '#7795f3'
                   description: Hex code colour
                 refund_sale:
@@ -6182,6 +6370,7 @@ paths:
                   type: string
                   maxLength: 50
                   pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
+                  minLength: 1
                   example: "COMPLETED"
                   description: Name of event
                 code:
@@ -6191,6 +6380,7 @@ paths:
                   type: string
                   maxLength: 10
                   pattern: '^#(?:[0-9a-fA-F]{3}){1,2}$'
+                  minLength: 1
                   example: '#7795f3'
                   description: Hex code colour,
                 refund_sale:
@@ -6275,6 +6465,7 @@ paths:
                   type: string
                   maxLength: 50
                   pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
+                  minLength: 1
                   example: "Coin Pulse"
                 active:
                   type: boolean
@@ -6375,6 +6566,7 @@ paths:
                   type: string
                   maxLength: 50
                   pattern: ^[A-Za-z0-9]+[A-Za-z 0-9]*$
+                  minLength: 1
                   example: "Coin Pulse"
                 active:
                   type: boolean
@@ -8604,6 +8796,7 @@ paths:
                   type: string
                   maxLength: 50
                   pattern: ^[a-zA-Z_]+
+                  minLength: 1
               required: [ "name" ]
       responses:
         '401':
@@ -9373,7 +9566,472 @@ paths:
                 items:
                   - $ref: "#/components/schemas/TotalDevicesByCurrentStatusResponseOne"
                   - $ref: "#/components/schemas/TotalDevicesByCurrentStatusResponseTwo"
-                example: TODO
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "columns": [
+                          {
+                            "id": 1,
+                            "name": "Zapper",
+                            "color": "#4282bf",
+                            "logo_url": "zapper.png"
+                          },
+                          {
+                            "id": 2,
+                            "name": "SnapScan",
+                            "color": "#309dbe",
+                            "logo_url": "snapscan.png"
+                          },
+                          {
+                            "id": 4,
+                            "name": "PayWayTest",
+                            "color": "#888888",
+                            "logo_url": "paywayLogo.png"
+                          },
+                          {
+                            "id": 5,
+                            "name": "Modus10",
+                            "color": "#01d5d6",
+                            "logo_url": "modus.png"
+                          },
+                          {
+                            "id": 6,
+                            "name": "MiFare",
+                            "color": "#c7d401",
+                            "logo_url": "mifare.png"
+                          },
+                          {
+                            "id": 7,
+                            "name": "Cash",
+                            "color": "#d83f37",
+                            "logo_url": "cash.png"
+                          },
+                          {
+                            "id": 10,
+                            "name": "Homii",
+                            "color": "#a9c702",
+                            "logo_url": "homii.png"
+                          },
+                          {
+                            "id": 11,
+                            "name": "Ozow",
+                            "color": "#00bfa7",
+                            "logo_url": "ozow.png"
+                          },
+                          {
+                            "id": 14,
+                            "name": "Halodot",
+                            "color": "#cb3091",
+                            "logo_url": "halodot.png"
+                          }
+                        ],
+                        "resellers": [
+                          {
+                            "id": 49,
+                            "name": "Marvel Studios",
+                            "address": "Marvell, AR 72366, USA",
+                            "contact_number": "+2711122233",
+                            "contact_person": "Captian America",
+                            "lat_lng": "34.5569568,-90.9125471",
+                            "logo_url": "",
+                            "active": true,
+                            "totals": [
+                              13,
+                              99,
+                              4,
+                              4,
+                              136,
+                              297.69,
+                              0,
+                              0,
+                              8,
+                              55,
+                              0,
+                              0,
+                              0,
+                              0,
+                              0,
+                              0,
+                              1,
+                              1,
+                              162,
+                              456.69
+                            ],
+                            "organisation": [
+                              {
+                                "id": 552,
+                                "name": "Stark Organisation",
+                                "address": "Starkville, MS 39759, USA",
+                                "contact_number": "+2711122233",
+                                "contact_person": "Tony",
+                                "lat_lng": "33.4503998,-88.81838719999999",
+                                "logo_url": "",
+                                "active": true,
+                                "resellers": {
+                                  "id": [
+                                    49
+                                  ],
+                                  "name": [
+                                    "Marvel Studios"
+                                  ],
+                                  "id_name": [
+                                    "49,Marvel Studios"
+                                  ]
+                                },
+                                "totals": [
+                                  13,
+                                  99,
+                                  4,
+                                  4,
+                                  136,
+                                  297.69,
+                                  0,
+                                  0,
+                                  8,
+                                  55,
+                                  0,
+                                  0,
+                                  0,
+                                  0,
+                                  0,
+                                  0,
+                                  1,
+                                  1,
+                                  162,
+                                  456.69
+                                ],
+                                "company": [
+                                  {
+                                    "id": 551,
+                                    "name": "Stark Company",
+                                    "address": "Testour, Tunisia",
+                                    "contact_number": "+27112224",
+                                    "contact_person": "Tony",
+                                    "lat_lng": "36.5499,9.4422664",
+                                    "logo_url": null,
+                                    "sap": null,
+                                    "active": true,
+                                    "resellers": {
+                                      "id": [
+                                        49
+                                      ],
+                                      "name": [
+                                        "Marvel Studios"
+                                      ],
+                                      "id_name": [
+                                        "49,Marvel Studios"
+                                      ]
+                                    },
+                                    "organisations": {
+                                      "id": 552,
+                                      "name": "Stark Organisation"
+                                    },
+                                    "totals": [
+                                      13,
+                                      99,
+                                      4,
+                                      4,
+                                      136,
+                                      297.69,
+                                      0,
+                                      0,
+                                      8,
+                                      55,
+                                      0,
+                                      0,
+                                      0,
+                                      0,
+                                      0,
+                                      0,
+                                      1,
+                                      1,
+                                      162,
+                                      456.69
+                                    ],
+                                    "site": [
+                                      {
+                                        "id": 941,
+                                        "name": "Tower 1 Site",
+                                        "address": "Charvátova, Nové Město, 110 00 Praha-Praha 1, Czechia",
+                                        "contact_number": "+2711122234",
+                                        "contact_person": "Stark",
+                                        "lat_lng": "50.0816514,14.420821",
+                                        "mifare_site_id": 0,
+                                        "allow_booking": true,
+                                        "active": true,
+                                        "resellers": {
+                                          "id": [
+                                            49
+                                          ],
+                                          "name": [
+                                            "Marvel Studios"
+                                          ],
+                                          "id_name": [
+                                            "49,Marvel Studios"
+                                          ]
+                                        },
+                                        "organisations": {
+                                          "id": 552,
+                                          "name": "Stark Organisation"
+                                        },
+                                        "companies": {
+                                          "id": 551,
+                                          "name": "Stark Company"
+                                        },
+                                        "totals": [
+                                          13,
+                                          99,
+                                          4,
+                                          4,
+                                          136,
+                                          297.69,
+                                          0,
+                                          0,
+                                          8,
+                                          55,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          1,
+                                          1,
+                                          162,
+                                          456.69
+                                        ],
+                                        "device": [
+                                          {
+                                            "id": 2141,
+                                            "device": "Dryer 2 (04.14)",
+                                            "historical": false,
+                                            "totals": [
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              1,
+                                              48,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              1,
+                                              48
+                                            ]
+                                          },
+                                          {
+                                            "id": 21385562,
+                                            "device": "Washer 1 (1.6)",
+                                            "historical": false,
+                                            "totals": [
+                                              8,
+                                              94,
+                                              4,
+                                              4,
+                                              119,
+                                              206.69,
+                                              0,
+                                              0,
+                                              7,
+                                              7,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              1,
+                                              1,
+                                              139,
+                                              312.69
+                                            ]
+                                          },
+                                          {
+                                            "id": 21389662,
+                                            "device": "Washer 2 (1.6)",
+                                            "historical": false,
+                                            "totals": [
+                                              5,
+                                              5,
+                                              0,
+                                              0,
+                                              14,
+                                              70,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              19,
+                                              75
+                                            ]
+                                          },
+                                          {
+                                            "id": 2442,
+                                            "device": "Washer 3 (5.5)",
+                                            "historical": false,
+                                            "totals": [
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              3,
+                                              21,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              3,
+                                              21
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "id": 942,
+                                        "name": "Tower 2 Site",
+                                        "address": "Via Aldo Manuzio, 66b, 00153 Roma RM, Italy",
+                                        "contact_number": "+272233332",
+                                        "contact_person": "Tony",
+                                        "lat_lng": "41.8776845,12.4738455",
+                                        "mifare_site_id": 0,
+                                        "allow_booking": true,
+                                        "active": true,
+                                        "resellers": {
+                                          "id": [
+                                            49
+                                          ],
+                                          "name": [
+                                            "Marvel Studios"
+                                          ],
+                                          "id_name": [
+                                            "49,Marvel Studios"
+                                          ]
+                                        },
+                                        "organisations": {
+                                          "id": 552,
+                                          "name": "Stark Organisation"
+                                        },
+                                        "companies": {
+                                          "id": 551,
+                                          "name": "Stark Company"
+                                        },
+                                        "totals": [
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0
+                                        ],
+                                        "device": [ ]
+                                      },
+                                      {
+                                        "id": 950,
+                                        "name": "Tower Test",
+                                        "address": "Ticino, Switzerland",
+                                        "contact_number": "+2711232321",
+                                        "contact_person": "test",
+                                        "lat_lng": "46.331734,8.800452900000002",
+                                        "mifare_site_id": 0,
+                                        "allow_booking": false,
+                                        "active": true,
+                                        "resellers": {
+                                          "id": [
+                                            49
+                                          ],
+                                          "name": [
+                                            "Marvel Studios"
+                                          ],
+                                          "id_name": [
+                                            "49,Marvel Studios"
+                                          ]
+                                        },
+                                        "organisations": {
+                                          "id": 552,
+                                          "name": "Stark Organisation"
+                                        },
+                                        "companies": {
+                                          "id": 551,
+                                          "name": "Stark Company"
+                                        },
+                                        "totals": [
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0
+                                        ],
+                                        "device": [ ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ],
+                        "compute_time_seconds": 0
+                      }
+                    ],
+                    "total_count": null,
+                    "timestamp": 1723108298846
+                  }
       parameters:
         - $ref: "#/components/parameters/reports_resellers"
         - $ref: "#/components/parameters/reports_organisations"
@@ -9566,6 +10224,169 @@ paths:
                     "timestamp": 1723108298846
                   }
 
+  '/qr/device/{device_id}/{provider_id}':
+    get:
+      tags:
+        - Data
+        - QR Codes
+      operationId: getQRDeviceProvider
+      x-tag-permissions:
+        - devices
+        - companies
+        - sites
+        - host_hardware
+        - asset_states
+        - organisations
+        - resellers
+      summary: Get generated QR code for provider
+      description: |-
+        This endpoint is used to generate QR codes if a provider supports them. This allows customers to pay using QR codes.
+
+      requestBody:
+        required: false
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                amount:
+                  type: number
+                  minimum: 0
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns a qr code data object
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/QRCodeDeviceProviderResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": {
+                      "provider": "SnapScan",
+                      "qr_string": "https://pos.snapscan.io/qr/AQ3SB_73?ID=IMEId4d4daf66818&Amount=1000",
+                      "logo_url": "snapscan.png",
+                      "logo_full_url": "https://payway3.iqt.co.za/images/snapscan.png"
+                    },
+                    "total_count": null,
+                    "timestamp": 1723108298846
+                  }
+    parameters:
+      - $ref: "#/components/parameters/deviceIdParam"
+      - $ref: "#/components/parameters/providerIdParam"
+
+  '/ota/publish':
+    post:
+      tags:
+        - Data
+        - Ota
+      summary: Publish OTA for specified group.
+      description: |-
+        This endpoint is used to initiate OTA updates for all physical devices in the field.
+
+      operationId: postPublishOta
+      x-tag-permissions:
+        - organisations
+        - devices
+        - sites
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              oneOf:
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    organisation_id:
+                      type: integer
+                  required: [ "organisation_id" ]
+                - type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      organisation_id:
+                        type: integer
+                    required: [ "organisation_id" ]
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    site_id:
+                      type: integer
+                  required: [ "site_id" ]
+                - type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      site_id:
+                        type: integer
+                    required: [ "site_id" ]
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    device_id:
+                      type: integer
+                  required: [ "device_id" ]
+                - type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      device_id:
+                        type: integer
+                    required: [ "device_id" ]
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns result object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PublishOtaResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "device_id": 2141,
+                        "success": true
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723108298846
+                  }
+
 components:
   securitySchemes:
     XUserToken:
@@ -9707,6 +10528,30 @@ components:
         qr_code:
           type: string
           description: Generated QR code used for first party payway applications.
+        resellers:
+          type: object
+          description: All the resellers this user is linked to.
+          properties:
+            id:
+              type: array
+              items:
+                type: integer
+            name:
+              type: array
+              items:
+                type: string
+        organisations:
+          type: object
+          description: All the organisations this user is linked to.
+          properties:
+            id:
+              type: array
+              items:
+                type: integer
+            name:
+              type: array
+              items:
+                type: string
         active:
           type: boolean
     AuthenticationResponse:
@@ -10016,6 +10861,7 @@ components:
           type: string
         timestamp:
           type: string
+          description: Time of creation.
         time_offset:
           type: integer
         firmware_version:
@@ -10077,6 +10923,12 @@ components:
         online:
           type: boolean
           description: Boolean representing the connection of the device.
+        last_online:
+          type: string
+          description: The last time we saw the device had an activate connection with MQTT.
+        last_transaction_date:
+          type: string
+          description: The last time any transaction occurred on the device.
         active:
           type: boolean
         resellers:
@@ -11091,7 +11943,6 @@ components:
           type: integer
         name:
           type: string
-
     UsersAccessResponse:
       type: object
       properties:
@@ -11382,8 +12233,30 @@ components:
           description: Name of file deleted.
         success:
           type: boolean
+    QRCodeDeviceProviderResponse:
+      type: object
+      properties:
+        provider:
+          type: string
+        qr_string:
+          type: string
+        logo_url:
+          type: string
+        logo_full_url:
+          type: string
+    PublishOtaResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        device_id:
+          type: integer
+        organisation_id:
+          type: integer
+        site_id:
+          type: integer
 
-
+    # Common
     DeleteResponse:
       type: object
       properties:
@@ -11393,27 +12266,6 @@ components:
           type: string
         timestamp:
           type: string
-
-    # Status codes
-    ValidationFailResponse:
-      type: object
-      properties:
-        err:
-          type: string
-      example:
-        {
-          "err": [
-            {
-              "instancePath": "/requestBody",
-              "schemaPath": "#/properties/requestBody/additionalProperties",
-              "keyword": "additionalProperties",
-              "params": {
-                "additionalProperty": "emulation_id"
-              },
-              "message": "must NOT have additional properties"
-            }
-          ]
-        }
     AccountNotActiveResponse:
       type: object
       properties:
@@ -11482,8 +12334,6 @@ components:
           "type": "internal",
           "timestamp": 1723108298846
         }
-
-
     numberIndex:
       type: integer
       minimum: 1
@@ -11491,6 +12341,27 @@ components:
       type: string
       enum:
         - _all
+
+    # Status codes
+    ValidationFailResponse:
+      type: object
+      properties:
+        err:
+          type: string
+      example:
+        {
+          "err": [
+            {
+              "instancePath": "/requestBody",
+              "schemaPath": "#/properties/requestBody/additionalProperties",
+              "keyword": "additionalProperties",
+              "params": {
+                "additionalProperty": "emulation_id"
+              },
+              "message": "must NOT have additional properties"
+            }
+          ]
+        }
 
   parameters:
     idParam:
@@ -11519,6 +12390,29 @@ components:
         id:
           value: 12
           summary: Search by specific primary key aka "id".
+    deviceIdParam:
+      in: path
+      name: device_id
+      required: true
+      schema:
+        allOf:
+          - $ref: "#/components/schemas/numberIndex"
+      examples:
+        id:
+          value: 12
+          summary: Search by specific device
+    providerIdParam:
+      in: path
+      name: provider_id
+      required: true
+      schema:
+        oneOf:
+          - $ref: "#/components/schemas/numberIndex"
+          - $ref: "#/components/schemas/selectAll"
+      examples:
+        id:
+          value: 12
+          summary: Search by specific provider
     tokenParam:
       in: path
       name: id

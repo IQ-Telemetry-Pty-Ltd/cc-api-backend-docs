@@ -20,11 +20,11 @@ info:
     name: Ryan Pomario
     email: ryan@iqt.co.za
 
-  version: 1.0.6
+  version: 1.0.8
 
 externalDocs:
   description: Click here to learn more about Payway.
-  url: https://payway.iqt.co.za
+  url: https://payway3.iqt.co.za
 
 tags:
   - name: Data
@@ -73,7 +73,7 @@ x-tagGroups:
       - Cardholder Products
 
 servers:
-  - url: '{scheme}://payway.iqt.co.za/{version}/mifare'
+  - url: '{scheme}://payway3.iqt.co.za/{version}/mifare'
     variables:
       scheme:
         description: 'The API is accessible via https.'
@@ -1490,6 +1490,8 @@ paths:
       description: |-
         Card Holders are identified as Mifare cards.  Each card is identified by a unique `card_no` that
         can be read out of the card using the correct Mifare card reader/NFC reader.
+        If no card_no is specified, a unique "virtual card" will be created for you. This is helpful when you want to 
+        use the Mifare system without needing physical cards.
       operationId: createCardholder
       x-tag-permissions:
         - cardholders
@@ -1529,7 +1531,7 @@ paths:
                   minLength: 0
                 negative_credit_allowed:
                   type: boolean
-                  description: If set, the card wallet balance will be allowed to go into negative credits
+                  description: If set, the card wallet balance will be allowed to go into negative credits.
                 throttle_multiple_requests:
                   type: boolean
                   description: |-
@@ -1567,7 +1569,7 @@ paths:
                       type: integer
                 active:
                   type: boolean
-              required: [ "user_id", "card_no", "active" ]
+              required: [ "user_id", "active" ]
       responses:
         '401':
           description: Authorization information is missing or invalid.

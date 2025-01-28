@@ -24,7 +24,7 @@ info:
 
 externalDocs:
   description: Click here to learn more about Payway.
-  url: https://payway.iqt.co.za
+  url: https://payway3.iqt.co.za
 
 tags:
   - name: Data
@@ -61,7 +61,7 @@ x-tagGroups:
       - Customers
 
 servers:
-  - url: '{scheme}://payway.iqt.co.za/{version}/booking'
+  - url: '{scheme}://payway3.iqt.co.za/{version}/booking'
     variables:
       scheme:
         description: 'The API is accessible via https.'
@@ -517,6 +517,7 @@ paths:
                         ],
                         "date": "2024-08-08T00:00:00Z",
                         "device_id": 154,
+                        "device_uid": "aab473ag",
                         "device_name": "Washer02",
                         "site_name": "Herb Street, Johannesburg",
                         "booked_amount": 0
@@ -789,6 +790,7 @@ paths:
       operationId: getCustomers
       x-tag-permissions:
         - customers
+        - devices
       summary: Get object for customers
       description: |-
         This endpoint manages a second type of user in Payway called customers.
@@ -830,7 +832,22 @@ paths:
                           "reserved_booking_limit": 4,
                           "blocked": false,
                           "email": "customer@customer.com",
-                          "verified": true
+                          "mifare_card_number": "V156373",
+                          "verified": true,
+                          "companies": {
+                            "id": 1,
+                            "name": "Company 1",
+                            "support_text": null,
+                            "contact_person": "Stark",
+                            "contact_number": "+2711122234"
+                          },
+                          "organisations": {
+                            "id": 552,
+                            "name": "Stark Organisation",
+                            "logo_url": "https://payway3.iqt.co.za/images/org-552-30256.png"
+                          },
+                          "daily_booking_limit_used": 1,
+                          "reserved_booking_limit_used": 1
                         }
                       ],
                       "cardholder": [
@@ -998,6 +1015,8 @@ components:
             type: string
         device_id:
           type: integer
+        device_uid:
+          type: string
         device_name:
           type: string
         site_name:
@@ -1070,9 +1089,39 @@ components:
               description: Prevents user from accessing the API.
             email:
               type: string
+            mifare_card_number:
+              type: string
             verified:
               type: boolean
               description: Has the user verified their email?
+            companies:
+              type: object
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+                support_text:
+                  type: string
+                contact_person:
+                  type: string
+                contact_number:
+                  type: string
+            organisations:
+              type: object
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+                logo_url:
+                  type: string
+            daily_booking_limit_used:
+              type: integer
+              description: The amount of daily bookings used.
+            reserved_booking_limit_used:
+              type: integer
+              description: The amount of total bookings used.
         cardholder:
           type: object
           properties:
