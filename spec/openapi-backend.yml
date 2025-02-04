@@ -2188,7 +2188,7 @@ paths:
         
         Every customer has "virtual" mifare card already created for them. Please see [cardholders](https://docs.iqt.co.za/pages/mifare.html#tag/Cardholders), in the Mifare documentation. 
         This allows the customer to activate machines using Mifare, have automatic monthly topups and more. The create customer endpoint allows for initial
-        configuration of the "virtual" mifare card. See all card_* fields that relate to the configuration of the card.
+        configuration of the "virtual" mifare card or physical if configured and explicitly defined in the cardholder object on creation. See all cardholder object fields that relate to the configuration of the card.
 
       operationId: createCustomers
       x-tag-permissions:
