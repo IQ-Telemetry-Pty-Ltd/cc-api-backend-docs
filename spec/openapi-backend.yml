@@ -2243,11 +2243,11 @@ paths:
                 daily_booking_limit:
                   type: integer
                   example: 2
-                  description: The total number of bookings a user can make in one day.
+                  description: The total number of bookings a user can make in one day. This field cannot be bigger than the reserved booking limit.
                 reserved_booking_limit:
                   type: integer
                   example: 4
-                  description: The total number of reserved bookings a user can have at once.
+                  description: The total number of reserved bookings a user can have at once. This field cannot be smaller than the daily booking limit.
                 verified:
                   type: boolean
                   description: Has the user verified their email?
@@ -2255,30 +2255,77 @@ paths:
                   type: integer
                   example: 5
                   description: Amount of times a login request has been sent.
-                card_negative_credit_allowed:
-                  type: boolean
-                  description: If set, the card wallet balance will be allowed to go into negative credits.
-                card_throttle_multiple_requests:
-                  type: boolean
+                cardholder:
+                  type: object
                   description: |-
-                    If set (default), multiple requests for the card at the same POS terminal will be throttled to prevent
-                    "double-tapping".
-                card_balance_accumulate:
-                  type: boolean
-                  description: At the end of each month, card wallet balances are re-calculated.  If this is set, then
-                    any un-used credits are included in the calculation.
-                card_topup_reoccurrence:
-                  type: boolean
-                  description: If set, the card wallet will automatically be reset on month end in accordance with the rules set
-                    above.
-                card_topup_value:
-                  type: number
-                  description: This is the amount the will be either added to the wallet balance, if balance_accumulate is set,
-                    or the value that will be used to set the wallet balance at month end.
-                  minimum: 0
-                card_initial_balance:
-                  type: number
-                  description: An initial wallet/balance amount for the automatically created virtual card. Must be in full currency, not cents.
+                    If this object is provided, the customers initial card can be created and customized.
+                    Any data that is not provided in the cardholder object will automatically be generated or taken from
+                    the customers values. e.g if the first name is not explicitly set in the cardholder object, it will be
+                    taken from the customer information.
+
+                  properties:
+                    card_no:
+                      type: string
+                      description: The unique UUID for the card
+                      example: ab34ef16aa
+                      maxLength: 45
+                    first_name:
+                      type: string
+                      maxLength: 45
+                    last_name:
+                      type: string
+                      maxLength: 45
+                    user_number:
+                      type: string
+                      description: A student number, employee number or similar
+                      example: STU001
+                      maxLength: 45
+                    contact_number:
+                      type: string
+                      maxLength: 20
+                      example: '+27876545611'
+                      pattern: ^((\+|\d)[0-9]{1,16})?$
+                      minLength: 0
+                    negative_credit_allowed:
+                      type: boolean
+                      description: If set, the card wallet balance will be allowed to go into negative credits.
+                    throttle_multiple_requests:
+                      type: boolean
+                      description: |-
+                        If set (default), multiple requests for the card at the same POS terminal will be throttled to prevent
+                        "double-tapping".
+                    balance_accumulate:
+                      type: boolean
+                      description: At the end of each month, card wallet balances are re-calculated.  If this is set, then
+                        any un-used credits are included in the calculation.
+                    cost_centre:
+                      type: string
+                      description: For reporting purposes.  Cards can be allocated to various Cost Centres
+                      example: STUDENT, MAINTENANCE
+                      maxLength: 45
+                    topup_value:
+                      type: number
+                      description: This is the amount the will be either added to the wallet balance, if balance_accumulate is set,
+                        or the value that will be used to set the wallet balance at month end.
+                      minimum: 0
+                    topup_reoccurrence:
+                      type: boolean
+                      description: If set, the card wallet will automatically be reset on month end in accordance with the rules set
+                        above.
+                    link_sites:
+                      type: boolean
+                      description: When we create this cardholder, should we automatically link them in the cardholder_sites table?
+                    sites:
+                      type: array
+                      description: Array of sites that the cardholder should be linked to. Linking table "cardholders_sites".
+                      properties:
+                        items:
+                          type: integer
+                    card_initial_balance:
+                      type: number
+                      description: An initial wallet/balance amount for the automatically created virtual card. Must be in full currency, not cents.
+                    active:
+                      type: boolean
               required: [ "first_name", "last_name", "email", "user_id" ]
       responses:
         '401':
@@ -2505,11 +2552,11 @@ paths:
                 daily_booking_limit:
                   type: integer
                   example: 2
-                  description: The total number of bookings a user can make in one day.
+                  description: The total number of bookings a user can make in one day. This field cannot be bigger than the reserved booking limit.
                 reserved_booking_limit:
                   type: integer
                   example: 4
-                  description: The total number of reserved bookings a user can have at once.
+                  description: The total number of reserved bookings a user can have at once. This field cannot be smaller than the daily booking limit.
                 verified:
                   type: boolean
                   description: Has the user verified their email?
