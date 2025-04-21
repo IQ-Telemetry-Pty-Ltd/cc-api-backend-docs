@@ -1510,8 +1510,9 @@ paths:
                 card_no:
                   type: string
                   description: The unique UUID for the card
+                  pattern: ^[0-9a-zA-Z]+$
                   example: ab34ef16aa
-                  maxLength: 45
+                  maxLength: 10
                 first_name:
                   type: string
                   maxLength: 45
@@ -1950,8 +1951,82 @@ paths:
                   example: 5.50
                 type:
                   type: string
-                  enum: [ "debit", "credit" ]
+                  enum: [ "debit", "credit", "target" ]
               required: [ "amount", "type" ]
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: List of cardholder topup objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CardholdersTopupResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "cardholder_id": 1,
+                        "amount": 5.5,
+                        "wallet": 10.00,
+                        "type": "credit",
+                        "success": true
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1724759082131
+                  }
+
+  '/cardholders/topup/site':
+    put:
+      tags:
+        - Functions
+        - Cardholders
+      summary: Topup cardholder balance by site
+      description: |-
+        This endpoint is used to add balance to cardholders. This will create a log/audit trail inside the mifare transactions table.
+
+      operationId: updateTopupCardholderSite
+      x-tag-permissions:
+        - cardholders
+        - sites
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                site_id:
+                  oneOf:
+                    - type: number
+                    - type: string
+                  example: "_all"
+                amount:
+                  oneOf:
+                    - type: string
+                    - type: number
+                  description: Amount to be added to balance in full currency, not cents.
+                  example: 5.50
+                type:
+                  type: string
+                  enum: [ "debit", "credit", "target" ]
+              required: [ "amount", "type", "site_id" ]
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -2296,10 +2371,14 @@ paths:
 
 components:
   securitySchemes:
-    XUserToken:
+    userToken:
       type: apiKey
       in: header
       name: x-user-token
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-token
   schemas:
     UserResponse:
       type: object

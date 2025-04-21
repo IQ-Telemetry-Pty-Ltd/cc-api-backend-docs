@@ -10440,10 +10440,14 @@ paths:
 
 components:
   securitySchemes:
-    XUserToken:
+    userToken:
       type: apiKey
       in: header
       name: x-user-token
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-token
   schemas:
     AccessResponse:
       type: object
