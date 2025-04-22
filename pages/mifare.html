@@ -69,35 +69,55 @@
 
             return a.path.localeCompare(b.path)
         },
-        servers: [
-            {
-                url: 'https://payway3.iqt.co.za/v1/mifare',
-                description: 'Production',
-            },
-            {
-                url: 'https://payway-dev.iqt.co.za/v1/mifare',
-                description: 'Development',
-            }
-        ],
         sources: [
             {
                 title: 'Backend API',
                 slug: 'backend-api',
                 url: '/spec/openapi-backend.yml',
-                proxyUrl: 'https://proxy.scalar.com'
+                proxyUrl: 'https://proxy.scalar.com',
+                servers: [
+                    {
+                        url: 'https://payway3.iqt.co.za/v1/api',
+                        description: 'Production',
+                    },
+                    {
+                        url: 'https://payway-dev.iqt.co.za/v1/api',
+                        description: 'Development',
+                    }
+                ],
             },
             {
                 title: 'Mifare API',
                 slug: 'mifare-api',
                 url: '/spec/openapi-mifare.yml',
                 proxyUrl: 'https://proxy.scalar.com',
-                default: true
+                default: true,
+                servers: [
+                    {
+                        url: 'https://payway3.iqt.co.za/v1/mifare',
+                        description: 'Production',
+                    },
+                    {
+                        url: 'https://payway-dev.iqt.co.za/v1/mifare',
+                        description: 'Development',
+                    }
+                ],
             },
             {
                 title: 'Bookings API',
                 slug: 'bookings-api',
                 url: '/spec/openapi-bookings.yml',
-                proxyUrl: 'https://proxy.scalar.com'
+                proxyUrl: 'https://proxy.scalar.com',
+                servers: [
+                    {
+                        url: 'https://payway3.iqt.co.za/v1/booking',
+                        description: 'Production',
+                    },
+                    {
+                        url: 'https://payway-dev.iqt.co.za/v1/booking',
+                        description: 'Development',
+                    }
+                ],
             }
         ]
     })
