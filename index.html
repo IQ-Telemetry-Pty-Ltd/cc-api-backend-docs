@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/svg+xml" href="favicon.svg"> <title>Payway Documentation</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <title>Payway Documentation</title>
     <style>
         /* Basic Reset & Defaults */
         *,
@@ -44,6 +45,7 @@
             /* Optional: Invert logo colors if needed on dark background */
             /* --logo-filter: invert(1) hue-rotate(180deg); */
         }
+
         /* --- End Theme Variables --- */
 
 
@@ -85,10 +87,10 @@
 
         /* Theme Toggle Button Styles - Moved to Bottom Left */
         .theme-toggle-button {
-            position: fixed;   /* Position relative to viewport */
-            bottom: 1rem;      /* Distance from bottom */
-            left: 1rem;        /* Distance from left */
-            z-index: 1000;     /* Ensure it stays on top */
+            position: fixed; /* Position relative to viewport */
+            bottom: 1rem; /* Distance from bottom */
+            left: 1rem; /* Distance from left */
+            z-index: 1000; /* Ensure it stays on top */
             background: var(--button-bg);
             color: var(--button-text);
             border: 1px solid var(--button-border);
@@ -98,6 +100,7 @@
             font-size: 0.9rem;
             transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
         }
+
         .theme-toggle-button:hover {
             background: var(--button-hover-bg);
             border-color: var(--button-hover-border);
@@ -191,7 +194,6 @@
 
             /* Removed the rule setting .theme-toggle-button to position: static */
             /* The button will remain fixed at bottom-left */
-
             .content-container {
                 flex: 1;
                 padding: 2rem 1rem;
@@ -217,18 +219,20 @@
                 gap: 0.5rem;
             }
         }
+
         @media (max-width: 480px) {
             .button {
                 width: 100%;
                 margin-left: 0;
                 margin-right: 0;
             }
+
             .button-container {
                 gap: 0.75rem;
             }
+
             /* No changes needed for logo-container or theme-toggle-button here */
             /* as they inherit from the 768px breakpoint or base styles */
-
             .content-container {
                 /* Adjust padding bottom for smaller screens if needed */
                 padding-bottom: 4.5rem;
@@ -239,7 +243,7 @@
 
     <script>
         // Script placed in <head> to apply theme ASAP and minimize flash/flicker
-        (function() {
+        (function () {
             const THEME_KEY = 'themePreference';
             let currentTheme = 'light'; // Default theme
 
@@ -273,9 +277,9 @@
     <section class="documentation-links">
         <h1>Project Documentation</h1>
         <div class="button-container">
-            <a href="pages/backend.html" class="button">API Backend</a>
-            <a href="pages/mifare.html" class="button">Mifare API Backend</a>
-            <a href="pages/bookings.html" class="button">Bookings API Backend</a>
+            <a href="pages/docs.html" class="button">API Backend</a>
+            <a href="pages/docs.html?api=mifare-api" class="button">Mifare API Backend</a>
+            <a href="pages/docs.html?api=bookings-api" class="button">Bookings API Backend</a>
         </div>
     </section>
 
@@ -283,15 +287,17 @@
         <h1>OpenAPI Specs</h1>
         <div class="button-container">
             <a href="/spec/openapi-backend.yml" class="button" target="_blank" rel="noopener noreferrer">API Backend</a>
-            <a href="/spec/openapi-mifare.yml" class="button" target="_blank" rel="noopener noreferrer">Mifare API Backend</a>
-            <a href="/spec/openapi-bookings.yml" class="button" target="_blank" rel="noopener noreferrer">Bookings API Backend</a>
+            <a href="/spec/openapi-mifare.yml" class="button" target="_blank" rel="noopener noreferrer">Mifare API
+                Backend</a>
+            <a href="/spec/openapi-bookings.yml" class="button" target="_blank" rel="noopener noreferrer">Bookings API
+                Backend</a>
         </div>
     </section>
 </main>
 
 <script>
     // Script placed at the end of <body> to ensure button exists
-    (function() {
+    (function () {
         const themeToggleButton = document.getElementById('theme-toggle');
         const THEME_KEY = 'themePreference'; // Use the same key as in head script
 
