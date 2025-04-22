@@ -2378,7 +2378,7 @@ components:
     apiKey:
       type: apiKey
       in: header
-      name: x-api-token
+      name: x-api-key
   schemas:
     UserResponse:
       type: object
@@ -3121,4 +3121,4 @@ components:
           summary: Searches in specific field for 1 OR 2 OR 10.
 
 security:
-  - XUserToken: [ ]
+  - userToken: [ ]

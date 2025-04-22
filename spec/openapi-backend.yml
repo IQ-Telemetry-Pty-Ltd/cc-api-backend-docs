@@ -159,6 +159,13 @@ x-tagGroups:
       - Total Devices By Current Status
       - Transactions Totals Current Previous
       - Detailed Transaction Drill Down Report
+      - Transactions Perc Escrow Current Previous
+      - Top Devices With Failed Transactions
+      - Top Sites With Failed Transactions
+      - Top Companies With Failed Transactions
+      - Top Devices With Connectivity Problems
+      - Top Pos Types With Connectivity Problems
+      - Count Of Devices Inside Percentiles Connectivity Issues
   - name: Biometrics
     tags:
       - Facial Biometrics
@@ -2221,8 +2228,8 @@ paths:
                 email:
                   type: string
                   maxLength: 100
-                  minLength: 1
-                  pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+                  minLength: 0
+                  pattern: '^(?:[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)?$'
                 contact_number:
                   type: string
                   example: '+27876545611'
@@ -2326,7 +2333,7 @@ paths:
                       description: An initial wallet/balance amount for the automatically created virtual card. Must be in full currency, not cents.
                     active:
                       type: boolean
-              required: [ "first_name", "last_name", "email", "user_id" ]
+              required: [ "first_name", "last_name", "user_id" ]
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -2371,6 +2378,43 @@ paths:
                         "mifare_card_number": '38362837a8aam332',
                         "missed_bookings": 0,
                         "image_guid": "323d8592-8464-44b2-8683-51925057cda5",
+                        "cardholder": {
+                          "id": 1,
+                          "card_no": "V11332",
+                          "first_name": "app",
+                          "last_name": "test",
+                          "user_number": "11",
+                          "contact_number": "+27111",
+                          "negative_credit_allowed": false,
+                          "throttle_multiple_requests": true,
+                          "balance_accumulate": false,
+                          "cost_centre": "customer",
+                          "wallet": "100.00",
+                          "topup_value": "0.00",
+                          "topup_reoccurrence": false,
+                          "topup_date": null,
+                          "topup_amount": null,
+                          "last_transaction_device_uid": null,
+                          "last_transaction_timestamp": null,
+                          "last_transaction_result": "CR",
+                          "import_site_id": null,
+                          "import_guid": null,
+                          "created_at": "2025-02-01T13:04:41.841Z",
+                          "updated_at": "2025-02-01T13:04:41.841Z",
+                          "active": true,
+                          "users": {
+                            "id": 32,
+                            "username": "Stark Industries"
+                          },
+                          "sites": {
+                            "id": [
+                              34
+                            ],
+                            "name": [
+                              "Tower"
+                            ]
+                          }
+                        },
                         "users": {
                           "id": 1,
                           "displayname": "Chris Groenewald",
@@ -2464,6 +2508,43 @@ paths:
                         "mifare_card_number": '38362837a8aam332',
                         "missed_bookings": 0,
                         "image_guid": "323d8592-8464-44b2-8683-51925057cda5",
+                        "cardholder": {
+                          "id": 1,
+                          "card_no": "V11332",
+                          "first_name": "app",
+                          "last_name": "test",
+                          "user_number": "11",
+                          "contact_number": "+27111",
+                          "negative_credit_allowed": false,
+                          "throttle_multiple_requests": true,
+                          "balance_accumulate": false,
+                          "cost_centre": "customer",
+                          "wallet": "100.00",
+                          "topup_value": "0.00",
+                          "topup_reoccurrence": false,
+                          "topup_date": null,
+                          "topup_amount": null,
+                          "last_transaction_device_uid": null,
+                          "last_transaction_timestamp": null,
+                          "last_transaction_result": "CR",
+                          "import_site_id": null,
+                          "import_guid": null,
+                          "created_at": "2025-02-01T13:04:41.841Z",
+                          "updated_at": "2025-02-01T13:04:41.841Z",
+                          "active": true,
+                          "users": {
+                            "id": 32,
+                            "username": "Stark Industries"
+                          },
+                          "sites": {
+                            "id": [
+                              34
+                            ],
+                            "name": [
+                              "Tower"
+                            ]
+                          }
+                        },
                         "users": {
                           "id": 1,
                           "displayname": "Chris Groenewald",
@@ -2530,8 +2611,8 @@ paths:
                 email:
                   type: string
                   maxLength: 100
-                  pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
-                  minLength: 1
+                  minLength: 0
+                  pattern: '^(?:[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)?$'
                 contact_number:
                   type: string
                   example: '+27876545611'
@@ -2613,6 +2694,43 @@ paths:
                         "mifare_card_number": '38362837a8aam332',
                         "missed_bookings": 0,
                         "image_guid": "323d8592-8464-44b2-8683-51925057cda5",
+                        "cardholder": {
+                          "id": 1,
+                          "card_no": "V11332",
+                          "first_name": "app",
+                          "last_name": "test",
+                          "user_number": "11",
+                          "contact_number": "+27111",
+                          "negative_credit_allowed": false,
+                          "throttle_multiple_requests": true,
+                          "balance_accumulate": false,
+                          "cost_centre": "customer",
+                          "wallet": "100.00",
+                          "topup_value": "0.00",
+                          "topup_reoccurrence": false,
+                          "topup_date": null,
+                          "topup_amount": null,
+                          "last_transaction_device_uid": null,
+                          "last_transaction_timestamp": null,
+                          "last_transaction_result": "CR",
+                          "import_site_id": null,
+                          "import_guid": null,
+                          "created_at": "2025-02-01T13:04:41.841Z",
+                          "updated_at": "2025-02-01T13:04:41.841Z",
+                          "active": true,
+                          "users": {
+                            "id": 32,
+                            "username": "Stark Industries"
+                          },
+                          "sites": {
+                            "id": [
+                              34
+                            ],
+                            "name": [
+                              "Tower"
+                            ]
+                          }
+                        },
                         "users": {
                           "id": 1,
                           "displayname": "Chris Groenewald",
@@ -4648,7 +4766,7 @@ paths:
                   type: string
                   maxLength: 50
                   pattern: ^[a-zA-Z0-9#!@$%^&*-_\s]+$
-                  minLength: 1
+                  minLength: 0
                   description: International Mobile Subscriber Identity or Service Set Identifier (SSID).
                   example: '17654337383999700'
                 pos_type_id:
@@ -4679,8 +4797,6 @@ paths:
                 unit_price:
                   anyOf:
                     - type: number
-                    - type: integer
-                    - type: string
                   example:
                   description: The price per unit.
                 ssid:
@@ -4699,8 +4815,6 @@ paths:
                 coupon_price:
                   anyOf:
                     - type: number
-                    - type: integer
-                    - type: string
                   description: The price per unit used for MiFare Payments.
                   example:
                 asset_state_id:
@@ -4716,7 +4830,7 @@ paths:
                   example: 'SWMN20045XY2323223'
                 active:
                   type: boolean
-              required: [ "name", "uid", "imsi", "site_id", "pos_type_id", "asset_state_id", "host_hardware_id", "polling_frequency", "scale_factor", "screen_fitted", "multiplier", "divider", "unit_price", "active" ]
+              required: [ "name", "uid", "site_id", "pos_type_id", "asset_state_id", "host_hardware_id", "scale_factor", "screen_fitted", "multiplier", "divider", "unit_price", "active" ]
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -4807,7 +4921,8 @@ paths:
                         },
                         "status_codes": {
                           "id": 51,
-                          "name": "AVAILABLE"
+                          "name": "AVAILABLE",
+                          "code": 99
                         },
                         "asset_states": {
                           "id": 1,
@@ -4939,7 +5054,8 @@ paths:
                         },
                         "status_codes": {
                           "id": 51,
-                          "name": "AVAILABLE"
+                          "name": "AVAILABLE",
+                          "code": 99
                         },
                         "asset_states": {
                           "id": 1,
@@ -5002,7 +5118,7 @@ paths:
                   type: string
                   maxLength: 50
                   pattern: ^[a-zA-Z0-9#!@$%^&*-_\s]+$
-                  minLength: 1
+                  minLength: 0
                   description: International Mobile Subscriber Identity or Service Set Identifier (SSID).
                   example: '17654337383999700'
                 pos_type_id:
@@ -5033,8 +5149,6 @@ paths:
                 unit_price:
                   anyOf:
                     - type: number
-                    - type: integer
-                    - type: string
                   example: 4
                   description: The price per unit.
                 ssid:
@@ -5053,8 +5167,6 @@ paths:
                 coupon_price:
                   anyOf:
                     - type: number
-                    - type: integer
-                    - type: string
                   description: The price per unit used for MiFare Payments.
                   example: 5
                 asset_state_id:
@@ -5160,7 +5272,8 @@ paths:
                         },
                         "status_codes": {
                           "id": 51,
-                          "name": "AVAILABLE"
+                          "name": "AVAILABLE",
+                          "code": 99
                         },
                         "asset_states": {
                           "id": 1,
@@ -5835,6 +5948,18 @@ paths:
                   pattern: '^\d+\.\d+\.\d+$'
                   minLength: 1
                   description: Version of firmware used.
+                polling_factor:
+                  type: number
+                  example: 0.5
+                  description: Factor used in the theoretical calculation of polls
+                default_polling_frequency:
+                  type: number
+                  example: 30
+                  description: Default polling interval when creating a device of this type
+                connectivity_dashboard_color:
+                  type: string
+                  example: "#AABBCC"
+                  description: Color code used on the connectivity dashboard
                 active:
                   type: boolean
               required: [ "name", "active" ]
@@ -5867,6 +5992,9 @@ paths:
                         "id": 1,
                         "name": "WIFI",
                         "version": "1.0",
+                        "polling_factor": 0.5,
+                        "default_polling_frequency": 30,
+                        "connectivity_dashboard_color": "#AABBCC",
                         "active": true
                       }
                     ],
@@ -5911,6 +6039,9 @@ paths:
                         "id": 1,
                         "name": "WIFI",
                         "version": "1.0",
+                        "polling_factor": 0.5,
+                        "default_polling_frequency": 30,
+                        "connectivity_dashboard_color": "#AABBCC",
                         "active": true
                       }
                     ],
@@ -5974,6 +6105,9 @@ paths:
                         "id": 1,
                         "name": "WIFI",
                         "version": "1.0",
+                        "polling_factor": 0.5,
+                        "default_polling_frequency": 30,
+                        "connectivity_dashboard_color": "#AABBCC",
                         "active": true
                       }
                     ],
@@ -6034,6 +6168,8 @@ paths:
                   type: integer
                   example: 1
                   description: Indicates whether the cycle signal is coming from the machine (0) or theoretical time (1).
+                cycle_signal_inverted:
+                  type: boolean
                 reseller_id:
                   type: integer
                   example: 1
@@ -6081,6 +6217,7 @@ paths:
                         "name": "Washer 3000",
                         "notes": "The best washer ever!",
                         "cycle_signal_source": 1,
+                        "cycle_signal_inverted": false,
                         "cycle_time": 30,
                         "pwm_on_time": 100,
                         "pwm_off_time": 50,
@@ -6142,6 +6279,7 @@ paths:
                         "name": "Washer 3000",
                         "notes": "The best washer ever!",
                         "cycle_signal_source": 1,
+                        "cycle_signal_inverted": false,
                         "cycle_time": 30,
                         "pwm_on_time": 100,
                         "pwm_off_time": 50,
@@ -6194,6 +6332,9 @@ paths:
                   type: integer
                   example: 1
                   description: Indicates whether the cycle signal is coming from the machine (0) or theoretical time (1).
+                cycle_signal_inverted:
+                  type: boolean
+                  description: Indicates whether the cycle signal is inverted or not
                 reseller_id:
                   type: integer
                   example: 1
@@ -6240,6 +6381,7 @@ paths:
                         "name": "Washer 3000",
                         "notes": "The best washer ever!",
                         "cycle_signal_source": 1,
+                        "cycle_signal_inverted": false,
                         "cycle_time": 30,
                         "pwm_on_time": 100,
                         "pwm_off_time": 50,
@@ -6706,64 +6848,162 @@ paths:
                 example:
                   {
                     "success": true,
-                    "data": [
-                      {
-                        "id": 1,
-                        "date": "2024-10-28T00:00:00.000Z",
-                        "device_id": 1,
-                        "pf0": 0,
-                        "pf1": 0,
-                        "pf2": 0,
-                        "pf3": 0,
-                        "pf4": 0,
-                        "pf5": 0,
-                        "pf6": 0,
-                        "pf7": 0,
-                        "pf8": 0,
-                        "pf9": 0,
-                        "pf10": 287,
-                        "pf11": 417,
-                        "pf12": 288,
-                        "pf13": 385,
-                        "pf14": 0,
-                        "pf15": 0,
-                        "pf16": 0,
-                        "pf17": 0,
-                        "pf18": 0,
-                        "pf19": 0,
-                        "pf20": 0,
-                        "pf21": 0,
-                        "pf22": 0,
-                        "pf23": 0,
-                        "sf0": 0,
-                        "sf1": 0,
-                        "sf2": 0,
-                        "sf3": 0,
-                        "sf4": 0,
-                        "sf5": 0,
-                        "sf6": 0,
-                        "sf7": 0,
-                        "sf8": 0,
-                        "sf9": 0,
-                        "sf10": 1,
-                        "sf11": 2,
-                        "sf12": 5,
-                        "sf13": 1,
-                        "sf14": 0,
-                        "sf15": 0,
-                        "sf16": 0,
-                        "sf17": 0,
-                        "sf18": 0,
-                        "sf19": 0,
-                        "sf20": 0,
-                        "sf21": 0,
-                        "sf22": 0,
-                        "sf23": 0
-                      }
-                    ],
-                    "entries": 1,
+                    "data": {
+                      "sessions": [
+                        0,
+                        0,
+                        0,
+                        1,
+                        0,
+                        0,
+                        0,
+                        2,
+                        0,
+                        0,
+                        1,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        1,
+                        0,
+                        1,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "polls": [
+                        29,
+                        29,
+                        29,
+                        16,
+                        30,
+                        30,
+                        20,
+                        49,
+                        30,
+                        30,
+                        20,
+                        30,
+                        30,
+                        30,
+                        30,
+                        30,
+                        30,
+                        30,
+                        32,
+                        29,
+                        17,
+                        30,
+                        32,
+                        30,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "dates": [
+                        "2025-02-28T00:00:00+02:00",
+                        "2025-02-28T01:00:00+02:00",
+                        "2025-02-28T02:00:00+02:00",
+                        "2025-02-28T03:00:00+02:00",
+                        "2025-02-28T04:00:00+02:00",
+                        "2025-02-28T05:00:00+02:00",
+                        "2025-02-28T06:00:00+02:00",
+                        "2025-02-28T07:00:00+02:00",
+                        "2025-02-28T08:00:00+02:00",
+                        "2025-02-28T09:00:00+02:00",
+                        "2025-02-28T10:00:00+02:00",
+                        "2025-02-28T11:00:00+02:00",
+                        "2025-02-28T12:00:00+02:00",
+                        "2025-02-28T13:00:00+02:00",
+                        "2025-02-28T14:00:00+02:00",
+                        "2025-02-28T15:00:00+02:00",
+                        "2025-02-28T16:00:00+02:00",
+                        "2025-02-28T17:00:00+02:00",
+                        "2025-02-28T18:00:00+02:00",
+                        "2025-02-28T19:00:00+02:00",
+                        "2025-02-28T20:00:00+02:00",
+                        "2025-02-28T21:00:00+02:00",
+                        "2025-02-28T22:00:00+02:00",
+                        "2025-02-28T23:00:00+02:00",
+                        "2025-03-06T10:00:16+02:00",
+                        "2025-03-06T11:00:16+02:00",
+                        "2025-03-06T12:00:16+02:00",
+                        "2025-03-06T13:00:16+02:00",
+                        "2025-03-06T14:00:16+02:00",
+                        "2025-03-06T15:00:16+02:00",
+                        "2025-03-06T16:00:16+02:00",
+                        "2025-03-06T17:00:16+02:00",
+                        "2025-03-06T18:00:16+02:00",
+                        "2025-03-06T19:00:16+02:00",
+                        "2025-03-06T20:00:16+02:00",
+                        "2025-03-06T21:00:16+02:00",
+                        "2025-03-06T22:00:16+02:00",
+                        "2025-03-06T23:00:16+02:00",
+                        "2025-03-07T00:00:16+02:00",
+                        "2025-03-07T01:00:16+02:00",
+                        "2025-03-07T02:00:16+02:00",
+                        "2025-03-07T03:00:16+02:00",
+                        "2025-03-07T04:00:16+02:00",
+                        "2025-03-07T05:00:16+02:00",
+                        "2025-03-07T06:00:16+02:00",
+                        "2025-03-07T07:00:16+02:00",
+                        "2025-03-07T08:00:16+02:00",
+                        "2025-03-07T09:00:16+02:00"
+                      ],
+                      "sessions_color_code": "#cf5723",
+                      "polls_color_code": "#62b0ff",
+                    },
                     "total_count": null,
-                    "timestamp": 1723108298846
+                    "timestamp": 1723639902458
                   }
       parameters:
         - $ref: "#/components/parameters/idParam"
@@ -7108,8 +7348,9 @@ paths:
         - Transactions
       operationId: getTransactions
       x-tag-permissions:
-        - companies
+        - resellers
         - organisations
+        - companies
         - sites
         - devices
       summary: Get object for transactions
@@ -7165,8 +7406,11 @@ paths:
                         "source": "za-server-1",
                         "created_at": "2024-10-28T09:26:57.145Z",
                         "status_codes": {
-                          "id": 32,
-                          "name": "SOURCE PAYMENT FAILED"
+                          "id": 28,
+                          "name": "RUNNING",
+                          "code": 8,
+                          "success": true,
+                          "refund": false
                         },
                         "providers": {
                           "id": 2,
@@ -7308,6 +7552,8 @@ paths:
                 reseller_id:
                   type: integer
                   example: 1
+                in_trade:
+                  type: boolean
                 active:
                   type: boolean
               required: [ "state", "reseller_id", "active" ]
@@ -7340,6 +7586,7 @@ paths:
                         "id": 1,
                         "reseller_id": 1,
                         "state": "Out of order",
+                        "in_trade": true,
                         "active": true,
                         "resellers": {
                           "id": 1,
@@ -7390,6 +7637,7 @@ paths:
                         "id": 1,
                         "reseller_id": 1,
                         "state": "Out of order",
+                        "in_trade": true,
                         "active": true,
                         "resellers": {
                           "id": 1,
@@ -7424,6 +7672,8 @@ paths:
                 reseller_id:
                   type: integer
                   example: 1
+                in_trade:
+                  type: boolean
                 active:
                   type: boolean
       responses:
@@ -7455,6 +7705,7 @@ paths:
                         "id": 1,
                         "reseller_id": 1,
                         "state": "Out of order",
+                        "in_trade": true,
                         "active": true,
                         "resellers": {
                           "id": 1,
@@ -9226,6 +9477,7 @@ paths:
         - Transactions Totals Current Previous
       operationId: getTransactionsTotalsCurrentPrevious
       x-tag-permissions:
+        - resellers
         - companies
         - organisations
         - sites
@@ -9361,6 +9613,335 @@ paths:
         - $ref: "#/components/parameters/reports_status_codes"
         - $ref: "#/components/parameters/reports_success"
 
+  '/reports/transactions/perc_escrow_current_previous':
+    get:
+      tags:
+        - Data
+        - Report
+        - Transactions Perc Escrow Current Previous
+      operationId: getPercEscrowInPeriod
+      x-tag-permissions:
+        - resellers
+        - organisations
+        - companies
+        - sites
+        - devices
+      summary: Get escrow percentage totals current previous report
+      description: |-
+        This endpoint returns the total number of escrow timeout transactions and total value of escrow timeout transactions for the current specified period and previous specified period.
+        This can be used to compare performance between all customers transactions in the form of dashboards or reports.
+
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns a dashboard data object
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TransactionsPercEscrowCurrentPreviousResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": {
+                      "current_period": {
+                        "day_of_week": [
+                          "Sat",
+                          "Sun"
+                        ],
+                        "date": [
+                          "2025-02-08 00:00:00",
+                          "2025-02-09 00:00:00"
+                        ],
+                        "total_amount": [
+                          190513.59999999998,
+                          250728.1
+                        ],
+                        "total_count": [
+                          9048,
+                          11475
+                        ],
+                        "escrow_amount": [
+                          3860.55,
+                          4936.25
+                        ],
+                        "escrow_count": [
+                          127,
+                          160
+                        ],
+                        "perc_escrow_count": [
+                          "1.40",
+                          "1.39"
+                        ]
+                      },
+                      "previous_period": {
+                        "day_of_week": [
+                          "Thu",
+                          "Fri"
+                        ],
+                        "date": [
+                          "2024-02-08 00:00:00",
+                          "2024-02-09 00:00:00"
+                        ],
+                        "total_amount": [
+                          83503.5,
+                          95138
+                        ],
+                        "total_count": [
+                          3336,
+                          3851
+                        ],
+                        "escrow_amount": [
+                          454,
+                          1012.5
+                        ],
+                        "escrow_count": [
+                          22,
+                          42
+                        ],
+                        "perc_escrow_count": [
+                          "0.66",
+                          "1.09"
+                        ]
+                      },
+                      "upper_limit": 0.8,
+                      "currency": "ZAR"
+                    },
+                    "total_count": null,
+                    "timestamp": 1723108298846
+                  }
+      parameters:
+        - $ref: "#/components/parameters/reports_start_time"
+        - $ref: "#/components/parameters/reports_end_time"
+        - $ref: "#/components/parameters/reports_organisations"
+        - $ref: "#/components/parameters/reports_companies"
+        - $ref: "#/components/parameters/reports_devices"
+        - $ref: "#/components/parameters/reports_sites"
+        - $ref: "#/components/parameters/reports_providers"
+
+  '/reports/devices/failed_transactions':
+    get:
+      tags:
+        - Data
+        - Report
+        - Top Devices With Failed Transactions
+      operationId: getEscrowByDeviceInPeriod
+      x-tag-permissions:
+        - resellers
+        - companies
+        - organisations
+        - sites
+        - devices
+      summary: Get top X devices with failed transactions
+      description: |-
+        This endpoint is used for report dashboards. It will give detail into the operations of all your devices in the Payway System.
+
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns a dashboard data object
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  - $ref: "#/components/schemas/EscrowByDeviceResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "device_id": 1,
+                        "device_name": "Washer 1",
+                        "site_id": 9,
+                        "site_name": "Avengers",
+                        "companies_id": 10,
+                        "companies_name": "Stark Ind",
+                        "organisations_id": 11,
+                        "organisations_name": "The Avengers",
+                        "count": 23
+                      },
+                      {
+                        "device_id": 2,
+                        "device_name": "Washer 2",
+                        "site_id": 9,
+                        "site_name": "Avengers",
+                        "companies_id": 10,
+                        "companies_name": "Stark Ind",
+                        "organisations_id": 11,
+                        "organisations_name": "The Avengers",
+                        "count": 12
+                      }
+                    ],
+                    "entries": 2,
+                    "total_count": null,
+                    "timestamp": 1723628631562
+                  }
+      parameters:
+        - $ref: "#/components/parameters/reports_organisations"
+        - $ref: "#/components/parameters/reports_companies"
+        - $ref: "#/components/parameters/reports_sites"
+        - $ref: "#/components/parameters/reports_devices"
+
+
+  '/reports/sites/failed_transactions':
+    get:
+      tags:
+        - Data
+        - Report
+        - Top Sites With Failed Transactions
+      operationId: getEscrowBySiteInPeriod
+      x-tag-permissions:
+        - resellers
+        - companies
+        - organisations
+        - sites
+        - devices
+      summary: Get top X sites with failed transactions
+      description: |-
+        This endpoint is used for report dashboards. It will give detail into the operations of all your devices in the Payway System.
+
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns a dashboard data object
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  - $ref: "#/components/schemas/EscrowBySiteResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "site_id": 9,
+                        "site_name": "Avenger Tower 1",
+                        "companies_id": 10,
+                        "companies_name": "Stark Ind",
+                        "organisations_id": 11,
+                        "organisations_name": "The Avengers",
+                        "count": 33
+                      },
+                      {
+                        "site_id": 10,
+                        "site_name": "Avengers Tower 2",
+                        "companies_id": 10,
+                        "companies_name": "Stark Ind",
+                        "organisations_id": 11,
+                        "organisations_name": "The Avengers",
+                        "count": 22
+                      }
+                    ],
+                    "entries": 2,
+                    "total_count": null,
+                    "timestamp": 1723628631562
+                  }
+      parameters:
+        - $ref: "#/components/parameters/reports_organisations"
+        - $ref: "#/components/parameters/reports_companies"
+        - $ref: "#/components/parameters/reports_sites"
+
+  '/reports/companies/failed_transactions':
+    get:
+      tags:
+        - Data
+        - Report
+        - Top Companies With Failed Transactions
+      operationId: getEscrowByCompanyInPeriod
+      x-tag-permissions:
+        - resellers
+        - companies
+        - organisations
+        - sites
+        - devices
+      summary: Get top X companies with failed transactions
+      description: |-
+        This endpoint is used for report dashboards. It will give detail into the operations of all your devices in the Payway System.
+
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns a dashboard data object
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  - $ref: "#/components/schemas/EscrowByCompaniesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "companies_id": 10,
+                        "companies_name": "Stark Ind 1",
+                        "organisations_id": 11,
+                        "organisations_name": "The Avengers",
+                        "count": 38
+                      },
+                      {
+                        "companies_id": 11,
+                        "companies_name": "Stark Ind 2",
+                        "organisations_id": 11,
+                        "organisations_name": "The Avengers",
+                        "count": 26
+                      }
+                    ],
+                    "entries": 2,
+                    "total_count": null,
+                    "timestamp": 1723628631562
+                  }
+      parameters:
+        - $ref: "#/components/parameters/reports_companies"
+        - $ref: "#/components/parameters/reports_organisations"
+
 
   '/reports/transactions/totals_by_provider_in_period':
     get:
@@ -9370,6 +9951,7 @@ paths:
         - Transactions Totals By Provider In Period
       operationId: getTransactionsTotalsByProviderInPeriod
       x-tag-permissions:
+        - resellers
         - companies
         - organisations
         - sites
@@ -9439,6 +10021,7 @@ paths:
         - Transactions Totals By Status Code In Period
       operationId: getTransactionsTotalsByStatusCodeInPeriod
       x-tag-permissions:
+        - resellers
         - companies
         - organisations
         - sites
@@ -9509,6 +10092,7 @@ paths:
         - Total Devices By Current Status
       operationId: getTotalDevicesByCurrentStatus
       x-tag-permissions:
+        - resellers
         - companies
         - organisations
         - sites
@@ -10091,6 +10675,290 @@ paths:
         - $ref: "#/components/parameters/reports_status_codes"
         - $ref: "#/components/parameters/reports_providers"
 
+  '/reports/connectivity/devices':
+    get:
+      tags:
+        - Data
+        - Report
+        - Top Devices With Connectivity Problems
+      operationId: getConnectivityByDeviceReport
+      x-tag-permissions:
+        - resellers
+        - companies
+        - organisations
+        - sites
+        - devices
+      summary: Get devices with connectivity issues
+      description: |-
+        This endpoint is used for report dashboards. 
+        It will give detail into the operations of all your devices in the Payway System.
+
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns a dashboard data object
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  - $ref: "#/components/schemas/ReportsConnectivityDevicesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "date": "2025-02-26",
+                        "devices": {
+                          "id": 21255974,
+                          "name": "(W)1807011255",
+                          "uid": "48e72935b530"
+                        },
+                        "sites": {
+                          "id": 204,
+                          "name": "Geldenhuys "
+                        },
+                        "companies": {
+                          "id": 74,
+                          "name": "SASP"
+                        },
+                        "organisations": {
+                          "id": 569,
+                          "name": "SouthPoint"
+                        },
+                        "polling_frequency": 15,
+                        "poll_period": "8.25",
+                        "poll_per_minute": "7.27",
+                        "poll_per_hour": "436.36",
+                        "hours_operational": 24,
+                        "actual_polls": 4521,
+                        "theoretical_polls": "10472.72"
+                      },
+                      {
+                        "date": "2025-02-26",
+                        "devices": {
+                          "id": 17895278,
+                          "name": "(D)1502032807",
+                          "uid": "d4d4dafcf740",
+                          "firmware_version": "1.0"
+                        },
+                        "sites": {
+                          "id": 204,
+                          "name": "Geldenhuys "
+                        },
+                        "companies": {
+                          "id": 74,
+                          "name": "SASP"
+                        },
+                        "organisations": {
+                          "id": 569,
+                          "name": "SouthPoint"
+                        },
+                        "polling_frequency": 15,
+                        "poll_period": "8.25",
+                        "poll_per_minute": "7.27",
+                        "poll_per_hour": "436.36",
+                        "hours_operational": 24,
+                        "actual_polls": 6373,
+                        "theoretical_polls": "10472.72"
+                      },
+                      {
+                        "date": "2025-02-26",
+                        "devices": {
+                          "id": 21456176,
+                          "name": "(W)0811006674",
+                          "uid": "48e729368bf0"
+                        },
+                        "sites": {
+                          "id": 204,
+                          "name": "Geldenhuys "
+                        },
+                        "companies": {
+                          "id": 74,
+                          "name": "SASP"
+                        },
+                        "organisations": {
+                          "id": 569,
+                          "name": "SouthPoint"
+                        },
+                        "polling_frequency": 15,
+                        "poll_period": "8.25",
+                        "poll_per_minute": "7.27",
+                        "poll_per_hour": "436.36",
+                        "hours_operational": 24,
+                        "actual_polls": 6397,
+                        "theoretical_polls": "10472.72"
+                      }
+                    ],
+                    "entries": 3,
+                    "total_count": null,
+                    "timestamp": 1723639902458
+                  }
+      parameters:
+        - $ref: "#/components/parameters/reports_start_time"
+        - $ref: "#/components/parameters/reports_end_time"
+        - $ref: "#/components/parameters/reports_percentile"
+        - $ref: "#/components/parameters/reports_sites"
+        - $ref: "#/components/parameters/reports_companies"
+        - $ref: "#/components/parameters/reports_organisations"
+
+  '/reports/connectivity/pos_types':
+    get:
+      tags:
+        - Data
+        - Report
+        - Top Pos Types With Connectivity Problems
+      operationId: getConnectivityByPosTypeReport
+      x-tag-permissions:
+        - resellers
+        - companies
+        - organisations
+        - sites
+        - devices
+      summary: Get Count of POS Types with connectivity problems
+      description: |-
+        This endpoint is used for report dashboards. 
+        It will give detail into the operations of all your devices in the Payway System.
+
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns a dashboard data object
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  - $ref: "#/components/schemas/ReportsConnectivityPosTypesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "pos_type_id": 1,
+                        "pos_type_name": "GSM",
+                        "count": 3,
+                        "color": "#B3B1B8"
+                      },
+                      {
+                        "pos_type_id": 2,
+                        "pos_type_name": "LTE",
+                        "count": 94,
+                        "color": "#86848A"
+                      },
+                      {
+                        "pos_type_id": 4,
+                        "pos_type_name": "WIFI",
+                        "count": 351,
+                        "color": "#555353"
+                      },
+                      {
+                        "pos_type_id": 5,
+                        "pos_type_name": "LTE-MQTT",
+                        "count": 56,
+                        "color": "#C9C6CD"
+                      }
+                    ],
+                    "entries": 4,
+                    "total_count": null,
+                    "timestamp": 1723639902458
+                  }
+      parameters:
+        - $ref: "#/components/parameters/reports_start_time"
+        - $ref: "#/components/parameters/reports_end_time"
+        - $ref: "#/components/parameters/reports_percentile"
+        - $ref: "#/components/parameters/reports_sites"
+        - $ref: "#/components/parameters/reports_companies"
+        - $ref: "#/components/parameters/reports_organisations"
+
+  '/reports/connectivity/percentiles':
+    get:
+      tags:
+        - Data
+        - Report
+        - Count Of Devices Inside Percentiles Connectivity Issues
+      operationId: getConnectivityPercentilesReport
+      x-tag-permissions:
+        - resellers
+        - companies
+        - organisations
+        - sites
+        - devices
+      summary: Get the count of devices inside percentiles giving connectivity issues
+      description: |-
+        This endpoint is used for report dashboards. 
+        It will give detail into the operations of all your devices in the Payway System.
+
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns a dashboard data object
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  - $ref: "#/components/schemas/ReportsConnectivityPercentilesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": {
+                      "stack_values": [
+                        {
+                          "count1": 128,
+                          "count2": 93,
+                          "count3": 279,
+                          "count4": 1555,
+                          "date": "2025-02-26"
+                        }
+                      ],
+                      "percentile1": 0.33,
+                      "percentile2": 0.5,
+                      "percentile3": 0.67,
+                      "percentile4": 10
+                    },
+                    "total_count": null,
+                    "timestamp": 1723639902458
+                  }
+      parameters:
+        - $ref: "#/components/parameters/reports_start_time"
+        - $ref: "#/components/parameters/reports_end_time"
+        - $ref: "#/components/parameters/reports_sites"
+        - $ref: "#/components/parameters/reports_companies"
+        - $ref: "#/components/parameters/reports_organisations"
 
   '/biometrics/face_compare':
     post:
@@ -10341,6 +11209,73 @@ paths:
       - $ref: "#/components/parameters/deviceIdParam"
       - $ref: "#/components/parameters/providerIdParam"
 
+
+  '/qr/mifare-topup/{card_number}/{provider_id}':
+    post:
+      tags:
+        - Data
+        - QR Codes
+      operationId: postQRMifareTopupProvider
+      x-tag-permissions:
+        - companies
+      summary: Get generated QR code for provider for Mifare Card Topup facility
+      description: |-
+        This endpoint is used to generate QR codes if a provider supports them. This allows customers to pay using QR codes.
+
+      requestBody:
+        required: false
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                company_id:
+                  type: number
+                amount:
+                  type: number
+                  minimum: 0
+                  description: Must be in full number, not cents.
+              required: [ "amount" ]
+
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns a qr code data object
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/QRCodeMifareTopupProviderResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": {
+                      "provider": "SnapScan",
+                      "qr_string": "https://pos.snapscan.io/qr/AQ3SB_73?ID=CARDd4d4daf66818&Amount=1000",
+                      "logo_url": "snapscan.png",
+                      "logo_full_url": "https://payway3.iqt.co.za/images/snapscan.png",
+                      "company_id": 5
+                    },
+                    "total_count": null,
+                    "timestamp": 1723108298846
+                  }
+    parameters:
+      - $ref: "#/components/parameters/cardUidParam"
+      - $ref: "#/components/parameters/providerIdParam"
+
   '/ota/publish':
     post:
       tags:
@@ -10447,7 +11382,7 @@ components:
     apiKey:
       type: apiKey
       in: header
-      name: x-api-token
+      name: x-api-key
   schemas:
     AccessResponse:
       type: object
@@ -10927,6 +11862,7 @@ components:
           type: integer
         csq:
           type: string
+          description: Signal quality
         dip:
           type: integer
         life_days:
@@ -10965,7 +11901,7 @@ components:
         asset_state_id:
           type: integer
         coupon_price:
-          type: integer
+          type: number
           description: The price per unit used for MiFare Payments.
         short_name:
           type: string
@@ -11029,6 +11965,8 @@ components:
               type: integer
             name:
               type: string
+            code:
+              type: integer
         asset_states:
           type: object
           properties:
@@ -11201,6 +12139,15 @@ components:
         version:
           type: string
           description: Version of firmware used.
+        polling_factor:
+          type: number
+          description: Factor used in the theoretical calculation of polls
+        default_polling_frequency:
+          type: number
+          description: Default polling interval when creating a device of this type
+        connectivity_dashboard_color:
+          type: string
+          description: Color code used on the connectivity dashboard
         active:
           type: boolean
     HostHardwareResponse:
@@ -11276,108 +12223,22 @@ components:
     ConnectivityHistoryResponse:
       type: object
       properties:
-        id:
-          type: integer
-        date:
+        sessions:
+          type: array
+          items:
+            type: integer
+        polls:
+          type: array
+          items:
+            type: integer
+        dates:
+          type: array
+          items:
+            type: string
+        sessions_color_code:
           type: string
-        device_id:
-          type: integer
-        pf0:
-          type: integer
-        pf1:
-          type: integer
-        pf2:
-          type: integer
-        pf3:
-          type: integer
-        pf4:
-          type: integer
-        pf5:
-          type: integer
-        pf6:
-          type: integer
-        pf7:
-          type: integer
-        pf8:
-          type: integer
-        pf9:
-          type: integer
-        pf10:
-          type: integer
-        pf11:
-          type: integer
-        pf12:
-          type: integer
-        pf13:
-          type: integer
-        pf14:
-          type: integer
-        pf15:
-          type: integer
-        pf16:
-          type: integer
-        pf17:
-          type: integer
-        pf18:
-          type: integer
-        pf19:
-          type: integer
-        pf20:
-          type: integer
-        pf21:
-          type: integer
-        pf22:
-          type: integer
-        pf23:
-          type: integer
-        sf0:
-          type: integer
-        sf1:
-          type: integer
-        sf2:
-          type: integer
-        sf3:
-          type: integer
-        sf4:
-          type: integer
-        sf5:
-          type: integer
-        sf6:
-          type: integer
-        sf7:
-          type: integer
-        sf8:
-          type: integer
-        sf9:
-          type: integer
-        sf10:
-          type: integer
-        sf11:
-          type: integer
-        sf12:
-          type: integer
-        sf13:
-          type: integer
-        sf14:
-          type: integer
-        sf15:
-          type: integer
-        sf16:
-          type: integer
-        sf17:
-          type: integer
-        sf18:
-          type: integer
-        sf19:
-          type: integer
-        sf20:
-          type: integer
-        sf21:
-          type: integer
-        sf22:
-          type: integer
-        sf23:
-          type: integer
+        polls_color_code:
+          type: string
     CompaniesProvidersResponse:
       type: object
       properties:
@@ -11495,6 +12356,12 @@ components:
               type: integer
             name:
               type: string
+            code:
+              type: integer
+            success:
+              type: boolean
+            refund:
+              type: boolean
         providers:
           type: object
           properties:
@@ -11552,6 +12419,8 @@ components:
           type: string
         reseller_id:
           type: integer
+        in_trade:
+          type: boolean
         active:
           type: boolean
         resellers:
@@ -11686,6 +12555,74 @@ components:
         image_guid:
           type: string
           description: Identification of biometric face image on disk.
+        cardholders:
+          type: object
+          description: See [cardholders](https://docs.iqt.co.za/pages/mifare.html#tag/Cardholders/operation/getCardholder) documentation in the Mifare API.
+          properties:
+            id:
+              type: integer
+            card_no:
+              type: string
+            first_name:
+              type: string
+            last_name:
+              type: string
+            user_number:
+              type: string
+            contact_number:
+              type: string
+            negative_credit_allowed:
+              type: boolean
+            throttle_multiple_requests:
+              type: boolean
+            balance_accumulate:
+              type: boolean
+            cost_centre:
+              type: string
+            wallet:
+              type: number
+            topup_value:
+              type: number
+            topup_reoccurrence:
+              type: boolean
+            topup_date:
+              type: string
+            topup_amount:
+              type: number
+            last_transaction_device_uid:
+              type: string
+            last_transaction_timestamp:
+              type: string
+            last_transaction_result:
+              type: string
+            import_site_id:
+              type: integer
+            import_guid:
+              type: string
+            created_at:
+              type: string
+            updated_at:
+              type: string
+            active:
+              type: boolean
+            users:
+              type: object
+              properties:
+                id:
+                  type: integer
+                username:
+                  type: string
+            sites:
+              type: object
+              properties:
+                id:
+                  type: array
+                  items:
+                    type: integer
+                name:
+                  type: array
+                  items:
+                    type: string
         users:
           type: object
           properties:
@@ -12117,6 +13054,76 @@ components:
         grand_total_count:
           type: integer
           description: Total amount of transactions amount.
+    TransactionsPercEscrowCurrentPreviousResponse:
+      type: object
+      properties:
+        current_period:
+          type: object
+          properties:
+            day_of_week:
+              type: array
+              items:
+                type: string
+            date:
+              type: array
+              items:
+                type: string
+            total_amount:
+              type: array
+              items:
+                type: number
+            total_count:
+              type: array
+              items:
+                type: number
+            escrow_amount:
+              type: array
+              items:
+                type: number
+            escrow_count:
+              type: array
+              items:
+                type: number
+            perc_escrow_count:
+              type: array
+              items:
+                type: string
+        previous_period:
+          type: object
+          properties:
+            day_of_week:
+              type: array
+              items:
+                type: string
+            date:
+              type: array
+              items:
+                type: string
+            total_amount:
+              type: array
+              items:
+                type: number
+            total_count:
+              type: array
+              items:
+                type: number
+            escrow_amount:
+              type: array
+              items:
+                type: number
+            escrow_count:
+              type: array
+              items:
+                type: number
+            perc_escrow_count:
+              type: array
+              items:
+                type: string
+        upper_limit:
+          type: number
+        currency:
+          type: string
+          description: Type of currency report is calculated in.
     TransactionsTotalsByStatusCodeInPeriodResponse:
       type: object
       properties:
@@ -12144,6 +13151,57 @@ components:
         grand_total_count:
           type: integer
           description: Total amount of status code.
+    EscrowByDeviceResponse:
+      type: object
+      properties:
+        device_name:
+          type: string
+        device_id:
+          type: number
+        site_name:
+          type: string
+        site_id:
+          type: number
+        companies_name:
+          type: string
+        companies_id:
+          type: number
+        organisations_name:
+          type: string
+        organisations_id:
+          type: number
+        count:
+          type: number
+    EscrowBySiteResponse:
+      type: object
+      properties:
+        site_name:
+          type: string
+        site_id:
+          type: number
+        companies_name:
+          type: string
+        companies_id:
+          type: number
+        organisations_name:
+          type: string
+        organisations_id:
+          type: number
+        count:
+          type: number
+    EscrowByCompaniesResponse:
+      type: object
+      properties:
+        companies_name:
+          type: string
+        companies_id:
+          type: number
+        organisations_name:
+          type: string
+        organisations_id:
+          type: number
+        count:
+          type: number
     TotalDevicesByCurrentStatusResponseOne:
       type: object
       properties:
@@ -12299,6 +13357,19 @@ components:
           type: string
         logo_full_url:
           type: string
+    QRCodeMifareTopupProviderResponse:
+      type: object
+      properties:
+        provider:
+          type: string
+        qr_string:
+          type: string
+        logo_url:
+          type: string
+        logo_full_url:
+          type: string
+        company_id:
+          type: integer
     PublishOtaResponse:
       type: object
       properties:
@@ -12310,6 +13381,94 @@ components:
           type: integer
         site_id:
           type: integer
+    ReportsConnectivityPercentilesResponse:
+      type: object
+      properties:
+        stack_values:
+          type: array
+          items:
+            type: object
+            properties:
+              count1:
+                type: integer
+              count2:
+                type: integer
+              count3:
+                type: integer
+              count4:
+                type: integer
+              date:
+                type: string
+        percentile1:
+          type: number
+        percentile2:
+          type: number
+        percentile3:
+          type: number
+        percentile4:
+          type: number
+    ReportsConnectivityPosTypesResponse:
+      type: object
+      properties:
+        pos_type_id:
+          type: number
+        pos_type_name:
+          type: string
+        count:
+          type: number
+        color:
+          type: string
+    ReportsConnectivityDevicesResponse:
+      type: object
+      properties:
+        date:
+          type: string
+        devices:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            uid:
+              type: string
+            firmware_version:
+              type: string
+        sites:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        companies:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        organisations:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        polling_frequency:
+          type: number
+        poll_period:
+          type: string
+        poll_per_minute:
+          type: string
+        poll_per_hour:
+          type: string
+        hours_operational:
+          type: number
+        actual_polls:
+          type: number
+        theoretical_polls:
+          type: string
 
     # Common
     DeleteResponse:
@@ -12456,6 +13615,18 @@ components:
         id:
           value: 12
           summary: Search by specific device
+    cardUidParam:
+      in: path
+      name: card_number
+      required: true
+      schema:
+        allOf:
+          - type: string
+            pattern: ^[a-zA-Z-0-9]+
+      examples:
+        id:
+          value: ab12cd4322
+          summary: Search by specific card uid
     providerIdParam:
       in: path
       name: provider_id
@@ -12813,7 +13984,17 @@ components:
         success:
           value: true
           summary: Search by specified success.
+    reports_percentile:
+      in: query
+      name: percentile
+      schema:
+        additionalProperties: true
+        type: number
+      examples:
+        percentile:
+          value: 0.67
+          summary: Apply specified percentile.
 security:
-  - XUserToken: [ ]
+  - userToken: [ ]
 
 

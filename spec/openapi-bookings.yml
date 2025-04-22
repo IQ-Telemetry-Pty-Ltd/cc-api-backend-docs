@@ -921,7 +921,7 @@ components:
     apiKey:
       type: apiKey
       in: header
-      name: x-api-token
+      name: x-api-key
   schemas:
     BookingsResponseDevice:
       type: object
@@ -1497,4 +1497,4 @@ components:
           summary: Searches in specific field for date equaling to "2024-08-01 00:00:00".
 
 security:
-  - XUserToken: [ ]
+  - userToken: [ ]
