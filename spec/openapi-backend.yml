@@ -102,6 +102,10 @@ tags:
     description: Endpoints that relate payment QR codes.
   - name: Ota
     description: Endpoints that relate OTA updates for devices.
+  - name: Intents
+    description: Endpoints that relate payment intents.
+  - name: Kiosks
+    description: Endpoints that relate kiosk devices.
 
 
 x-tagGroups:
@@ -169,6 +173,12 @@ x-tagGroups:
   - name: Biometrics
     tags:
       - Facial Biometrics
+  - name: Payments
+    tags:
+      - Intents
+  - name: Kiosks & Other Devices.
+    tags:
+      - Kiosks
 
 servers:
   - url: '{scheme}://payway3.iqt.co.za/{version}/api'
@@ -389,7 +399,7 @@ paths:
         If a user encounters the message: **"Unauthorized. [${operationId}]"**, they most likely do not have an access entry linked to their account.
         All access to endpoints is denied by default, expect for a few select around user authentication.
       
-
+      
       operationId: createAccess
       requestBody:
         required: true
@@ -5368,25 +5378,55 @@ paths:
                 - type: array
                   items:
                     type: object
+                    additionalProperties: false
+                    properties:
+                      device_id:
+                        type: integer
+                      intent_reference:
+                        type: string
+                      payment_service_provider:
+                        type: string
+                        enum: [ "mifare", "test" ]
+                        description: The type of activation method.
+                      card_no:
+                        type: string
+                        description: The unique UUID for the card found in the MiFare system. Only used if "payment_service_provider" = mifare.
+                        example: ab34ef16aa
+                        maxLength: 45
+                      amount:
+                        type: number
+                        minimum: 0
+                        description: The amount of currency the activation is going to use in whole numbers, not cents. If "payment_service_provider" = mifare, the devices coupon price is used and the amount is ignored.
+                    allOf:
+                      - required: [ "payment_service_provider" ]
+                      - oneOf:
+                          - required: [ "device_id" ]
+                          - required: [ "intent_reference" ]
                 - type: object
-              additionalProperties: false
-              properties:
-                device_id:
-                  type: integer
-                payment_service_provider:
-                  type: string
-                  enum: [ "mifare", "test" ]
-                  description: The type of activation method.
-                card_no:
-                  type: string
-                  description: The unique UUID for the card found in the MiFare system. Only used if "payment_service_provider" = mifare.
-                  example: ab34ef16aa
-                  maxLength: 45
-                amount:
-                  type: number
-                  minimum: 0
-                  description: The amount of currency the activation is going to use in whole numbers, not cents. If "payment_service_provider" = mifare, the devices coupon price is used and the amount is ignored.
-              required: [ "device_id", "payment_service_provider" ]
+                  additionalProperties: false
+                  properties:
+                    device_id:
+                      type: integer
+                    intent_reference:
+                      type: string
+                    payment_service_provider:
+                      type: string
+                      enum: [ "mifare", "test" ]
+                      description: The type of activation method.
+                    card_no:
+                      type: string
+                      description: The unique UUID for the card found in the MiFare system. Only used if "payment_service_provider" = mifare.
+                      example: ab34ef16aa
+                      maxLength: 45
+                    amount:
+                      type: number
+                      minimum: 0
+                      description: The amount of currency the activation is going to use in whole numbers, not cents. If "payment_service_provider" = mifare, the devices coupon price is used and the amount is ignored.
+                  allOf:
+                    - required: [ "payment_service_provider" ]
+                    - oneOf:
+                        - required: [ "device_id" ]
+                        - required: [ "intent_reference" ]
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -11209,16 +11249,15 @@ paths:
       - $ref: "#/components/parameters/deviceIdParam"
       - $ref: "#/components/parameters/providerIdParam"
 
-
-  '/qr/mifare-topup/{card_number}/{provider_id}':
+  '/kiosk/mifare_topup/qr/{card_number}/{provider_id}':
     post:
       tags:
         - Data
-        - QR Codes
+        - Kiosks
       operationId: postQRMifareTopupProvider
       x-tag-permissions:
         - companies
-      summary: Get generated QR code for provider for Mifare Card Topup facility
+      summary: Generate a QR code to topup a mifare card.
       description: |-
         This endpoint is used to generate QR codes if a provider supports them. This allows customers to pay using QR codes.
 
@@ -11231,13 +11270,15 @@ paths:
               additionalProperties: false
               properties:
                 company_id:
-                  type: number
+                  type: array
+                  description: Array of company ids you want to generate the QR code for.
+                  items:
+                    type: integer
                 amount:
                   type: number
                   minimum: 0
-                  description: Must be in full number, not cents.
+                  description: Must be in decimal format (eg 10.50)
               required: [ "amount" ]
-
       responses:
         '401':
           description: Authorization information is missing or invalid.
@@ -11275,6 +11316,189 @@ paths:
     parameters:
       - $ref: "#/components/parameters/cardUidParam"
       - $ref: "#/components/parameters/providerIdParam"
+
+  '/intents/generate':
+    post:
+      tags:
+        - Data
+        - Intents
+      operationId: postGenerateIntent
+      x-tag-permissions:
+        - devices
+        - companies
+        - resellers
+        - organisations
+        - sites
+        - host_hardware
+        - asset_states
+      summary: Generate a payment intent and get a QR reference string
+      description: |-
+        This endpoint is used to generate a payment intent and get a QR reference code for future payments.
+
+      requestBody:
+        required: false
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                company_id:
+                  type: integer
+                  description: Company id you want to generate the intent for.
+                source_provider_id:
+                  type: integer
+                  description: The Payway provider id that will be the source of the intent payment.
+                  example: 4
+                target_provider_id:
+                  type: integer
+                  description: The Payway provider id that will be the target of the intent payment.
+                  example: 1
+                source_type:
+                  type: string
+                  description: Any identifiable string. This is the source of where/what is requesting the intent.
+                  maxLength: 20
+                  example: "Kiosk"
+                source_uid:
+                  type: string
+                  maxLength: 50
+                  pattern: ^[a-zA-Z0-9]+$
+                  minLength: 1
+                  description: Unique identification for the device.
+                  example: 'ae23db32'
+                source_reference:
+                  type: string
+                  description: Any identifiable string. This can be used as a unique reference for the intent.
+                  maxLength: 50
+                  example: 'payment-473-kiosk'
+                source_amount:
+                  type: number
+                  description: The amount that will be paid by the user. Please note, that not all providers support this field.
+                  example: '20.10'
+                target_amount:
+                  type: number
+                  description: The amount that will be sent to the provider. Please note, that not all providers support this field.
+                  example: '20.10'
+                intent_type_id:
+                  type: number
+                  enum: [ 1, 2 ]
+                  description: Specify the type of intent we are working with. 1 = activation for all devices in the metadata object, 2 = mifare topup.
+                source_currency:
+                  type: string
+                  example: "$"
+                  maxLength: 5
+                  minLength: 1
+                  pattern: '(?:ZAR|USD|EUR)'
+                  description: Defines the type of currency used for the payment.
+                target_currency:
+                  type: string
+                  example: "$"
+                  maxLength: 5
+                  minLength: 1
+                  pattern: '(?:ZAR|USD|EUR)'
+                  description: Defines the type of currency used for the payment.
+                target_type:
+                  type: string
+                  description: Record keeping field, can be used to identify the target of the intent.
+                  maxLength: 20
+                  example: 'wallet_topup'
+                target_uid:
+                  type: string
+                  description: Identifiable value for the target of the intent.
+                  maxLength: 256
+                  example: 'wallet_topup_746en8a'
+                metadata:
+                  type: string
+                  description: Must be a JSON object string. This is used to store additional information about the intent.
+                expiry_seconds:
+                  type: integer
+                  description: The amount of seconds the intent will be valid for. If not specified, defaults to 300 seconds (5 min).
+                receipt_email:
+                  type: string
+                  example: 'john.doe@gmail.com'
+                  maxLength: 320
+                  minLength: 1
+                  pattern: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+                  description: The amount of seconds the intent will be valid for. If not specified, defaults to 300 seconds (5 min).
+              required: [ "company_id", "source_provider_id", "source_reference", "source_uid", "intent_type_id" ]
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an intent data object
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GenerateIntentResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "intent": {
+                          "id": 233,
+                          "source_type": "",
+                          "source_uid": "testing",
+                          "source_provider_id": 1,
+                          "source_reference": "",
+                          "source_timestamp": 1748456177,
+                          "source_time": "2025-05-28T16:16:16.979Z",
+                          "source_amount": "1.00",
+                          "expiry_seconds": 300,
+                          "target_type": "device_uid",
+                          "target_uid": "",
+                          "target_provider_id": 1,
+                          "target_reference": "INTENT-683752f01MLM2GDNG4E8JSR0",
+                          "target_timestamp": null,
+                          "target_time": null,
+                          "target_amount": "1.00",
+                          "intent_type_id": 1,
+                          "status": "intent",
+                          "issued": false,
+                          "expired": false,
+                          "rejected": false,
+                          "reason": null,
+                          "version": 1,
+                          "companies_id": 551,
+                          "intent_uid": "683752f01MLM2GDNG4E8JSR0",
+                          "source_currency": "ZAR",
+                          "target_currency": "ZAR",
+                          "receipt_email": "",
+                          "metadata": {
+                            "target": "devices",
+                            "id": [
+                              21389662
+                            ],
+                            "uid": [
+                              "b0b21c3c6328"
+                            ],
+                            "amount": [
+                              "1.00"
+                            ]
+                          }
+                        },
+                        "provider": "Zapper",
+                        "qr_string": "http://2.zap.pe?t=6&i=41041:50173:7[34|1|11,33n|INTENT-683752f01MLM2GDNG4E8JSR0|10:10[39|ZAR,38|:8[0||10|",
+                        "logo_url": "zapper.png",
+                        "logo_full_url": "https://payway3.iqt.co.za/images/zapper.png"
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723108298846
+                  }
 
   '/ota/publish':
     post:
@@ -13370,6 +13594,79 @@ components:
           type: string
         company_id:
           type: integer
+    GenerateIntentResponse:
+      type: object
+      properties:
+        intent:
+          type: object
+          items:
+            properties:
+              id:
+                type: integer
+              source_type:
+                type: string
+              source_uid:
+                type: string
+              source_provider_id:
+                type: integer
+              source_reference:
+                type: string
+              source_timestamp:
+                type: integer
+              source_time:
+                type: string
+              source_amount:
+                type: number
+              expiry_seconds:
+                type: integer
+              target_type:
+                type: string
+              target_uid:
+                type: string
+              target_provider_id:
+                type: integer
+              target_reference:
+                type: string
+              target_timestamp:
+                type: integer
+              target_time:
+                type: integer
+              target_amount:
+                type: number
+              intent_type_id:
+                type: integer
+              status:
+                type: string
+              issued:
+                type: boolean
+              expired:
+                type: boolean
+              rejected:
+                type: boolean
+              reason:
+                type: string
+              version:
+                type: integer
+              companies_id:
+                type: integer
+              intent_uid:
+                type: string
+              source_currency:
+                type: string
+              target_currency:
+                type: string
+              receipt_email:
+                type: string
+              metadata:
+                type: object
+        provider:
+          type: string
+        qr_string:
+          type: string
+        logo_url:
+          type: string
+        logo_full_url:
+          type: string
     PublishOtaResponse:
       type: object
       properties:
@@ -13615,6 +13912,17 @@ components:
         id:
           value: 12
           summary: Search by specific device
+    companiesIdParam:
+      in: path
+      name: companies_id
+      required: true
+      schema:
+        allOf:
+          - $ref: "#/components/schemas/numberIndex"
+      examples:
+        id:
+          value: 12
+          summary: Search by specific company
     cardUidParam:
       in: path
       name: card_number
