@@ -20,7 +20,7 @@ info:
     name: Ryan Pomario
     email: ryan@iqt.co.za
 
-  version: 1.0.8
+  version: 1.1.0
 
 externalDocs:
   description: Click here to learn more about Payway.
@@ -429,7 +429,7 @@ paths:
                 name:
                   type: string
                   maxLength: 45
-                  pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
+                  pattern: ^(?=.*[\p{L}\d])[\p{L}\d ().,'&#+@:;\-]+$
                   minLength: 1
                   example: BigTech Corp
                 address:
@@ -441,7 +441,7 @@ paths:
                   maxLength: 45
                   description: Extra level of physical location identification can be used here.
                   example: Games Room
-                  pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
+                  pattern: ^(?=.*[\p{L}\d])[\p{L}\d ().,'&#+@:;\-]+$
                   minLength: 1
                 active:
                   type: boolean
@@ -560,7 +560,7 @@ paths:
                 name:
                   type: string
                   maxLength: 45
-                  pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
+                  pattern: ^(?=.*[\p{L}\d])[\p{L}\d ().,'&#+@:;\-]+$
                   minLength: 1
                   example: BigTech Corp
                 address:
@@ -572,7 +572,7 @@ paths:
                   maxLength: 45
                   description: Extra level of physical location identification can be used here.
                   example: Games Room
-                  pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
+                  pattern: ^(?=.*[\p{L}\d])[\p{L}\d ().,'&#+@:;\-]+$
                   minLength: 1
                 active:
                   type: boolean
@@ -707,7 +707,7 @@ paths:
                   maxLength: 80
                   description: Stock location (can be store room location or channel location in a vending machine)
                   example: ROW 6 COL 10
-                  pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
+                  pattern: ^(?=.*[\p{L}\d])[\p{L}\d ().,'&#+@:;\-]+$
                   minLength: 1
                 active:
                   type: boolean
@@ -844,7 +844,7 @@ paths:
                   maxLength: 80
                   description: Stock location (can be store room location or channel location in a vending machine)
                   example: ROW 6 COL 10
-                  pattern: ^[.@&]?[a-zA-Z0-9 ]+[ !.@&()]?[ a-zA-Z0-9!()]+
+                  pattern: ^(?=.*[\p{L}\d])[\p{L}\d ().,'&#+@:;\-]+$
                   minLength: 1
                 active:
                   type: boolean
@@ -1512,7 +1512,7 @@ paths:
                   description: The unique UUID for the card
                   pattern: ^[0-9a-zA-Z]+$
                   example: ab34ef16aa
-                  maxLength: 10
+                  maxLength: 45
                 first_name:
                   type: string
                   maxLength: 45
@@ -1983,6 +1983,7 @@ paths:
                         "amount": 5.5,
                         "wallet": 10.00,
                         "type": "credit",
+                        "transaction_id": "HPOMFHBJQY25LJ9922OYZJJH08X",
                         "success": true
                       }
                     ],
@@ -2057,6 +2058,7 @@ paths:
                         "amount": 5.5,
                         "wallet": 10.00,
                         "type": "credit",
+                        "transaction_id": "HPOMFHBJQY25LJ9922OYZJJH08X",
                         "success": true
                       }
                     ],
@@ -2303,6 +2305,8 @@ paths:
       tags:
         - Functions
         - Devices
+      x-tag-permissions:
+        - sites
       summary: Activate device remotely
       description: |-
         Devices are physical WiFi or SIM based modems used to connect physical hardware to the Payway system. Using this endpoint,
@@ -2642,6 +2646,8 @@ components:
           type: number
           description: Wallet amount after applied action.
         type:
+          type: string
+        transaction_id:
           type: string
         success:
           type: boolean

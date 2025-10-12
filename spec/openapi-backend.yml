@@ -106,7 +106,8 @@ tags:
     description: Endpoints that relate payment intents.
   - name: Kiosks
     description: Endpoints that relate kiosk devices.
-
+  - name: Templates
+    description: Endpoints that relate access templates.
 
 x-tagGroups:
   - name: Access Controls & User Management
@@ -118,6 +119,7 @@ x-tagGroups:
       - Users
       - Customers
       - Password Reset
+      - Templates
   - name: Authentication
     tags:
       - Token
@@ -2926,6 +2928,42 @@ paths:
     parameters:
       - $ref: "#/components/parameters/idParam"
 
+    delete:
+      tags:
+        - Data
+        - Customers
+      operationId: delCustomersBiometricsFacial
+      summary: Delete biometrics for customer
+      x-tag-permissions:
+        - customers
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DeleteResponse"
+              example:
+                {
+                  "success": true,
+                  "data": "Successfully cleared customer biometric data. [image_guid = c1aba8d4-491d-4052-b282-a67650945f53]",
+                  "timestamp": 1723108298846
+                }
+          description: Returns result of delete
+
   '/resellers':
     post:
       tags:
@@ -5463,6 +5501,476 @@ paths:
                     "timestamp": 1723108298846
                   }
 
+  '/kiosks':
+    post:
+      tags:
+        - Data
+        - Kiosks
+      summary: Create object for kiosk
+      description: |-
+        Kiosks are physical WiFi or SIM based touchscreen devices running bespoke software to interface with the PayWay payment ecosystem. 
+        Each kiosk has its own "pos_type" that defines the type of kiosk. Each kiosks
+        configuration can be set here. e.g polling frequency, etc. 
+        **A kiosk may only be linked to ONE parent Site.**
+
+      operationId: createKiosks
+      x-tag-permissions:
+        - sites
+        - kiosks
+        - resellers
+        - organisations
+        - companies
+        - sites
+        - asset_states
+        - host_hardware
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  maxLength: 50
+                  example: "Floor 1 Laundry Kiosk"
+                uid:
+                  type: string
+                  maxLength: 50
+                  pattern: ^[a-zA-Z0-9]+$
+                  minLength: 1
+                  description: Unique identification for the kiosk.
+                  example: 'ae23db32'
+                imsi:
+                  type: string
+                  maxLength: 50
+                  pattern: ^[a-zA-Z0-9#!@$%^&*-_\s]+$
+                  minLength: 0
+                  description: International Mobile Subscriber Identity or Service Set Identifier (SSID).
+                  example: '17654337383999700'
+                serial_number:
+                  type: string
+                  maxLength: 100
+                  pattern: ^[a-zA-Z0-9-]+$
+                  minLength: 0
+                  description: Unique serial number of the kiosk.
+                  example: 'WM019-097123253'
+                pos_type_id:
+                  type: integer
+                host_hardware_id:
+                  type: integer
+                site_id:
+                  type: integer
+                polling_frequency:
+                  type: integer
+                  description: Expected number of polled calls from the kiosk (default from POS Type).
+                asset_state_id:
+                  type: integer
+                active:
+                  type: boolean
+              required: [ "name", "uid", "serial_number", "pos_type_id", "asset_state_id", "host_hardware_id", "active" ]
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns kiosk object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/KiosksResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "Floor 1 Laundry Kiosk",
+                        "async_ratio": "0.00",
+                        "channels": 0,
+                        "connected_at": "never",
+                        "software_version": "1.0.4",
+                        "heartbeat_rate": "0.00",
+                        "imsi": "not reported",
+                        "life_days": 1572,
+                        "minutes_connected": "0.00",
+                        "peer_host": "0.0.0.0",
+                        "polling_frequency": 30,
+                        "protocol": "mqtt",
+                        "uid": "ae6533ef23",
+                        "serial_number": null,
+                        "online": false,
+                        "last_online": "2024-12-10 13:15:00.231160",
+                        "last_transaction_date": null,
+                        "active": true,
+                        "resellers": {
+                          "id": [
+                            1
+                          ],
+                          "name": [
+                            "IQT Holdings"
+                          ],
+                          "id_name": [
+                            "1,IQT Holdings"
+                          ]
+                        },
+                        "organisations": {
+                          "id": 5,
+                          "name": "Supreme Vending"
+                        },
+                        "companies": {
+                          "id": 5,
+                          "name": "Supreme Vending"
+                        },
+                        "sites": {
+                          "id": 5,
+                          "name": "CSG"
+                        },
+                        "status_codes": {
+                          "id": 51,
+                          "name": "AVAILABLE",
+                          "code": 99
+                        },
+                        "asset_states": {
+                          "id": 1,
+                          "name": "Production"
+                        },
+                        "pos_types": {
+                          "id": 2,
+                          "name": "MDB POS",
+                          "version": "1.0"
+                        },
+                        "host_hardware": {
+                          "id": 1,
+                          "name": "Coin Emulation POS"
+                        },
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723108298846
+                  }
+
+  '/kiosks/{id}':
+    get:
+      tags:
+        - Data
+        - Kiosks
+      operationId: getKiosks
+      x-tag-permissions:
+        - sites
+        - kiosks
+        - resellers
+        - organisations
+        - companies
+        - sites
+        - asset_states
+        - host_hardware
+      summary: Get object for kiosks
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of "kiosk" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/KiosksResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "Floor 1 Laundry Kiosk",
+                        "async_ratio": "0.00",
+                        "channels": 0,
+                        "connected_at": "never",
+                        "software_version": "1.0.4",
+                        "heartbeat_rate": "0.00",
+                        "imsi": "not reported",
+                        "life_days": 1572,
+                        "minutes_connected": "0.00",
+                        "peer_host": "0.0.0.0",
+                        "polling_frequency": 30,
+                        "protocol": "mqtt",
+                        "uid": "ae6533ef23",
+                        "serial_number": null,
+                        "online": false,
+                        "last_online": "2024-12-10 13:15:00.231160",
+                        "last_transaction_date": null,
+                        "active": true,
+                        "resellers": {
+                          "id": [
+                            1
+                          ],
+                          "name": [
+                            "IQT Holdings"
+                          ],
+                          "id_name": [
+                            "1,IQT Holdings"
+                          ]
+                        },
+                        "organisations": {
+                          "id": 5,
+                          "name": "Supreme Vending"
+                        },
+                        "companies": {
+                          "id": 5,
+                          "name": "Supreme Vending"
+                        },
+                        "sites": {
+                          "id": 5,
+                          "name": "CSG"
+                        },
+                        "status_codes": {
+                          "id": 51,
+                          "name": "AVAILABLE",
+                          "code": 99
+                        },
+                        "asset_states": {
+                          "id": 1,
+                          "name": "Production"
+                        },
+                        "pos_types": {
+                          "id": 2,
+                          "name": "MDB POS",
+                          "version": "1.0"
+                        },
+                        "host_hardware": {
+                          "id": 1,
+                          "name": "Coin Emulation POS"
+                        },
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723108298846
+                  }
+    put:
+      tags:
+        - Data
+        - Kiosks
+      summary: Update object for kiosks
+      operationId: updateKiosks
+      x-tag-permissions:
+        - sites
+        - kiosks
+        - resellers
+        - organisations
+        - companies
+        - sites
+        - asset_states
+        - host_hardware
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  maxLength: 50
+                  example: "Floor 1 Laundry Kiosk"
+                uid:
+                  type: string
+                  maxLength: 50
+                  pattern: ^[a-zA-Z0-9]+$
+                  minLength: 1
+                  description: Unique identification for the kiosk.
+                  example: 'ae23db32'
+                imsi:
+                  type: string
+                  maxLength: 50
+                  pattern: ^[a-zA-Z0-9#!@$%^&*-_\s]+$
+                  minLength: 0
+                  description: International Mobile Subscriber Identity or Service Set Identifier (SSID).
+                  example: '17654337383999700'
+                serial_number:
+                  type: string
+                  maxLength: 100
+                  pattern: ^[a-zA-Z0-9-]+$
+                  minLength: 0
+                  description: Unique serial number of the kiosk.
+                  example: 'WM019-097123253'
+                pos_type_id:
+                  type: integer
+                host_hardware_id:
+                  type: integer
+                site_id:
+                  type: integer
+                polling_frequency:
+                  type: integer
+                  description: Expected number of polled calls from the kiosk (default from POS Type).
+                asset_state_id:
+                  type: integer
+                active:
+                  type: boolean
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of "kiosk" items updated by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/KiosksResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "Floor 1 Laundry Kiosk",
+                        "async_ratio": "0.00",
+                        "channels": 0,
+                        "connected_at": "never",
+                        "software_version": "1.0.4",
+                        "heartbeat_rate": "0.00",
+                        "imsi": "not reported",
+                        "life_days": 1572,
+                        "minutes_connected": "0.00",
+                        "peer_host": "0.0.0.0",
+                        "polling_frequency": 30,
+                        "protocol": "mqtt",
+                        "uid": "ae6533ef23",
+                        "serial_number": null,
+                        "online": false,
+                        "last_online": "2024-12-10 13:15:00.231160",
+                        "last_transaction_date": null,
+                        "active": true,
+                        "resellers": {
+                          "id": [
+                            1
+                          ],
+                          "name": [
+                            "IQT Holdings"
+                          ],
+                          "id_name": [
+                            "1,IQT Holdings"
+                          ]
+                        },
+                        "organisations": {
+                          "id": 5,
+                          "name": "Supreme Vending"
+                        },
+                        "companies": {
+                          "id": 5,
+                          "name": "Supreme Vending"
+                        },
+                        "sites": {
+                          "id": 5,
+                          "name": "CSG"
+                        },
+                        "status_codes": {
+                          "id": 51,
+                          "name": "AVAILABLE",
+                          "code": 99
+                        },
+                        "asset_states": {
+                          "id": 1,
+                          "name": "Production"
+                        },
+                        "pos_types": {
+                          "id": 2,
+                          "name": "MDB POS",
+                          "version": "1.0"
+                        },
+                        "host_hardware": {
+                          "id": 1,
+                          "name": "Coin Emulation POS"
+                        },
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723108298846
+                  }
+    delete:
+      tags:
+        - Data
+        - Kiosks
+      summary: Delete object for kiosks
+      operationId: deleteKiosks
+      x-tag-permissions:
+        - kiosks
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DeleteResponse"
+              example:
+                {
+                  "success": true,
+                  "data": "Successfully deleted record(s). [1]",
+                  "timestamp": 1723108298846
+                }
+          description: Returns result of delete
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
+
   '/logs_fatal/{id}':
     get:
       tags:
@@ -6850,12 +7358,12 @@ paths:
       - $ref: "#/components/parameters/smallerThanEqualParam"
       - $ref: "#/components/parameters/greaterThanEqualParam"
 
-  '/connectivity_history/{id}':
+  '/connectivity_history/devices/{id}':
     get:
       tags:
         - Data
         - Connectivity History
-      operationId: getConnectivityHistory
+      operationId: getDeviceConnectivityHistory
       x-tag-permissions:
         - devices
       summary: Get object for connectivity history
@@ -6889,6 +7397,211 @@ paths:
                   {
                     "success": true,
                     "data": {
+                      "device_id": 1234,
+                      "sessions": [
+                        0,
+                        0,
+                        0,
+                        1,
+                        0,
+                        0,
+                        0,
+                        2,
+                        0,
+                        0,
+                        1,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        1,
+                        0,
+                        1,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "polls": [
+                        29,
+                        29,
+                        29,
+                        16,
+                        30,
+                        30,
+                        20,
+                        49,
+                        30,
+                        30,
+                        20,
+                        30,
+                        30,
+                        30,
+                        30,
+                        30,
+                        30,
+                        30,
+                        32,
+                        29,
+                        17,
+                        30,
+                        32,
+                        30,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0
+                      ],
+                      "dates": [
+                        "2025-02-28T00:00:00+02:00",
+                        "2025-02-28T01:00:00+02:00",
+                        "2025-02-28T02:00:00+02:00",
+                        "2025-02-28T03:00:00+02:00",
+                        "2025-02-28T04:00:00+02:00",
+                        "2025-02-28T05:00:00+02:00",
+                        "2025-02-28T06:00:00+02:00",
+                        "2025-02-28T07:00:00+02:00",
+                        "2025-02-28T08:00:00+02:00",
+                        "2025-02-28T09:00:00+02:00",
+                        "2025-02-28T10:00:00+02:00",
+                        "2025-02-28T11:00:00+02:00",
+                        "2025-02-28T12:00:00+02:00",
+                        "2025-02-28T13:00:00+02:00",
+                        "2025-02-28T14:00:00+02:00",
+                        "2025-02-28T15:00:00+02:00",
+                        "2025-02-28T16:00:00+02:00",
+                        "2025-02-28T17:00:00+02:00",
+                        "2025-02-28T18:00:00+02:00",
+                        "2025-02-28T19:00:00+02:00",
+                        "2025-02-28T20:00:00+02:00",
+                        "2025-02-28T21:00:00+02:00",
+                        "2025-02-28T22:00:00+02:00",
+                        "2025-02-28T23:00:00+02:00",
+                        "2025-03-06T10:00:16+02:00",
+                        "2025-03-06T11:00:16+02:00",
+                        "2025-03-06T12:00:16+02:00",
+                        "2025-03-06T13:00:16+02:00",
+                        "2025-03-06T14:00:16+02:00",
+                        "2025-03-06T15:00:16+02:00",
+                        "2025-03-06T16:00:16+02:00",
+                        "2025-03-06T17:00:16+02:00",
+                        "2025-03-06T18:00:16+02:00",
+                        "2025-03-06T19:00:16+02:00",
+                        "2025-03-06T20:00:16+02:00",
+                        "2025-03-06T21:00:16+02:00",
+                        "2025-03-06T22:00:16+02:00",
+                        "2025-03-06T23:00:16+02:00",
+                        "2025-03-07T00:00:16+02:00",
+                        "2025-03-07T01:00:16+02:00",
+                        "2025-03-07T02:00:16+02:00",
+                        "2025-03-07T03:00:16+02:00",
+                        "2025-03-07T04:00:16+02:00",
+                        "2025-03-07T05:00:16+02:00",
+                        "2025-03-07T06:00:16+02:00",
+                        "2025-03-07T07:00:16+02:00",
+                        "2025-03-07T08:00:16+02:00",
+                        "2025-03-07T09:00:16+02:00"
+                      ],
+                      "sessions_color_code": "#cf5723",
+                      "polls_color_code": "#62b0ff",
+                    },
+                    "total_count": null,
+                    "timestamp": 1723639902458
+                  }
+      parameters:
+        - $ref: "#/components/parameters/idParam"
+        - $ref: "#/components/parameters/limitParam"
+        - $ref: "#/components/parameters/offsetParam"
+        - $ref: "#/components/parameters/orderParam"
+        - $ref: "#/components/parameters/countParam"
+        - $ref: "#/components/parameters/others"
+
+  '/connectivity_history/kiosks/{id}':
+    get:
+      tags:
+        - Data
+        - Connectivity History
+      operationId: getKioskConnectivityHistory
+      x-tag-permissions:
+        - kiosks
+      summary: Get object for connectivity history
+      description: |-
+        Obtain kiosk polling / connectivity history.  
+        * **pfN** ---- Connectivity History frequency for hour of day __N__.
+        * **sfN** ---- Session frequency for hour of day __N__.
+
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: List of connectivity history objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ConnectivityHistoryResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": {
+                      "kiosk_id": 1234,
                       "sessions": [
                         0,
                         0,
@@ -7425,6 +8138,7 @@ paths:
                         "id": 1,
                         "acknowledged": 80,
                         "amount": "32.00",
+                        "tendered_amount": "32.00",
                         "credit": "0.00",
                         "customer_name": "unknown",
                         "divider": 1,
@@ -9509,6 +10223,350 @@ paths:
       - $ref: "#/components/parameters/smallerThanEqualParam"
       - $ref: "#/components/parameters/greaterThanEqualParam"
 
+  '/templates':
+    post:
+      tags:
+        - Data
+        - Templates
+      summary: Create object for templates
+      description: |-
+        This system is used to create templates of access levels that can be assigned to users.
+
+      operationId: createTemplates
+      x-tag-permissions:
+        - resellers
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  maxLength: 350
+                  example: "Default Template"
+                reseller_id:
+                  type: integer
+                  example: 15
+                access_id:
+                  type: array
+                  items:
+                    type: integer
+                  example: [ 1, 2, 3 ]
+                  description: "List of access levels that should be assigned to this template."
+                active:
+                  type: boolean
+              required: [ "name", "reseller_id" ]
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns template object created by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TemplatesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "Test Template",
+                        "active": true,
+                        "resellers": {
+                          "id": 1,
+                          "name": "IQ Telemetry (Pty) Ltd"
+                        },
+                        "access": [
+                          {
+                            "id": 83,
+                            "name": "Get Device Activity Audit",
+                            "access_level": 6
+                          },
+                          {
+                            "id": 84,
+                            "name": "Create Device Activity Audit",
+                            "access_level": 6
+                          }
+                        ]
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723628631562
+                  }
+
+  '/templates/{id}':
+    get:
+      tags:
+        - Data
+        - Templates
+      operationId: getTemplates
+      x-tag-permissions:
+        - resellers
+        - templates
+      summary: Get object for templates
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of "templates" items from the database
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TemplatesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "Test Template",
+                        "active": true,
+                        "resellers": {
+                          "id": 1,
+                          "name": "IQ Telemetry (Pty) Ltd"
+                        },
+                        "access": [
+                          {
+                            "id": 83,
+                            "name": "Get Device Activity Audit",
+                            "access_level": 6
+                          },
+                          {
+                            "id": 84,
+                            "name": "Create Device Activity Audit",
+                            "access_level": 6
+                          }
+                        ]
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723628631562
+                  }
+    put:
+      tags:
+        - Data
+        - Templates
+      summary: Update object for templates
+      operationId: updateTemplates
+      x-tag-permissions:
+        - resellers
+        - templates
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  maxLength: 350
+                  example: "Default Template"
+                reseller_id:
+                  type: integer
+                  example: 15
+                access_id:
+                  type: array
+                  items:
+                    type: integer
+                  example: [ 1, 2, 3 ]
+                  description: "List of access levels that should be assigned to this template."
+                active:
+                  type: boolean
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns an array of "template" items updated by query
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TemplatesResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "Test Template",
+                        "active": true,
+                        "resellers": {
+                          "id": 1,
+                          "name": "IQ Telemetry (Pty) Ltd"
+                        },
+                        "access": [
+                          {
+                            "id": 83,
+                            "name": "Get Device Activity Audit",
+                            "access_level": 6
+                          },
+                          {
+                            "id": 84,
+                            "name": "Create Device Activity Audit",
+                            "access_level": 6
+                          }
+                        ]
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723628631562
+                  }
+    delete:
+      tags:
+        - Data
+        - Templates
+      summary: Delete object for templates
+      operationId: deleteTemplates
+      x-tag-permissions:
+        - templates
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DeleteResponse"
+              example:
+                {
+                  "success": true,
+                  "data": "Successfully deleted record(s). [1]",
+                  "timestamp": 1723108298846
+                }
+          description: Returns result of delete
+    parameters:
+      - $ref: "#/components/parameters/idParam"
+      - $ref: "#/components/parameters/limitParam"
+      - $ref: "#/components/parameters/offsetParam"
+      - $ref: "#/components/parameters/orderParam"
+      - $ref: "#/components/parameters/countParam"
+      - $ref: "#/components/parameters/others"
+      - $ref: "#/components/parameters/smallerThanParam"
+      - $ref: "#/components/parameters/greaterThanParam"
+      - $ref: "#/components/parameters/smallerThanEqualParam"
+      - $ref: "#/components/parameters/greaterThanEqualParam"
+
+  '/templates/user':
+    post:
+      tags:
+        - Functions
+        - Templates
+      summary: Apply template to user
+      description: |-
+        This endpoint will delete all currently linked access to the user, and replace it with the defined access in
+        the template. This is useful for certain user setups.
+
+      operationId: createTemplateUser
+      x-tag-permissions:
+        - templates
+        - users
+      requestBody:
+        required: true
+        content:
+          'application/json':
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                user_id:
+                  type: integer
+                  example: 108
+                template_id:
+                  type: integer
+                  example: 15
+              required: [ "user_id", "template_id" ]
+      responses:
+        '401':
+          description: Authorization information is missing or invalid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedResponse"
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '200':
+          description: Returns result of the query.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TemplatesUserResponse"
+                example:
+                  {
+                    "success": true,
+                    "data": [
+                      {
+                        "id": 275717,
+                        "user_id": 1698,
+                        "access_id": 85,
+                        "can_access": true
+                      }
+                    ],
+                    "entries": 1,
+                    "total_count": null,
+                    "timestamp": 1723108298846
+                  }
   '/reports/transactions/totals_current_previous':
     get:
       tags:
@@ -11325,6 +12383,7 @@ paths:
       operationId: postGenerateIntent
       x-tag-permissions:
         - devices
+        - kiosks
         - companies
         - resellers
         - organisations
@@ -11381,8 +12440,8 @@ paths:
                   example: '20.10'
                 intent_type_id:
                   type: number
-                  enum: [ 1, 2 ]
-                  description: Specify the type of intent we are working with. 1 = activation for all devices in the metadata object, 2 = mifare topup.
+                  enum: [ 1, 2, 3 ]
+                  description: Specify the type of intent we are working with. 1 = activation for all devices in the metadata object, 2 = mifare topup, 3 = kiosks.
                 source_currency:
                   type: string
                   example: "$"
@@ -12221,6 +13280,126 @@ components:
               type: integer
             name:
               type: string
+    KiosksResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        uid:
+          type: string
+          description: Unique identification for the device.
+        imsi:
+          type: string
+          description: International Mobile Subscriber Identity or Service Set Identifier (SSID).
+        polling_frequency:
+          type: integer
+          description: Expected number of polled calls from the device.
+        software_version:
+          type: string
+        life_days:
+          type: integer
+        connected_at:
+          type: string
+        peer_host:
+          type: string
+        async_ratio:
+          type: string
+        protocol:
+          type: string
+        channels:
+          type: integer
+        minutes_connected:
+          type: integer
+        heartbeat_rate:
+          type: string
+        status_code:
+          type: integer
+        asset_state_id:
+          type: integer
+        serial_number:
+          type: string
+          description: Serial number of the physical machine.
+        online:
+          type: boolean
+          description: Boolean representing the connection of the device.
+        last_online:
+          type: string
+          description: The last time we saw the device had an activate connection with MQTT.
+        last_transaction_date:
+          type: string
+          description: The last time any transaction occurred on the device.
+        active:
+          type: boolean
+        resellers:
+          type: object
+          properties:
+            id:
+              type: array
+              items:
+                type: integer
+            name:
+              type: array
+              items:
+                type: string
+            id_name:
+              type: array
+              items:
+                type: string
+        organisations:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        companies:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        sites:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        status_codes:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            code:
+              type: integer
+        asset_states:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        pos_types:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            version:
+              type: string
+        host_hardware:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
     DevicesActivateResponse:
       type: object
       properties:
@@ -12533,6 +13712,8 @@ components:
           type: string
         amount:
           type: number
+        tendered_amount:
+          type: number
         payment_id:
           type: string
         payment_reference:
@@ -12735,6 +13916,44 @@ components:
               type: string
             logo_url:
               type: string
+    TemplatesResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        active:
+          type: boolean
+        resellers:
+          type: object
+          properties:
+            id:
+              type: number
+            name:
+              type: string
+        access:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: number
+              name:
+                type: string
+              access_level:
+                type: string
+    TemplatesUserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        access_id:
+          type: integer
+        can_access:
+          type: boolean
     CustomersResponse:
       type: object
       properties:
